@@ -47,6 +47,8 @@ app.use(cookieParser());
 
 app.use(express.json()); // For parsing JSON requests
 
+// Keep the general static file serving
+app.use(express.static(path.join(__dirname, 'dist')));
 
 app.use(express.json()); // For parsing JSON data
 app.use(express.urlencoded({ extended: true })); // For parsing URL-encoded data
@@ -58,6 +60,10 @@ mongoose.connect(process.env.DATABASE_URI).then(() => {
     console.error('Failed to connect to MongoDB', err);
 });
 
+// Keep the catch-all route last 
+app.get('*', (req, res) => {
+    res.sendFile(path.join(__dirname, 'dist', 'index.html'));
+});
     
 // Use Routes   
 app.use(express.static(path.join(__dirname, "public"), {
