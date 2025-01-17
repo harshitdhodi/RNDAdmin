@@ -1,0 +1,134 @@
+import React from 'react';
+import { Form, Input, Button, message, Upload, Breadcrumb } from 'antd';
+import { useNavigate, Link } from 'react-router-dom';
+import { useCreateBannerMutation } from '../../slice/banner/banner';
+import ReactQuill from 'react-quill';
+import 'react-quill/dist/quill.snow.css';
+import { UploadOutlined, HomeOutlined } from '@ant-design/icons';
+
+const AddBannerForm = () => {
+  const navigate = useNavigate();
+  const [form] = Form.useForm();
+  const [createBanner] = useCreateBannerMutation();
+  const [previewUrl, setPreviewUrl] = React.useState(null);
+
+  const onFinish = async (values) => {
+    try {
+      const formData = new FormData();
+      if (values.image?.[0]?.originFileObj) {
+        formData.append('image', values.image[0].originFileObj);
+        formData.append('imgName', values.image[0].name);
+      } else {
+        message.error('Please select an image');
+        return;
+      }
+      
+      formData.append('title', values.title);
+      formData.append('altName', values.altName);
+      formData.append('details', values.details);
+      
+      await createBanner(formData);
+      message.success('Banner created successfully');
+      navigate('/banner-table');
+    } catch (error) {
+      console.log(error);
+      message.error('Failed to create banner');
+    }
+  };
+
+  const handleImageChange = (info) => {
+    const file = info.fileList[0];
+    if (file?.originFileObj) {
+      const reader = new FileReader();
+      reader.onload = () => {
+        setPreviewUrl(reader.result);
+      };
+      reader.readAsDataURL(file.originFileObj);
+      
+      form.setFieldsValue({
+        image: info.fileList,
+        imgName: file.name
+      });
+    } else {
+      setPreviewUrl(null);
+    }
+  };
+
+  return (
+    <div>
+      <Breadcrumb style={{ padding: '16px 24px' }}>
+        <Breadcrumb.Item>
+          <Link to="/dashboard">
+            <HomeOutlined /> Dashboard
+          </Link>
+        </Breadcrumb.Item>
+        <Breadcrumb.Item>
+          <Link to="/banner-table">Banner Management</Link>
+        </Breadcrumb.Item>
+        <Breadcrumb.Item>Add New Banner</Breadcrumb.Item>
+      </Breadcrumb>
+
+      <div style={{ padding: '24px' }}>
+        <h1 className="text-2xl font-bold mb-6">Add New Banner</h1>
+        <Form
+          form={form}
+          layout="vertical"
+          onFinish={onFinish}
+        >
+          <Form.Item
+            name="image"
+            label="Banner Image"
+            rules={[{ required: true, message: 'Please upload an image!' }]}
+          >
+            <Upload
+              maxCount={1}
+              listType="picture"
+              beforeUpload={() => false}
+              onChange={handleImageChange}
+            >
+              <Button icon={<UploadOutlined />}>Upload Image</Button>
+            </Upload>
+          </Form.Item>
+
+          <Form.Item
+            name="imgName"
+            label="Image Name"
+            rules={[{ required: true, message: 'Please input image name!' }]}
+          >
+            <Input />
+          </Form.Item>
+
+          <Form.Item
+            name="title"
+            label="Title"
+          >
+            <Input />
+          </Form.Item>
+
+          <Form.Item
+            name="altName"
+            label="Alt Name"
+            rules={[{ required: true, message: 'Please input alt name!' }]}
+          >
+            <Input />
+          </Form.Item>
+
+          <Form.Item
+            name="details"
+            label="Details"
+          >
+            <ReactQuill theme="snow" />
+          </Form.Item>
+
+          <Form.Item>
+            <Button type="primary" htmlType="submit">
+              Submit
+            </Button>
+          </Form.Item>
+        </Form>
+      </div>
+    </div>
+  );
+};
+
+export default AddBannerForm; 

@@ -1,0 +1,218 @@
+import { useState } from "react";
+import { Button } from "@/components/ui/button";
+import { Sidebar, SidebarContent, SidebarGroup, SidebarGroupLabel, SidebarMenu, SidebarMenuItem, SidebarMenuButton } from "@/components/ui/sidebar";
+import { Collapsible, CollapsibleTrigger, CollapsibleContent } from "@/components/ui/collapsible";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { Separator } from "@/components/ui/separator";
+import { ChevronDown, LayoutDashboard, PlusSquare, List, TruckIcon, Settings, ArrowLeftRightIcon, UsersRoundIcon, Truck, Flower, MailQuestion, FileQuestion, ChartNoAxesGanttIcon } from "lucide-react";
+import { cn } from "@/lib/utils";
+import { Link , useLocation } from "react-router-dom";
+
+// Updated JSON structure with parent-child relationships
+const menuData = [
+  {
+    title: "Dashboard",
+    icon: LayoutDashboard,
+    url: "/dashboard",
+    
+  },
+  {
+    title: "Chemical",
+    icon: LayoutDashboard,
+    children: [
+      { title: "List", icon: List, url: "/chemical-table" },
+      { title: "Add New", icon: PlusSquare, url: "/chemical-form" },
+      { title: "Chemical Types", icon: ArrowLeftRightIcon, url: "/chemical-types" },
+      { title: "Search Suppliers", icon: Truck, url: "/search-suppliers" },
+      { title: "Unit", icon: PlusSquare, url: "/unit" },
+      { title: "Tax", icon: PlusSquare, url: "#types" },
+      { title: "Category", icon: ChartNoAxesGanttIcon, url: "/chemical-category" }
+    ]
+  },
+  {
+    title: "Supplier",
+    icon: TruckIcon,
+    children: [
+      { title: "List", icon: List, url: "/supplier-table" },
+      { title: "Add New", icon: PlusSquare, url: "/supplier-form" },
+      { title: "Chemical Mapping ", icon: ArrowLeftRightIcon, url: "/chemical-mapping" },
+      { title: "Search Chemicals", icon: Flower, url: "/chemical-search" }
+    ]
+  },
+  {
+    title: "Customer",
+    icon: UsersRoundIcon,
+    children: [
+      { title: "List", icon: List, url: "/customer-table" },
+      { title: "Add New", icon: PlusSquare, url: "/customer-form" },
+      { title: "Chemical Mapping ", icon: ArrowLeftRightIcon, url: "/customer-chemical-mapping" },
+    
+    ]
+  },
+  {
+    title: "Email",
+    icon: UsersRoundIcon,
+    children: [
+      { title: "SMTP Setting", icon: List, url: "/smtp-table" },
+      { title: "Email Template", icon: PlusSquare, url: "/email-template-table" },
+      { title: "Send Email ", icon: ArrowLeftRightIcon, url: "/email-form" },
+      { title: "Email Category", icon: ArrowLeftRightIcon, url: "/email-category" },
+     ]
+  },
+  {
+    title: "Inquiry",
+    icon: FileQuestion,
+    children: [
+      { title: "List", icon: List, url: "/inquiry-list" },
+      { title: "Add New", icon: PlusSquare, url: "/add-inquiry" },
+      { title: "Inquiry Sources ", icon: List, url: "source-table" },
+      { title: "Inquiry Status ", icon: List, url: "status-table" },
+    
+    ]
+  },
+  {
+    title: "Website",
+    icon: LayoutDashboard,
+    children: [
+      {
+        title: "Blog",
+        icon: List,
+        children: [
+          { title: "Blog Categories", icon: List, url: "/blog-category-table" },
+          { title: "Blog", icon: PlusSquare, url: "/blog-table" },
+        ]
+      },
+      // {
+      //   title: "Inquiry",
+      //   icon: FileQuestion,
+      //   children: [
+      //     { title: "List", icon: List, url: "/product-inquiry-table" },
+      //   ]
+      // },
+      {
+        title: "Corporate",
+        icon: FileQuestion,
+        children: [
+          { title: "List", icon: List, url: "/about-us-table" },
+          // { title: "Add New", icon: PlusSquare, url: "/about-us-form" },
+        ]
+      },
+      {
+        title: "Banner",
+        icon: FileQuestion,
+        children: [
+          { title: "List", icon: List, url: 
+            "/banner-table" },
+          { title: "Add New", icon: PlusSquare, url: "/add-banner" },
+
+        ]
+      } , 
+      {
+        title: "Worldwide",
+        icon: FileQuestion,
+        children: [
+          { title: "List", icon: List, url: "/worldwide-table" },
+        ]
+      },
+      {
+        title: "Career",
+        icon: FileQuestion,
+        children: [
+          { title: "List", icon: List, url: "/career-table" },
+        ]
+      }
+    ] 
+  }
+];
+
+export default function AppSidebar() {
+  const [openSections, setOpenSections] = useState({});
+  const [userMenuOpen, setUserMenuOpen] = useState(false);
+
+  const toggleUserMenu = () => {
+    setUserMenuOpen((prev) => !prev);
+  };
+  const location = useLocation();
+
+  const toggleSection = (title) => {
+    setOpenSections((prev) => ({ ...prev, [title]: !prev[title] }));
+  };
+
+  const isActive = (url) => location.pathname === url;
+
+  const renderMenuItems = (items) =>
+    items.map((item) => {
+      const isParentActive = item.children?.some((child) => isActive(child.url));
+      const isChildActive = isActive(item.url);
+      const activeClass = isParentActive || isChildActive ? "text-blue-600" : "text-gray-600";
+
+      return (
+        <SidebarMenuItem key={item.title}>
+          {item.children?.length ? (
+            <Collapsible open={openSections[item.title]} onOpenChange={() => toggleSection(item.title)}>
+              <CollapsibleTrigger asChild>
+                <Button variant="ghost" className={`w-full justify-start gap-2 hover:text-blue-600 font-normal ${activeClass}`}>
+                  <item.icon className="w-4 h-4" />
+                  {item.title}
+                  <ChevronDown className={cn("w-4 h-4 ml-auto transition-transform hover:text-blue-600", { "-rotate-90": !openSections[item.title] })} />
+                </Button>
+              </CollapsibleTrigger>
+              <CollapsibleContent className="pl-6 space-y-1">
+                {renderMenuItems(item.children)}
+              </CollapsibleContent>
+            </Collapsible>
+          ) : (
+            <SidebarMenuButton asChild>
+              <Link to={item.url} className={`pl-4 flex items-center gap-2 hover:text-blue-600 ${activeClass}`}>
+                <item.icon className="w-4 h-4" />
+                {item.title}
+              </Link>
+            </SidebarMenuButton>
+          )}
+        </SidebarMenuItem>
+      );
+    });
+
+  return (
+    <Sidebar >
+      <SidebarContent>
+        <SidebarGroup>
+          <SidebarGroupLabel>Application</SidebarGroupLabel>
+          <SidebarMenu>{renderMenuItems(menuData)}</SidebarMenu>
+        </SidebarGroup>
+      </SidebarContent>
+      {/* <Separator className="my-4" /> */}
+      <ScrollArea className="p-4">
+      <ScrollArea className="p-4">
+        {/* <Button variant="ghost" className="w-full justify-start gap-2 font-normal" onClick={toggleUserMenu}>
+          <div className="flex items-center gap-2">
+            <div className="w-8 h-8 rounded-full bg-primary flex items-center justify-center">
+              <span className="text-xs font-medium text-primary-foreground">SC</span>
+            </div>
+            <div className="text-left">
+              <div className="text-sm font-medium">shadcn</div>
+              <div className="text-xs text-muted-foreground">m@example.com</div>
+            </div>
+            <ChevronDown className={cn("w-4 h-4 ml-auto transition-transform", { "-rotate-180": userMenuOpen })} />
+          </div>
+        </Button> */}
+
+      
+        {/* {userMenuOpen && (
+          <div className="mt-2 pl-8">
+            <Button variant="ghost" className="w-full justify-start gap-2 font-normal text-sm">
+              Profile
+            </Button>
+            <Button variant="ghost" className="w-full justify-start gap-2 font-normal text-sm">
+              Account Settings
+            </Button>
+            <Button variant="ghost" className="w-full justify-start gap-2 font-normal text-sm text-red-600">
+              Logout
+            </Button>
+          </div>
+        )} */}
+      </ScrollArea> 
+      </ScrollArea>
+    </Sidebar>
+  );
+}
