@@ -98,7 +98,7 @@ app.use('/api/chemicalMail',chemicalMail)
 app.use('/api/career', career);
 app.use('/api/worldwide', worldwide);
 app.use('/api/emailCategory', emailCategory);
-const PORT = 3000;
+const PORT = 3028;
 app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
     // generateAllSitemaps(); // Generate the sitemap when the server starts
