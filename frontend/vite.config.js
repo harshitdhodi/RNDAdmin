@@ -10,13 +10,13 @@ export default defineConfig({
     mimeTypes: {
       "application/javascript": ["js"],
     },
-    proxy: {
-      "/api": {
-        target: "http://localhost:3000",
-        changeOrigin: true, // Ensures proper handling of CORS
-        secure:false
-          },
-    },
+    // proxy: {
+    //   "/api": {
+    //     target: "http://localhost:3000",
+    //     changeOrigin: true, // Ensures proper handling of CORS
+    //     secure:false
+    //       },
+    // },
   },
   resolve: {
     alias: {
