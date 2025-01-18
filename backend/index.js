@@ -96,6 +96,10 @@ mongoose.connect(process.env.DATABASE_URI).then(() => {
     console.error('Failed to connect to MongoDB', err);
 });
 
+<<<<<<< HEAD
+=======
+const PORT = 3028;
+>>>>>>> 63f46a23eb3183a1f8377bb22d57ca2be97f2dc9
 app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
     // generateAllSitemaps(); // Generate the sitemap when the server starts

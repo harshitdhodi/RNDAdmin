@@ -2,9 +2,9 @@ const path = require('path');
 const Chemical = require('../model/chemical');  // Assuming the model is in models/Chemical.js
 const Customer = require('../model/customer');
 const Supplier = require('../model/supplier');
+const ChemicalCategory = require('../model/chemicalCategory');
 // Create new chemical
 exports.createChemical = async (req, res) => {
-  console.log(req.files)
   try {
     // Generate a unique 6-digit product code
     const generateUniquePCode = async () => {
@@ -28,61 +28,69 @@ exports.createChemical = async (req, res) => {
       
       images = imageFiles.map((file, index) => ({
         url: path.basename(file.path),
-        altText: req.body[`altText-${index}`],
-        title: req.body[`title-${index}`]
+        altText: req.body[`altText-${index}`] || '',
+        title: req.body[`title-${index}`] || ''
       }));
     }
 
-    // Handle the catalog file (if uploaded)
-    const catalog = req.files?.catalog?.[0]?.filename || '';
-    const msds = req.files?.msds?.[0]?.filename || '';  // Add MSDS handling
+    // Parse arrays from JSON strings
+    const parseArrayField = (field) => {
+      if (!field) return [];
+      try {
+        return JSON.parse(field);
+      } catch (e) {
+        console.error('Error parsing array field:', e);
+        return [];
+      }
+    };
 
-    // Prepare chemical data
+    // Handle the specs and msds files
+    const specs = req.files?.specs?.[0]?.filename || '';
+    const msds = req.files?.msds?.[0]?.filename || '';
+
+    // Parse array fields from JSON strings
+    const packings = parseArrayField(req.body.packings);
+    const application = parseArrayField(req.body.application);
+    const synonyms = parseArrayField(req.body.synonyms);
+    const chemical_industries = parseArrayField(req.body.chemical_industries);
+
+    // Log the parsed arrays for debugging
+    console.log('Parsed packings:', packings);
+    console.log('Parsed application:', application);
+    console.log('Parsed synonyms:', synonyms);
+    console.log('Parsed chemical_industries:', chemical_industries);
+
+    // Create chemical object
     const chemical = new Chemical({
-      name: req.body.name,
-      slug: req.body.slug,
-      category: req.body.category,
-      categorySlug: req.body.categorySlug,
-      sub_category: req.body.sub_category,
-      subCategorySlug: req.body.subCategorySlug,
-      subsub_category_id: req.body.subsub_category_id,
-      subSubCategorySlug: req.body.subSubCategorySlug,
-      unit: req.body.unit,
-      chemical_type: req.body.chemical_type,
-      cas_number: req.body.cas_number,
-      packings: req.body.packings,
-      grade: req.body.grade,
-      iupac: req.body.iupac,
-      h_s_code: req.body.h_s_code,
-      molecular_weight: req.body.molecular_weight,
-      molecular_formula: req.body.molecular_formula,
-      synonyms: req.body.synonyms || [],
-      chemical_industries: req.body.chemical_industries || [],
-      product_code: req.body.product_code,
-      auto_p_code: uniquePCode,
-      packing: req.body.packing,
-      hs_code: req.body.hs_code,
-      metatitle: req.body.metatitle,
-      metadescription: req.body.metadescription,
-      metakeywords: req.body.metakeywords,
-      metacanonical: req.body.metacanonical,
-      metalanguage: req.body.metalanguage,
-      metaschema: req.body.metaschema,
-      otherMeta: req.body.otherMeta,
-      images: images,
-      catalog: catalog,
-      msds: msds  // Add MSDS field
+      ...req.body,
+      packings,
+      application,
+      synonyms,
+      chemical_industries,
+      specs,
+      msds,
+      images: req.files?.images ? req.files.images.map((file, index) => ({
+        url: file.filename,
+        altText: req.body[`altText-${index}`] || '',
+        title: req.body[`title-${index}`] || ''
+      })) : []
     });
 
-    // Save the chemical data in the database
     const savedChemical = await chemical.save();
-    res.status(201).json({ message: 'Chemical inserted successfully', chemical: savedChemical });
+    
+    return res.status(201).json({
+      success: true,
+      message: 'Chemical inserted successfully',
+      chemical: savedChemical
+    });
   } catch (err) {
     console.error('Error creating chemical:', err);
-    res.status(400).json({ message: err.message });
+    return res.status(400).json({
+      success: false,
+      message: err.message || 'Failed to create chemical'
+    });
   }
 };
-
 
 exports.updateProduct = async (req, res) => {
   const { slugs } = req.query;
@@ -94,7 +102,7 @@ exports.updateProduct = async (req, res) => {
       if (!existingProduct) {
           return res.status(404).json({ message: 'Product not found' });
       } 
-
+ 
       // Process new uploaded photos
       if (req.files?.photo?.length > 0) {
           const newPhotoPaths = req.files.photo.map(file => ({
@@ -126,7 +134,6 @@ exports.updateProduct = async (req, res) => {
       res.status(500).json({ message: 'Server error', error });
   }
 };
-
 
 // Get all chemicals
 exports.getAllChemicals = async (req, res) => {
@@ -174,10 +181,48 @@ exports.getAllChemicals = async (req, res) => {
 // Get chemical by ID
 exports.getChemicalById = async (req, res) => {
     try {
+        // First, find the chemical
         const chemical = await Chemical.findById(req.query.id);
         if (!chemical) return res.status(404).json({ message: 'Chemical not found' });
-        res.status(200).json(chemical);
+
+        // Find the category document
+        const category = await ChemicalCategory.findOne({ slug: chemical.categorySlug });
+        if (!category) return res.status(404).json({ message: 'Category not found' });
+
+        // Find the subcategory within the category
+        const subCategory = category.subCategories.find(
+            sub => sub.slug === chemical.subCategorySlug
+        );
+
+        // Find the sub-subcategory within the subcategory
+        const subSubCategory = subCategory?.subSubCategory.find(
+            subsub => subsub.slug === chemical.subSubCategorySlug
+        );
+
+        // Construct the response
+        const response = {
+            ...chemical.toObject(),
+            category: {
+                _id: category._id,
+                name: category.category,
+                slug: category.slug,
+                details: category.details
+            },
+            sub_category: subCategory ? {
+                name: subCategory.category,
+                slug: subCategory.slug,
+                details: subCategory.details
+            } : null,
+            subsub_category_id: subSubCategory ? {
+                name: subSubCategory.category,
+                slug: subSubCategory.slug,
+                details: subSubCategory.details
+            } : null
+        };
+
+        res.status(200).json(response);
     } catch (err) {
+        console.error('Error in getChemicalById:', err);
         res.status(400).json({ message: err.message });
     }
 };
@@ -330,11 +375,10 @@ exports.getChemicalByCategorySubCategorySlug = async (req, res) => {
 exports.getChemicalByCategoryAndAlphabet = async (req, res) => {
   try {
     // Destructure categoryslug and the selected alphabet from query parameters
-    const { categoryslug, alphabet } = req.query;
+    const { alphabet } = req.query;
     
     // Step 1: Query for chemicals by category and name starting with the provided alphabet (case-insensitive)
     const chemicals = await Chemical.find({
-      'categorySlug': categoryslug, // Query based on category
       'name': { $regex: `^${alphabet}`, $options: 'i' } // Match name starting with alphabet (case-insensitive)
     });
 
@@ -345,7 +389,6 @@ exports.getChemicalByCategoryAndAlphabet = async (req, res) => {
     res.status(400).json({ message: err.message });
   }
 };
-
 
 //get chemical by sub sub category slug
 exports.getChemicalBysubsubCategorySlug = async (req, res) => {
@@ -392,59 +435,84 @@ exports.deleteChemical = async (req, res) => {
 exports.updateChemical = async (req, res) => {
   try {
     const { id } = req.query;
-
-    // Find the existing chemical in the database
     const existingChemical = await Chemical.findById(id);
+    
     if (!existingChemical) {
       return res.status(404).json({ message: 'Chemical not found' });
     }
 
-    // Initialize the images array with existing images
-    let images = existingChemical.images || [];
-
-    // Handle new images from the request
-    if (req.files && req.files.images) {
-      const imageFiles = Array.isArray(req.files.images) ? req.files.images : [req.files.images];
-      
-      const newImages = imageFiles.map((file, index) => ({
-        url: path.basename(file.path),
-        altText: req.body[`altText-${index}`] || '',
-        title: req.body[`title-${index}`] || ''
-      }));
-
-      images = [...images, ...newImages];
+    // Handle specs file
+    let specs = existingChemical.specs;
+    if (req.files?.specs?.[0]) {
+      specs = req.files.specs[0].filename;
     }
 
-    // Handle the catalog and MSDS files
-    const catalog = req.files?.catalog?.[0]?.filename || existingChemical.catalog;
-    const msds = req.files?.msds?.[0]?.filename || existingChemical.msds;  // Add MSDS handling
+    // Handle msds file
+    let msds = existingChemical.msds;
+    if (req.files?.msds?.[0]) {
+      msds = req.files.msds[0].filename;
+    }
 
-    // Update data with the new request body and fields
-    const updateData = {
-      ...req.body,
-      images: images,
-      catalog: catalog,
-      msds: msds,  // Add MSDS field
-      auto_p_code: existingChemical.auto_p_code,
+    // Safe parsing function for arrays
+    const safeParseArray = (value) => {
+      if (!value) return undefined; // Return undefined to skip updating this field
+      try {
+        // Handle case where value is already an array
+        if (Array.isArray(value)) return value;
+        // Try parsing as JSON
+        return JSON.parse(value);
+      } catch (e) {
+        // If parsing fails, return the original value
+        console.warn('Failed to parse array:', e);
+        return undefined;
+      }
     };
 
-    // Remove unnecessary fields from the update payload
-    delete updateData.images; // Already handled
-    delete updateData.altText; // Not needed
-    delete updateData.title; // Not needed
+    // Only include fields that are actually present in the request
+    const updateData = {
+      ...req.body,
+      specs,
+      msds
+    };
 
-    // Update the chemical in the database
-    const updatedChemical = await Chemical.findByIdAndUpdate(id, updateData, {
-      new: true, // Return the updated document
+    // Only add array fields if they exist in the request
+    if (req.body.synonyms !== undefined) {
+      updateData.synonyms = safeParseArray(req.body.synonyms);
+    }
+    if (req.body.chemical_industries !== undefined) {
+      updateData.chemical_industries = safeParseArray(req.body.chemical_industries);
+    }
+    if (req.body.packings !== undefined) {
+      updateData.packings = safeParseArray(req.body.packings);
+    }
+    if (req.body.application !== undefined) {
+      updateData.application = safeParseArray(req.body.application);
+    }
+
+    // Remove any undefined values from updateData
+    Object.keys(updateData).forEach(key => 
+      updateData[key] === undefined && delete updateData[key]
+    );
+
+    const updatedChemical = await Chemical.findByIdAndUpdate(
+      id, 
+      updateData,
+      { new: true, runValidators: true }
+    );
+
+    res.status(200).json({
+      success: true,
+      message: 'Chemical updated successfully',
+      chemical: updatedChemical
     });
-
-    res.status(200).json({ message: 'Chemical updated successfully', chemical: updatedChemical });
   } catch (err) {
     console.error('Error updating chemical:', err);
-    res.status(400).json({ message: err.message });
+    res.status(400).json({
+      success: false,
+      message: err.message || 'Failed to update chemical'
+    });
   }
 };
-
 
 exports.searchChemicals = async (req, res) => {
     try {
@@ -559,6 +627,135 @@ exports.getLatestChemicals = async (req, res) => {
             error: err.message 
         });
     }
+};
+
+exports.getLatestChemicalsExcept = async (req, res) => {
+  try {
+    const { slug } = req.query;
+
+    // Fetch latest 8 chemicals excluding the one with matching slug
+    const chemicals = await Chemical.find({ slug: { $ne: slug } })
+      .sort({ createdAt: -1 })  // Sort by creation date in descending order
+      .limit(8);                // Limit to 8 items
+
+    // Initialize counts for Customer and Supplier
+    const customerChemicalCounts = {};
+    const supplierChemicalCounts = {};
+
+    // Count occurrences in Customer schema
+    const customers = await Customer.find();
+    customers.forEach(customer => {
+      customer.chemicalId.forEach(chemicalId => {
+        customerChemicalCounts[chemicalId] = (customerChemicalCounts[chemicalId] || 0) + 1;
+      });
+    });
+
+    // Count occurrences in Supplier schema
+    const suppliers = await Supplier.find();
+    suppliers.forEach(supplier => {
+      supplier.chemical_ids.forEach(chemicalId => {
+        supplierChemicalCounts[chemicalId] = (supplierChemicalCounts[chemicalId] || 0) + 1;
+      });
+    });
+
+    // Enhance the chemical data with counts
+    const enhancedChemicals = chemicals.map(chemical => {
+      const chemicalId = chemical._id.toString();
+      return {
+        ...chemical.toObject(),
+        customerCount: customerChemicalCounts[chemicalId] || 0,
+        supplierCount: supplierChemicalCounts[chemicalId] || 0
+      };
+    });
+
+    res.status(200).json({
+      success: true,
+      data: enhancedChemicals
+    });
+  } catch (err) {
+    res.status(500).json({ 
+      success: false,
+      message: "Error fetching latest chemicals",
+      error: err.message 
+    });
+  }
+};
+
+// Update chemical by ID
+exports.updateChemicalById = async (req, res) => {
+  try {
+    const { id } = req.query;
+
+    // Parse arrays with custom delimiter handling - only if they exist in req.body
+    const parseArrayField = (field) => {
+      if (field === undefined) return undefined; // Don't update if field not provided
+      if (!field) return [];
+      if (Array.isArray(field)) return field;
+      try {
+        // Try parsing as JSON first
+        return JSON.parse(field);
+      } catch {
+        // Fall back to comma splitting if not valid JSON
+        return field.split(',').map(item => item.trim()).filter(Boolean);
+      }
+    };
+
+    // Only include array fields in updateData if they exist in req.body
+    const updateData = { ...req.body };
+    
+    if ('packings' in req.body) {
+      updateData.packings = parseArrayField(req.body.packings);
+    }
+    if ('application' in req.body) {
+      updateData.application = parseArrayField(req.body.application);
+    }
+    if ('synonyms' in req.body) {
+      updateData.synonyms = parseArrayField(req.body.synonyms);
+    }
+    if ('chemical_industries' in req.body) {
+      updateData.chemical_industries = parseArrayField(req.body.chemical_industries);
+    }
+
+    // Handle files only if they exist
+    if (req.files?.specs?.[0]) {
+      updateData.specs = req.files.specs[0].filename;
+    }
+    if (req.files?.msds?.[0]) {
+      updateData.msds = req.files.msds[0].filename;
+    }
+    if (req.files?.images) {
+      updateData.images = req.files.images.map((file, index) => ({
+        url: file.filename,
+        altText: req.body[`altText-${index}`] || '',
+        title: req.body[`title-${index}`] || ''
+      }));
+    }
+
+    const updatedChemical = await Chemical.findByIdAndUpdate(
+      id,
+      { $set: updateData }, // Use $set to only update provided fields
+      { new: true, runValidators: true }
+    );
+
+    if (!updatedChemical) {
+      return res.status(404).json({
+        success: false,
+        message: 'Chemical not found'
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      message: 'Chemical updated successfully',
+      chemical: updatedChemical
+    });
+  } catch (err) {
+    console.error('Error updating chemical:', err);
+    return res.status(400).json({
+      success: false,
+      message: err.message || 'Failed to update chemical'
+    });
+  }
 };
 
 
