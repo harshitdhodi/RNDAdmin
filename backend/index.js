@@ -71,9 +71,7 @@ app.use('/api/chemicalMail',chemicalMail)
 app.use('/api/career', career);
 app.use('/api/worldwide', worldwide);
 app.use('/api/emailCategory', emailCategory);
-<<<<<<< HEAD
 const PORT = 3028;
-=======
 
 // 2. Then serve static files
 // Using 'dist' since you're using Vite instead of Create React App
@@ -98,8 +96,6 @@ mongoose.connect(process.env.DATABASE_URI).then(() => {
     console.error('Failed to connect to MongoDB', err);
 });
 
-const PORT = 3000;
->>>>>>> 465e6c6f3e21418aa54e85b68f7ce9867c3efec8
 app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
     // generateAllSitemaps(); // Generate the sitemap when the server starts
@@ -107,3 +103,4 @@ app.listen(PORT, () => {
  
   
         
+y
