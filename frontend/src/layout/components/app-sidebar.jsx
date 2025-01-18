@@ -74,6 +74,12 @@ const menuData = [
     title: "Website",
     icon: LayoutDashboard,
     children: [
+      { title: "Logo", icon: List,
+        children: [
+        
+          { title: "Logo Form", icon: PlusSquare, url: "/add-logo" },
+        ] 
+      },
       {
         title: "Blog",
         icon: List,
@@ -120,7 +126,16 @@ const menuData = [
         children: [
           { title: "List", icon: List, url: "/career-table" },
         ]
+      },
+      {
+        title: "Contact Info",
+        icon: FileQuestion,
+        children: [
+          { title: "List", icon: List, url: "/contact-info-table" },
+          // { title: "Add New", icon: PlusSquare, url: "/contact-info/add" },
+        ]
       }
+
     ] 
   }
 ];

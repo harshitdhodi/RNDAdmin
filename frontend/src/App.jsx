@@ -88,7 +88,10 @@ import CareerTable from './websiteBackend/career/CareerTable';
 import CareerAdminForm from './websiteBackend/career/CareerForm';
 import EmailCategoryParent from './email/emailCategory/EmailCategoryParent';
 import AdvanceSearch from './website/pages/AdvanceSearchPage';
-
+import Logo from './websiteBackend/companyLogo/CompanyLogoTable';
+import LogoForm from './websiteBackend/companyLogo/LogoForm';
+import ContactInfoForm from './websiteBackend/contactInfo/ContactInfoData';
+import ContactForm from './websiteBackend/contactInfo/contactInfoForm';
 // Auth Components
 const PrivateRoute = ({ children }) => {
   const token = Cookies.get('jwt');
@@ -261,7 +264,17 @@ function App() {
           { path: 'career-table', element: <CareerTable /> },
           { path: 'career/add', element: <CareerAdminForm /> },
           { path: 'career/edit/:id', element: <CareerAdminForm /> },
-          ]
+        
+          // Logo Management Routes
+          { path: 'logo-table', element: <Logo /> },
+          { path: 'add-logo', element: <LogoForm /> },
+          { path: 'edit-logo/:id', element: <LogoForm /> },
+
+          // Contact Info Management Routes
+          { path: 'contact-info-table', element: <ContactInfoForm /> },
+          // { path: 'contact-info/add', element: <ContactForm /> },
+          // { path: 'contact-info/edit/:id', element: <ContactForm /> },
+        ]
         }
       ]
     }

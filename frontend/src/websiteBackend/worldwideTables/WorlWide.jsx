@@ -46,9 +46,10 @@ const WorldWideBackend = () => {
             key: 'state',
         },
         {
-            title: 'City',
-            dataIndex: 'city',
-            key: 'city',
+            title: 'Cities',
+            dataIndex: 'cities',
+            key: 'cities',
+            render: (cities) => cities.join(', ')
         },
         {
             title: 'Actions',

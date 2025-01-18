@@ -24,7 +24,7 @@ const Slideshow = () => {
 
   return (
     <>
-      <div className="relative w-full h-[60vh] overflow-hidden">
+      <div className="relative w-full h-[25vh] sm:h-[70vh] overflow-hidden">
         {banners?.map((banner, index) => (
           <div
             key={banner._id}
@@ -43,10 +43,10 @@ const Slideshow = () => {
           </div>
         ))}
       </div>
-      <div className='absolute top-[65%] pl-[15%] mt-10'>
+      <div className='absolute top-[22%] sm:top-[65%] lg:top-[75%] md:top-[75%] pl-[15%] mt-10'>
         <Link to="/introduction">
-          <Button className="bg-orange-500 hover:bg-orange-600 font-bold px-5">
-            Read More <ArrowRight className='w-10 h-10' /> 
+          <Button className="bg-orange-500 hover:bg-orange-600 sm:font-bold sm:px-5 px-3">
+            Read More <ArrowRight className='w-5 h-5 sm:w-10 sm:h-10' /> 
           </Button>
         </Link>
       </div>

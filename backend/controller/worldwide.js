@@ -1,4 +1,5 @@
 const Worldwide = require('../model/worldwide');
+const { State, City } = require('country-state-city');
 
 // Create new worldwide entry
 const createWorldwide = async (req, res) => {
@@ -183,61 +184,51 @@ const addInternationalCountries = async (req, res) => {
 
 const addIndianLocations = async (req, res) => {
     try {
-        const indianLocations = [
-            // Andaman Nicobar
-            { state: 'Andaman Nicobar', city: 'Port Blair' },
+        // First, delete all existing India category entries
+        await Worldwide.deleteMany({ category: 'india' });
+
+        // Get all states of India
+        const indianStates = State.getStatesOfCountry('IN');
+        
+        const locationObjects = [];
+
+        // For each state, get exactly 5 cities and create entry
+        for (const state of indianStates) {
+            const stateCities = City.getCitiesOfState('IN', state.isoCode);
             
-            // Andhra Pradesh
-            { state: 'Andhra Pradesh', city: 'Anantapur' },
-            { state: 'Andhra Pradesh', city: 'Guntur' },
-            { state: 'Andhra Pradesh', city: 'Hyderabad' },
-            { state: 'Andhra Pradesh', city: 'Kakinada' },
-            { state: 'Andhra Pradesh', city: 'Secunderabad' },
-            { state: 'Andhra Pradesh', city: 'Tirupati' },
-            { state: 'Andhra Pradesh', city: 'Vijayawada' },
-            { state: 'Andhra Pradesh', city: 'Visakhapatnam' },
-            { state: 'Andhra Pradesh', city: 'Warangal' },
+            // Log warning if state has less than 5 cities
+            if (stateCities.length < 5) {
+                console.warn(`Warning: ${state.name} has only ${stateCities.length} cities available`);
+            }
 
-            // Assam
-            { state: 'Assam', city: 'Guwahati' },
-            { state: 'Assam', city: 'Jorhat' },
+            // Ensure exactly 5 cities by repeating the last city if needed
+            const cities = [];
+            for (let i = 0; i < 5; i++) {
+                // If we run out of cities, use the last available city
+                const cityIndex = Math.min(i, stateCities.length - 1);
+                cities.push(stateCities[cityIndex]?.name || stateCities[0]?.name || 'Unknown City');
+            }
 
-            // Bihar
-            { state: 'Bihar', city: 'Patna' },
-
-            // Chandigarh
-            { state: 'Chandigarh', city: 'Chandigarh' },
-
-            // ... (continuing with all other states and cities)
-            
-            // West Bengal
-            { state: 'West Bengal', city: 'Asansol' },
-            { state: 'West Bengal', city: 'Jalpaiguri' },
-            { state: 'West Bengal', city: 'Jamshedpur' },
-            { state: 'West Bengal', city: 'Kolkatta' },
-            { state: 'West Bengal', city: 'North 24 Parganas' },
-            { state: 'West Bengal', city: 'Siliguri' }
-        ];
-
-        const locationObjects = indianLocations.map(location => ({
-            category: 'india',
-            name: 'India',
-            state: location.state,
-            city: location.city
-        }));
+            locationObjects.push({
+                category: 'india',
+                name: 'India',
+                state: state.name,
+                cities: cities
+            });
+        }
 
         const result = await Worldwide.insertMany(locationObjects);
 
         res.status(201).json({
             success: true,
-            message: 'Indian locations added successfully',
+            message: 'Indian locations reset successfully',
             count: result.length,
             data: result
         });
     } catch (error) {
         res.status(500).json({
             success: false,
-            message: 'Error adding Indian locations',
+            message: 'Error resetting Indian locations',
             error: error.message
         });
     }

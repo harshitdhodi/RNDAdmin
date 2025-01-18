@@ -106,11 +106,18 @@ const WorldwideForm = () => {
                                     </Form.Item>
 
                                     <Form.Item
-                                        name="city"
-                                        label="City"
-                                        rules={[{ required: true, message: 'Please enter city' }]}
+                                        name="cities"
+                                        label="Cities (Enter up to 5 cities, one per line)"
+                                        rules={[{ required: true, message: 'Please enter at least one city' }]}
                                     >
-                                        <Input />
+                                        <Input.TextArea 
+                                            rows={5}
+                                            placeholder="Enter cities, one per line"
+                                            onChange={(e) => {
+                                                const cities = e.target.value.split('\n').slice(0, 5);
+                                                form.setFieldsValue({ cities });
+                                            }}
+                                        />
                                     </Form.Item>
                                 </>
                             )

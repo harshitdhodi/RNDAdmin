@@ -11,8 +11,9 @@ export default function MSDSSection({ msds, specs, name, onInquiry }) {
   };
 
   const handleWhatsAppClick = () => {
-    const phoneNumber = "8347980883"; // Replace with your actual WhatsApp number
-    const message = `Hi, I'm interested in ${name}`; // You can customize this message
+    // Remove all non-numeric characters and format properly
+    const phoneNumber = "917304945823"; // Removed spaces, hyphens, and '+' symbol
+    const message = `Hi, I'm interested in ${name}`;
     const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`;
     window.open(whatsappUrl, '_blank');
   };

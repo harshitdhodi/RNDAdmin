@@ -66,7 +66,8 @@ const upload = multer({
     fileFilter: fileFilter
 }).fields([
     { name: 'image', maxCount: MAX_FILES },  // Changed from 'images' to 'image' to match controller
-    { name: 'catalog', maxCount: 1 }
+    { name: 'catalog', maxCount: 1 },
+    { name: 'photo', maxCount: MAX_FILES },
 ]);
 
 // Wrap multer in a more robust error handler

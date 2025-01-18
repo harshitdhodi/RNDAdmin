@@ -18,14 +18,14 @@ export default function CountriesTable({ data, isIndiaTable = false }) {
                         {rows.map((row, rowIndex) => (
                             <tr key={rowIndex}>
                                 {row.map((item, colIndex) => (
-                                    <td key={colIndex} className="px-4 py-2 border border-gray-300 whitespace-nowrap">
+                                    <td key={colIndex} className="px-4 py-2 border border-gray-300 whitespace-normal">
                                         <div className="text-sm text-gray-900">
                                             {item.name}
                                         </div>
                                     </td>
                                 ))}
                                 {[...Array(5 - row.length)].map((_, i) => (
-                                    <td key={`empty-${i}`} className="px-4 py-2 border whitespace-nowrap">
+                                    <td key={`empty-${i}`} className="px-4 py-2 border">
                                         <div className="text-sm text-gray-900"></div>
                                     </td>
                                 ))}
@@ -46,10 +46,12 @@ export default function CountriesTable({ data, isIndiaTable = false }) {
                 isState: true
             });
         }
-        // Add city as a cell
-        acc.push({
-            content: item.city,
-            isState: false
+        // Add cities as cells
+        item.cities.forEach(city => {
+            acc.push({
+                content: city,
+                isState: false
+            });
         });
         return acc;
     }, []);
@@ -64,7 +66,7 @@ export default function CountriesTable({ data, isIndiaTable = false }) {
                     {rows.map((row, rowIndex) => (
                         <tr key={rowIndex}>
                             {row.map((cell, colIndex) => (
-                                <td key={colIndex} className="px-4 py-2 border whitespace-nowrap">
+                                <td key={colIndex} className="px-4 py-2 border whitespace-normal">
                                     <div className="text-sm text-gray-900">
                                         {cell.isState ? (
                                             <div className="font-bold">{cell.content}</div>
@@ -75,7 +77,7 @@ export default function CountriesTable({ data, isIndiaTable = false }) {
                                 </td>
                             ))}
                             {[...Array(5 - row.length)].map((_, i) => (
-                                <td key={`empty-${i}`} className="px-4 py-2 border whitespace-nowrap">
+                                <td key={`empty-${i}`} className="px-4 py-2 border">
                                     <div className="text-sm text-gray-900"></div>
                                 </td>
                             ))}

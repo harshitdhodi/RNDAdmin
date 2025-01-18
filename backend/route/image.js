@@ -68,4 +68,26 @@ router.get('/pdf/view/:filename', (req, res) => {
   });
 });
 
+// Combined route for both MSDS and Specs viewing
+router.get('/:docType/view/:filename', (req, res) => {
+  const { docType, filename } = req.params;
+  
+  // Validate document type
+  if (!['msds', 'specs'].includes(docType)) {
+    return res.status(400).json({ message: 'Invalid document type' });
+  }
+
+  const filePath = path.join(__dirname, `../uploads/${docType}`, filename);
+
+  res.setHeader('Content-Type', 'application/pdf');
+  res.setHeader('Content-Disposition', 'inline');
+
+  res.sendFile(filePath, (err) => {
+    if (err) {
+      console.error(err);
+      res.status(500).json({ message: 'File display failed' });
+    }
+  });
+});
+
 module.exports = router; 
