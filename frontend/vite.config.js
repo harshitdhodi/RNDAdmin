@@ -9,7 +9,7 @@ export default defineConfig({
   server: {
     mimeTypes: {
       "application/javascript": ["js"],
-    },
+    },             
     proxy: {
       "/api": {
         target: "http://localhost:3028",
