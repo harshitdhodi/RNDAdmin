@@ -87,7 +87,7 @@ console.log(parsedBlogCategories)
                         <img 
                             src={logoData?.headerLogo ? `/api/logo/download/${logoData.headerLogo}` : ""} 
                             alt="Company Logo" 
-                            className="h-auto w-[350px] md:w-[300px] lg:w-[450px]"
+                            className="h-auto w-[100px] md:w-[130px] lg:w-[150px]"
                         />
                     </Link>
                     <div className="w-1/2 md:mt-0  hidden md:block">
@@ -115,7 +115,7 @@ console.log(parsedBlogCategories)
                 {/* Navigation Section */}
                 <nav className="bg-[#2d4899] text-white">
                     <div className="max-w-[75rem] mx-auto px-4 flex items-center justify-evenly">
-                        <div className="space-x-2 lg:space-x-3 hidden md:flex text-sm lg:text-[16px] font-bold">
+                        <div className="space-x-2 lg:space-x-3 hidden md:flex text-sm items-center lg:text-[16px] font-bold">
                             <div
                                 className="relative"
                                 onMouseEnter={() => setCorporateDropdownOpen(true)}
@@ -219,8 +219,6 @@ console.log(parsedBlogCategories)
                             >
                                 Contact Us
                             </NavLink>
-                        </div>
-
                         {/* User Actions */}
                         {!mobileMenuOpen && (
                             <div className="hidden md:flex justify-center items-center">
@@ -233,6 +231,8 @@ console.log(parsedBlogCategories)
                                 </Button>
                             </div>
                         )}
+                        </div>
+
                     </div>
                 </nav>
 
