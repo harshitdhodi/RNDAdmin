@@ -97,17 +97,17 @@ export default function Footer() {
               <div className="space-y-6">
                 <div className="flex items-start text-[13px] gap-3">
                   <MapPin className="w-5 h-5 mt-1 text-orange-500 flex-shrink-0" />
-                  <p>7/28, Vardaan House Ansari Road, Daryaganj, New Delhi 110002 (INDIA)</p>
+                  <p>V2 Signature, 135-136, Chala, Vapi, Gujarat 396191 (INDIA).</p>
                 </div>
                 <div className="flex items-center gap-3">
                   <Mail className="w-5 h-5 text-orange-500 flex-shrink-0" />
                   <a href="mailto:sales@cdhfinechemical.com" className="hover:text-gray-200">
-                    sales@cdhfinechemical.com
+                  hello@rndtechnosoft.com
                   </a>
                 </div>
                 <div className="flex items-center gap-3">
                   <Phone className="w-5 h-5 text-orange-500 flex-shrink-0" />
-                  <p>+91-11-49404040 - 100 lines</p>
+                  <p>+91-730 494 5823</p>
                 </div>
                 <div className="flex gap-2 mt-6">
                   <a href="https://www.facebook.com/cdhfinechemical" target="_blank" rel="noopener noreferrer" className="hover:text-gray-200">

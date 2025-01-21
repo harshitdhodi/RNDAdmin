@@ -39,67 +39,83 @@ const upload = multer({
   }
 });
 
-// Function to process the uploaded logo image
-const processLogoImage = async (tempPath, finalPath) => {
+// Process both headerLogo and favIcon
+const processLogoImage = async (tempPath, finalPath, isIcon = false) => {
   try {
-    // Verify file exists and is readable
     await fs.promises.access(tempPath, fs.constants.R_OK);
-
-    // Get file stats
     const stats = await fs.promises.stat(tempPath);
     console.log('File size:', stats.size);
 
-    // Initial processing with high quality
-    await sharp(tempPath)
-      .webp({ quality: 100 })
-      .resize({ width: 1024, withoutEnlargement: true })
-      .toFile(finalPath);
-
-    // Rest of the existing code...
+    // Different processing for favicon (smaller size) and header logo
+    if (isIcon) {
+      await sharp(tempPath)
+        .webp({ quality: 90 })
+        .resize({ width: 32, height: 32 })
+        .toFile(finalPath);
+    } else {
+      await sharp(tempPath)
+        .webp({ quality: 90 })
+        .resize({ width: 1024, withoutEnlargement: true })
+        .toFile(finalPath);
+    }
   } catch (err) {
     console.error('Detailed Processing Error:', err);
     throw new Error(`Failed to process image: ${err.message}`);
   }
 };
 
-// Middleware to handle the logo file upload and process the image
+// Updated middleware to handle both files
 const uploadLogo = async (req, res, next) => {
   try {
-    await upload.single('photo')(req, res, async (err) => {
-      // Log detailed error information
+    const uploadFields = upload.fields([
+      { name: 'headerLogo', maxCount: 1 },
+      { name: 'favIcon', maxCount: 1 }
+    ]);
+
+    uploadFields(req, res, async (err) => {
       if (err) {
         console.error('Multer Error:', err);
         return res.status(400).json({
-          error: 'Error uploading file',
+          error: 'Error uploading files',
           details: err.message
         });
       }
 
-      // If no file is uploaded, log this
-      if (!req.file) {
-        console.error('No file uploaded');
+      if (!req.files || !req.files.headerLogo || !req.files.favIcon) {
+        console.error('Missing required files');
         return res.status(400).json({
-          error: 'No file uploaded'
+          error: 'Both headerLogo and favIcon are required'
         });
       }
 
       try {
-        const tempPath = req.file.path;
-        const finalPath = path.join(uploadDir, req.file.filename);
+        // Process headerLogo
+        const headerLogoTemp = req.files.headerLogo[0].path;
+        const headerLogoFinal = path.join(uploadDir, req.files.headerLogo[0].filename);
+        await processLogoImage(headerLogoTemp, headerLogoFinal, false);
 
-        console.log('Temp Path:', tempPath);
-        console.log('Final Path:', finalPath);
+        // Process favIcon
+        const favIconTemp = req.files.favIcon[0].path;
+        const favIconFinal = path.join(uploadDir, req.files.favIcon[0].filename);
+        await processLogoImage(favIconTemp, favIconFinal, true);
 
-        // Process the image if file is present
-        await processLogoImage(tempPath, finalPath);
+        // Update req.body with just the filenames
+        req.body.headerLogo = req.files.headerLogo[0].filename;
+        req.body.favIcon = req.files.favIcon[0].filename;
 
-        // Update req.file with the new path
-        req.file.path = finalPath;
+        // Clean up temp files
+        fs.unlink(headerLogoTemp, err => {
+          if (err) console.error('Error deleting temp headerLogo:', err);
+        });
+        fs.unlink(favIconTemp, err => {
+          if (err) console.error('Error deleting temp favIcon:', err);
+        });
+
         next();
       } catch (processError) {
         console.error('Processing Error Details:', processError);
         return res.status(500).json({
-          error: 'Error processing the image',
+          error: 'Error processing the images',
           details: processError.message
         });
       }

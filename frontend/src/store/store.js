@@ -23,7 +23,8 @@ import { bannerApi } from '@/slice/banner/banner';
 import { careerApi } from '../slice/career/CareerForm';
 import { worldwideApi } from '../slice/worldwide/worldwide';
 import { emailCategoryApi } from '../slice/emailCategory/emailCategory';
-
+import { logoApi } from '../slice/logo/LogoSlice';
+import { contactInfoApi } from '../slice/contactInfo/contactInfo';
 const store = configureStore({
   reducer: {
     [chemicalApi.reducerPath]: chemicalApi.reducer, // RTK Query reducer for chemicals
@@ -48,7 +49,8 @@ const store = configureStore({
     [careerApi.reducerPath]: careerApi.reducer,
     [worldwideApi.reducerPath]: worldwideApi.reducer,
     [emailCategoryApi.reducerPath]: emailCategoryApi.reducer,
-   
+    [logoApi.reducerPath]: logoApi.reducer,
+    [contactInfoApi.reducerPath]: contactInfoApi.reducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
@@ -76,7 +78,8 @@ const store = configureStore({
       .concat(careerApi.middleware)
       .concat(worldwideApi.middleware)
       .concat(emailCategoryApi.middleware)
-    
+      .concat(logoApi.middleware)
+      .concat(contactInfoApi.middleware)
 });
 
 export default store;

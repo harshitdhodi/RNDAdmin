@@ -17,10 +17,9 @@ const worldwideSchema = new Schema({
         trim: true,
         default: ''
     },
-    city: {
-        type: String,
-        trim: true,
-        default: ''
+    cities: {
+        type: [String],
+        default: []
     },
     createdAt: {
         type: Date,

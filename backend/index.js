@@ -2,6 +2,7 @@
 const express = require('express');
 const fs = require('fs');
 const path = require('path');
+const NodeCache = require('node-cache');
 
 const mongoose = require('mongoose');
 const supplier = require('./route/supplier');
@@ -33,6 +34,8 @@ const chemicalMail = require('./route/chemicalMail')
 const career = require('./route/carrer')
 const worldwide = require('./route/worldwide')
 const emailCategory = require('./route/emailCategory')
+const companyLogo = require('./route/companyLogo')
+const contactinfo = require('./route/contactinfo')
 const app = express();
  
 require('dotenv').config(); 
@@ -41,6 +44,94 @@ const cookieParser = require('cookie-parser');
 app.use(cookieParser());  
 
 app.use(express.json()); // For parsing JSON requests
+
+// Enhanced cache configuration with better options
+const cache = new NodeCache({ 
+  stdTTL: 300, // 5 minutes default TTL
+  checkperiod: 600,
+  useClones: false,
+  deleteOnExpire: true,
+  maxKeys: 1000 // Limit maximum cache entries
+});
+
+// Improved cache middleware with better error handling and selective caching
+const cacheMiddleware = (duration) => {
+  return (req, res, next) => {
+    // Skip caching for specific conditions
+    if (req.method !== 'GET' || 
+        req.headers['cache-control'] === 'no-cache' ||
+        req.headers['authorization']) {
+      return next();
+    }
+
+    // Create unique cache key including query parameters
+    const key = `__express__${req.originalUrl || req.url}`;
+    
+    try {
+      const cachedResponse = cache.get(key);
+      if (cachedResponse) {
+        // Add cache hit headers
+        res.setHeader('X-Cache', 'HIT');
+        return res.send(cachedResponse);
+      }
+
+      res.setHeader('X-Cache', 'MISS');
+      
+      // Enhanced response interceptor
+      const originalSend = res.send;
+      res.send = function(body) {
+        // Only cache successful responses
+        if (res.statusCode >= 200 && res.statusCode < 300) {
+          cache.set(key, body, duration);
+        }
+        originalSend.call(this, body);
+      };
+
+      next();
+    } catch (error) {
+      console.error('Cache middleware error:', error);
+      next(); // Continue without caching on error
+    }
+  };
+};
+
+// Add cache monitoring and management endpoints
+app.post('/api/cache/clear/:route', async (req, res) => {
+  try {
+    const route = req.params.route;
+    const keys = cache.keys();
+    let cleared = 0;
+    
+    keys.forEach(key => {
+      if (key.includes(route)) {
+        cache.del(key);
+        cleared++;
+      }
+    });
+    
+    res.json({ 
+      message: `Cache cleared for ${route}`,
+      entriesCleared: cleared 
+    });
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to clear cache' });
+  }
+});
+
+app.get('/api/cache/stats', async (req, res) => {
+  try {
+    const stats = cache.getStats();
+    res.json({
+      keys: cache.keys().length,
+      hits: stats.hits,
+      misses: stats.misses,
+      ksize: stats.ksize,
+      vsize: stats.vsize
+    });
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to get cache stats' });
+  }
+});
 
 // 1. First, define all your API routes
 app.use('/api/admin', admin);
@@ -68,10 +159,11 @@ app.use('/api/banner', banner)
 app.use('/api/aboutus', aboutUsRoute);
 app.use('/api/contactForm', contactForm);
 app.use('/api/chemicalMail',chemicalMail)
-app.use('/api/career', career);
+app.use('/api/career', career); 
 app.use('/api/worldwide', worldwide);
+app.use('/api/contactinfo', contactinfo);
 app.use('/api/emailCategory', emailCategory);
-
+app.use('/api/companyLogo', companyLogo);
 // 2. Then serve static files
 // Using 'dist' since you're using Vite instead of Create React App
 app.use(express.static(path.join(__dirname, 'dist')));
@@ -101,3 +193,8 @@ app.listen(PORT, () => {
     // generateAllSitemaps(); // Generate the sitemap when the server starts
 });
 
+// Add cache cleanup on server shutdown
+process.on('SIGTERM', () => {
+  cache.flushAll();
+  // ... rest of shutdown logic ...
+});

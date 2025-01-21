@@ -11,15 +11,14 @@ export default function LeftSection() {
       <h1 className="text-3xl font-bold text-gray-700">Contact Us</h1>
       
       <div className="space-y-2">
-       <img src={logo} alt="" />
+       {/* <img src={logo} alt="" /> */}
       </div>
 
       <div className="space-y-4">
         <div>
           <h3 className="font-semibold text-gray-700">Corporate Office</h3>
           <p className="text-gray-600">
-            7/28, Vardaan House, Mahavir Street<br />
-            Ansari Road, Darya Ganj, New Delhi-110002 (INDIA).
+          V2 Signature, 135-136, Chala, Vapi, Gujarat 396191 (INDIA).
           </p>
         </div>
 
@@ -31,7 +30,7 @@ export default function LeftSection() {
             <span className="font-semibold">Call Us</span>
           
            </div>
-             <p className="text-gray-600 text-[15px]">+ 91-11-49404040 - 100 lines</p>
+             <p className="text-gray-600 text-[15px]">+91-730 494 5823</p>
           </div>
 
           <div className=" items-center gap-2">
@@ -39,7 +38,7 @@ export default function LeftSection() {
            <img src={fax} alt="" />
            <span className="font-semibold">Fax</span>
            </div>
-            <p className="text-gray-600 text-[15px]">+ 91-11-49404050 / 23280932</p>
+            <p className="text-gray-600 text-[15px]">+91-987 047 2873</p>
           </div>
         </div>
 
@@ -52,14 +51,14 @@ export default function LeftSection() {
             </div>
             <h4 className="font-bold text-blue-800">Domestic</h4>
              <a href="mailto:sales@cdhfinechemical.com" className="text-gray-800 block hover:underline">
-              sales@cdhfinechemical.com
+              hello@rndtechnosoft.com
             </a>
             <a href="mailto:mumbai@cdhfinechemical.com" className="text-gray-800 block hover:underline">
-              mumbai@cdhfinechemical.com
+              ravishah@rndtechnosoft.com
             </a>
           </div>
 
-          <div>
+          {/* <div>
             <h4 className="font-bold text-blue-800">International</h4>
             <a href="mailto:export@cdhfinechemical.com" className="text-gray-800 block hover:underline">
               export@cdhfinechemical.com
@@ -67,16 +66,16 @@ export default function LeftSection() {
             <a href="mailto:overseas@cdhfinechemical.com" className="text-gray-800 block hover:underline">
               overseas@cdhfinechemical.com
             </a>
-          </div>
+          </div> */}
         </div>
        </div>
       </div>
 
-      <div className="relative mt-8">
+      <div className="relative mt-10">
         <img 
           src={img}
           alt="Corporate Office Building"
-          className="rounded-lg"
+          className="rounded-lg lg:mt-16 mt-10"
         />
         <div className="absolute bottom-0 left-0 bg-blue-800 text-white py-2 px-4 rounded-br-lg">
           <span className="text-cyan-400">SINCE</span> 1731
