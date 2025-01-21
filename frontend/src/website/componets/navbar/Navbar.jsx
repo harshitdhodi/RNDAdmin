@@ -87,7 +87,7 @@ console.log(parsedBlogCategories)
                         <img 
                             src={logoData?.headerLogo ? `/api/logo/download/${logoData.headerLogo}` : ""} 
                             alt="Company Logo" 
-                            className="h-auto w-[100px] md:w-[130px] lg:w-[200px]"
+                            className="h-auto w-[100px] md:w-[130px] lg:w-[150px]"
                         />
                     </Link>
                     <div className="w-1/2 md:mt-0  hidden md:block">
