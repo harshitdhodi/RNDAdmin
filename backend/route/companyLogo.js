@@ -9,7 +9,13 @@ router.get('/get-logo', logoController.getLogo);
 
 // Protected routes - require authentication
 router.post('/add', requireAuth, uploadLogo, logoController.addLogo);
-router.put('/update', requireAuth, uploadLogo, logoController.updateLogo);
+router.put('/update',  (req, res, next) => {
+    if (req.headers['content-type']?.includes('multipart/form-data')) {
+        uploadLogo(req, res, next);
+    } else {
+        next(); // Skip multer if no file is provided
+    }
+}, logoController.updateLogo);
 router.delete('/delete', requireAuth, logoController.deleteLogo);
 
 module.exports = router;

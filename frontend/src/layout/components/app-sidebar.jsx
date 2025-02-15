@@ -81,6 +81,14 @@ const menuData = [
         ] 
       },
       {
+        title: "Menu",
+        icon: List,
+        children: [
+          { title: "Menu List", icon: List, url: "/menu-listing-table" },
+          { title: "Add New", icon: PlusSquare, url: "/menu-listing-form" },
+        ]
+      },
+      {
         title: "Blog",
         icon: List,
         children: [
@@ -134,8 +142,25 @@ const menuData = [
           { title: "List", icon: List, url: "/contact-info-table" },
           // { title: "Add New", icon: PlusSquare, url: "/contact-info/add" },
         ]
-      }
+      },
+      {
+        title: "Slide Show",
+        icon: FileQuestion,
+        children: [
+          { title: "slideshow Table", icon: PlusSquare, url: "/slideShow-table" },
+          { title: "slide show", icon: List, url: "/slideShow-form" },
+        ]
+      },
 
+ {
+        title: "Meta Info",
+        icon: FileQuestion,
+        children: [
+          { title: "Meta List", icon: List, url: "/meta-table" },
+          { title: "Meta Form", icon: List, url: "/meta-form" },
+          // { title: "Add New", icon: PlusSquare, url: "/contact-info/add" },
+        ]
+      }
     ] 
   }
 ];

@@ -36,6 +36,9 @@ const worldwide = require('./route/worldwide')
 const emailCategory = require('./route/emailCategory')
 const companyLogo = require('./route/companyLogo')
 const contactinfo = require('./route/contactinfo')
+const staticMeta = require('./route/staticMeta');
+const menuListing = require('./route/menuListing');
+const slideShow = require('./route/slideShow')
 const app = express();
  
 require('dotenv').config(); 
@@ -164,6 +167,9 @@ app.use('/api/worldwide', worldwide);
 app.use('/api/contactinfo', contactinfo);
 app.use('/api/emailCategory', emailCategory);
 app.use('/api/companyLogo', companyLogo);
+app.use('/api/meta', staticMeta);
+app.use("/api/menulist", menuListing);
+app.use("/api/slideshow",slideShow);
 // 2. Then serve static files
 // Using 'dist' since you're using Vite instead of Create React App
 app.use(express.static(path.join(__dirname, 'dist')));

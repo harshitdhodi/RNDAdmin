@@ -1,6 +1,10 @@
-const mongoose = require('mongoose');
+    const mongoose = require('mongoose');
 
 const bannerSchema = new mongoose.Schema({
+    pageSlug: { 
+        type: String,
+        required: true 
+    },
     image: { 
         type: String,
         required: true 
