@@ -11,7 +11,7 @@ export default function SearchBar() {
     const [isExpanded, setIsExpanded] = useState(false);
     const searchRef = useRef(null);
     const navigate = useNavigate();
-
+    const searchInputRef = useRef(null);
     // Fetch chemicals effect
     useEffect(() => {
         if (!searchTerm || searchTerm.length < 2) {
@@ -75,12 +75,14 @@ export default function SearchBar() {
         <div className="hidden md:block relative w-full max-w-[35rem] mx-auto" ref={searchRef}>
             <div className="flex rounded-full">
                 <input
+                    ref={searchInputRef}
                     type="text"
                     value={searchTerm}
                     onChange={(e) => {
                         setSearchTerm(e.target.value);
                         setShowSuggestions(true);
                     }}
+                    onBlur={() => setTimeout(() => searchInputRef.current?.focus(), 100)} // Keeps focus
                     className="w-full px-4 py-2 border-2 rounded-l-full border-orange-500 focus:outline-none placeholder:text-sm"
                     placeholder="Product Code / Name / CAS / Grade"
                 />

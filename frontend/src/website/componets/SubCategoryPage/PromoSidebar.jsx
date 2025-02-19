@@ -14,7 +14,8 @@ export default function PromoSidebar() {
                 if (response.data) {
                     setImages(response.data.map(item => ({
                         url: `${BASE_URL}${item.image}`, // Construct full image URL
-                        altText: item.altText || "Slideshow Image"
+                        altText: item.altText || "Slideshow Image",
+                        title: item.title || item.altText || "Slideshow Image" // Add this line
                     })));
                 }
             } catch (error) {
@@ -43,9 +44,9 @@ export default function PromoSidebar() {
                         key={index}
                         src={image.url}
                         alt={image.altText}
-                        className={`w-full h-full absolute object-cover transition-opacity duration-1000 ease-in-out ${
-                            index === currentImageIndex ? "opacity-100" : "opacity-0"
-                        }`}
+                        title={image.title} // This will now correctly show the title from your data
+                        className={`w-full h-full absolute object-cover transition-opacity duration-1000 ease-in-out ${index === currentImageIndex ? "opacity-100" : "opacity-0"
+                            }`}
                     />
                 ))
             ) : (

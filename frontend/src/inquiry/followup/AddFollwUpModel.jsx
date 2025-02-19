@@ -48,7 +48,7 @@ export function AddFollowUpModal({ isOpen, onClose, onAddFollowUp }) {
                     </div>
                 </div>
                 <div className="flex justify-end space-x-2">
-                    <Button variant="outline" onClick={onClose}>
+                    <Button className="bg-red-600" variant="outline" onClick={onClose}>
                         Cancel
                     </Button>
                     <Button onClick={handleAddFollowUp}>

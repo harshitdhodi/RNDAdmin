@@ -52,7 +52,7 @@ export default function WorldWide() {
                         <div className="inline-block bg-blue-800 text-white px-4 py-1 text-2xl md:text-3xl font-bold mb-6">
                             In India
                         </div>
-                        <p className="text-gray-600 mb-8 text-left md:text-center">
+                        <p className="text-gray-600 mb-8 text-left ">
                             Our presence across Indian states and cities
                         </p>
                         {isLoading ? (
