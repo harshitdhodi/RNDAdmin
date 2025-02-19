@@ -1,35 +1,56 @@
-import img3 from "../../../assets/category_crousal/3.png";
-import img1 from "../../../assets/category_crousal/1.png";
-import img4 from "../../../assets/category_crousal/4.png";
-import img5 from "../../../assets/category_crousal/5.png";
-import img2 from "../../../assets/category_crousal/2.png";
 import { useEffect, useState } from "react";
+import axios from "axios";
 
 export default function PromoSidebar() {
-    const images = [img1, img2, img3, img4, img5];
+    const [images, setImages] = useState([]);
     const [currentImageIndex, setCurrentImageIndex] = useState(0);
+    const BASE_URL = "/api/logo/download/"; // Change this to your actual image server path
 
-  useEffect(() => {
-    console.log("Current Image Index:", currentImageIndex);
-    const interval = setInterval(() => {
-        setCurrentImageIndex((prevIndex) => (prevIndex + 1) % images.length);
-    }, 3000);
+    useEffect(() => {
+        // Fetch images from API
+        const fetchImages = async () => {
+            try {
+                const response = await axios.get("/api/slideShow/getAll");
+                if (response.data) {
+                    setImages(response.data.map(item => ({
+                        url: `${BASE_URL}${item.image}`, // Construct full image URL
+                        altText: item.altText || "Slideshow Image"
+                    })));
+                }
+            } catch (error) {
+                console.error("Error fetching slideshow images:", error);
+            }
+        };
 
-    return () => clearInterval(interval);
-}, [currentImageIndex, images.length]);
+        fetchImages();
+    }, []);
+
+    useEffect(() => {
+        if (images.length > 0) {
+            const interval = setInterval(() => {
+                setCurrentImageIndex((prevIndex) => (prevIndex + 1) % images.length);
+            }, 3000);
+
+            return () => clearInterval(interval);
+        }
+    }, [currentImageIndex, images.length]);
 
     return (
         <div className="w-62 relative h-[55vh] overflow-hidden">
-            {images.map((image, index) => (
-                <img
-                    key={index}
-                    src={image}
-                    alt={`Promo ${index + 1}`}
-                    className={`w-full h-full absolute object-cover transition-opacity duration-1000 ease-in-out ${
-                        index === currentImageIndex ? "opacity-100" : "opacity-0"
-                    }`}
-                />
-            ))}
+            {images.length > 0 ? (
+                images.map((image, index) => (
+                    <img
+                        key={index}
+                        src={image.url}
+                        alt={image.altText}
+                        className={`w-full h-full absolute object-cover transition-opacity duration-1000 ease-in-out ${
+                            index === currentImageIndex ? "opacity-100" : "opacity-0"
+                        }`}
+                    />
+                ))
+            ) : (
+                <p className="text-center text-gray-500">Loading images...</p>
+            )}
         </div>
     );
 }

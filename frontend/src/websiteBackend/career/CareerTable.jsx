@@ -115,20 +115,22 @@ const CareerTable = () => {
     ];
 
     return (
-        <div style={{ padding: '20px' }}>
+        <div >
             <Breadcrumb
                 items={[
                     { 
-                        title: <span onClick={() => navigate('/dashboard')} style={{ cursor: 'pointer' }}>
+                        title: <span onClick={() => navigate('/dashboard')} className='cursor-pointer'>
                             Dashboard
                         </span>
                     },
                     { title: 'Career Applications' }
                 ]}
-                style={{ marginBottom: '16px' }}
+                className='mb-4'
             />
 
-            <Button 
+           <div className='flex justify-between items-center mb-5'>
+            <div className='text-2xl font-semibold'>Career List </div>
+           <Button 
                 type="primary" 
                 icon={<PlusOutlined />}
                 onClick={() => navigate('/career/add')}
@@ -137,6 +139,7 @@ const CareerTable = () => {
             >
                 Add New Application
             </Button>
+           </div>
 
             <Table 
                 columns={columns}

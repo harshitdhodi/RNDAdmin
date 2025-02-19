@@ -1,13 +1,14 @@
 import React, { useState } from "react";
-import { Form, Input, Upload, Button, message, Card } from "antd";
+import { Form, Input, Upload, Button, message, Card, Breadcrumb } from "antd";
 import { UploadOutlined } from "@ant-design/icons";
 import axios from "axios";
+import { Link, useNavigate } from "react-router-dom";
 
 const ImageUploadForm = () => {
   const [loading, setLoading] = useState(false);
   const [fileList, setFileList] = useState([]);
   const [preview, setPreview] = useState(null);
-
+const navigate = useNavigate();
   const onFinish = async (values) => {
     if (fileList.length === 0) {
       message.error("Please upload an image.");
@@ -25,6 +26,7 @@ const ImageUploadForm = () => {
         headers: { "Content-Type": "multipart/form-data" },
       });
       message.success("Image uploaded successfully!");
+      navigate("/slideShow-table");
       console.log("Response:", response.data);
     } catch (error) {
       message.error("Failed to upload image.");
@@ -32,14 +34,13 @@ const ImageUploadForm = () => {
     } finally {
       setLoading(false);
       setFileList([]);
-      setPreview(null); // Clear preview after upload
+      setPreview(null);
     }
   };
 
   const handleFileChange = ({ fileList }) => {
-    setFileList(fileList.slice(-1)); // Keep only the latest file
+    setFileList(fileList.slice(-1));
 
-    // Generate preview URL
     if (fileList.length > 0) {
       const file = fileList[0].originFileObj;
       setPreview(URL.createObjectURL(file));
@@ -49,11 +50,21 @@ const ImageUploadForm = () => {
   };
 
   return (
-    <div className="flex justify-center bg-gray-100 ">
-      <Card className="w-full max-w-4lg shadow-lg rounded-xl ">
-        <h2 className="text-xl font-semibold text-center mb-4">Upload Image</h2>
-        <Form layout="vertical" onFinish={onFinish}>
-          {/* Image Title */}
+    <div className="flex flex-col items-center px-6">
+      {/* Breadcrumb Navigation */}
+      <Breadcrumb className="self-start mb-4 text-gray-600">
+        <Breadcrumb.Item>
+          <Link to="/dashboard">Dashboard</Link>
+        </Breadcrumb.Item>
+        <Breadcrumb.Item>
+          <Link to="/slideShow-table">SlideShow Table</Link>
+        </Breadcrumb.Item>
+        <Breadcrumb.Item>Upload Image</Breadcrumb.Item>
+      </Breadcrumb>
+
+      <Card className="w-full max-w-4lg shadow-lg rounded-xl">
+        <h2 className="text-xl font-semibold text-left mb-4">Upload Image</h2>
+        <Form layout="vertical" onFinish={onFinish} className="w-full lg:w-1/2">
           <Form.Item
             label="Image Title"
             name="title"
@@ -62,7 +73,6 @@ const ImageUploadForm = () => {
             <Input placeholder="Enter image title" />
           </Form.Item>
 
-          {/* Alt Name */}
           <Form.Item
             label="Alt Name"
             name="altText"
@@ -71,11 +81,10 @@ const ImageUploadForm = () => {
             <Input placeholder="Enter alt text" />
           </Form.Item>
 
-          {/* Image Upload */}
           <Form.Item label="Upload Image">
             <Upload
               fileList={fileList}
-              beforeUpload={() => false} // Prevent auto upload
+              beforeUpload={() => false}
               maxCount={1}
               onChange={handleFileChange}
               accept="image/*"
@@ -84,7 +93,6 @@ const ImageUploadForm = () => {
             </Upload>
           </Form.Item>
 
-          {/* Image Preview */}
           {preview && (
             <div className="flex justify-center mb-4">
               <img
@@ -95,15 +103,8 @@ const ImageUploadForm = () => {
             </div>
           )}
 
-          {/* Submit Button */}
           <Form.Item>
-            <Button
-              type="primary"
-              htmlType="submit"
-              block
-              loading={loading}
-              className="mt-4"
-            >
+            <Button type="primary" htmlType="submit" block loading={loading} className="mt-4">
               {loading ? "Uploading..." : "Upload Image"}
             </Button>
           </Form.Item>

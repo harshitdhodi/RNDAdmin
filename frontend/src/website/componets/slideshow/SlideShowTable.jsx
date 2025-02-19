@@ -61,7 +61,7 @@ const SlideShowTable = () => {
             alt="Slide"
             width={80}
             height={50}
-            className="rounded-lg shadow object-fill"
+            className="rounded-lg shadow object-contain"
           />
         ) : (
           <span>No Image</span>
@@ -104,11 +104,11 @@ const SlideShowTable = () => {
   ];
 
   return (
-    <div className="flex flex-col items-center min-h-screen p-6">
+    <div className="flex flex-col items-center min-h-screen px-6">
       {/* Breadcrumb Navigation */}
-      <div className="w-full max-w-4xl mb-4 flex justify-between items-center">
+      <div className="w-full  mb-4 flex justify-between items-center">
         <Breadcrumb>
-          <Breadcrumb.Item onClick={() => navigate("/")}>Home</Breadcrumb.Item>
+          <Breadcrumb.Item onClick={() => navigate("/dashboard")}>Dashboard</Breadcrumb.Item>
           <Breadcrumb.Item>Slideshow</Breadcrumb.Item>
         </Breadcrumb>
 
@@ -123,8 +123,8 @@ const SlideShowTable = () => {
       </div>
 
       {/* Card Container */}
-      <Card className="w-full max-w-4xl shadow-lg rounded-xl ">
-        <h2 className="text-xl font-semibold text-center mb-4">
+      <Card className="w-full max-w-7xl shadow-lg rounded-xl ">
+        <h2 className="text-xl font-semibold text-left mb-4">
           Slideshow Images
         </h2>
         <Table

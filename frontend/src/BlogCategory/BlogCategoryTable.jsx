@@ -1,107 +1,91 @@
 'use client'
 
 import React, { useEffect } from 'react'
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table"
-import { Button } from "@/components/ui/button"
-import { Edit, Trash2, Plus } from 'lucide-react'
-
+import { Table, Button, Space, Spin, Popconfirm, message } from 'antd'
+import { EditOutlined, DeleteOutlined, PlusOutlined } from '@ant-design/icons'
 import { Link, useNavigate } from 'react-router-dom'
 import { useDeleteCategoryMutation, useGetAllCategoriesQuery } from '@/slice/blog/blogCategory'
 
-const CategoryRow = ({ item, level, refetch }) => {
+const BlogCategory = () => {
   const navigate = useNavigate()
-  const [deleteCategory, { isLoading: isDeleting }] = useDeleteCategoryMutation()
-
-  const handleEdit = () => {
-    const editPath = `/edit-blog-category-form/${item._id}`
-    navigate(editPath)
-  }
-
-  const handleDelete = async () => {
-    try {
-      await deleteCategory(item._id).unwrap()
-      // Trigger refetch to refresh data
-      refetch()
-      console.log('Category deleted successfully')
-    } catch (error) {
-      console.error('Failed to delete category', error)
-    }
-  }
-
-  return (
-    <TableRow>
-      <TableCell className="font-medium">
-        <div className="flex items-center" style={{ paddingLeft: `${level * 20}px` }}>
-          {item.category}
-        </div>
-      </TableCell>
-      <TableCell>
-        <div className="flex justify-end space-x-2">
-          <Button variant="ghost" size="icon" onClick={handleEdit}>
-            <Edit className="h-4 w-4" />
-          </Button>
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={handleDelete}
-            disabled={isDeleting}
-          >
-            <Trash2 className="h-4 w-4" />
-          </Button>
-        </div>
-      </TableCell>
-    </TableRow>
-  )
-}
-
-export default function BlogCategory() {
   const { data: categories, error, isLoading, refetch } = useGetAllCategoriesQuery()
-  
+  const [deleteCategory, { isLoading: isDeleting }] = useDeleteCategoryMutation()
+console.log(categories)
   useEffect(() => {
     refetch()
   }, [refetch])
 
-  if (isLoading) return <div>Loading...</div>
+  const handleEdit = (id) => {
+    navigate(`/edit-blog-category-form/${id}`)
+  }
+
+  const handleDelete = async (id) => {
+    try {
+      await deleteCategory(id).unwrap()
+      message.success('Category deleted successfully')
+      refetch()
+    } catch (error) {
+      message.error('Failed to delete category')
+    }
+  }
+
+  if (isLoading) return <Spin size="large" />
+
   if (error) return <div>Error: {error.message || 'An error occurred'}</div>
 
-  const categoriesArray = Array.isArray(categories) ? categories : [categories]
+  const columns = [
+    {
+      title: 'Category',
+      dataIndex: 'category',
+      key: 'category',
+    },
+    {
+      title: 'Actions',
+      key: 'actions',
+      render: (_, record) => (
+        <Space size="middle">
+          <Button
+            type="primary"
+            icon={<EditOutlined />}
+            onClick={() => handleEdit(record._id)}
+          />
+          <Popconfirm
+            title="Are you sure to delete this category?"
+            onConfirm={() => handleDelete(record._id)}
+            okText="Yes"
+            cancelText="No"
+          >
+            <Button
+              type="danger"
+              icon={<DeleteOutlined />}
+              loading={isDeleting}
+            />
+          </Popconfirm>
+        </Space>
+      ),
+    },
+  ]
 
   return (
     <div className="space-y-4">
-      <div className="flex justify-end">
+      <div className="flex justify-between  p-5 mb-4">
+        <div>
+          <h2 className='text-2xl font-semibold'>Blog Categories</h2>
+        </div>
         <Link to="/blog-category-form">
-          <Button>
-            <Plus className="mr-2 h-4 w-4" /> Add Category
+          <Button type="primary" icon={<PlusOutlined />}>
+            Add Category
           </Button>
         </Link>
       </div>
-      <div className="border rounded-lg overflow-hidden">
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>Categories</TableHead>
-              <TableHead>Actions</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {categoriesArray.map((category) => (
-              <CategoryRow 
-                key={category._id} 
-                item={category} 
-                level={0} 
-                refetch={refetch} 
-              />
-            ))}
-          </TableBody>
-        </Table>
-      </div>
+      <Table
+        columns={columns}
+        dataSource={categories || []}
+        rowKey="_id"
+        bordered
+      />
     </div>
   )
 }
+
+export default BlogCategory

@@ -222,9 +222,9 @@ export default function AppSidebar() {
         </SidebarGroup>
       </SidebarContent>
       {/* <Separator className="my-4" /> */}
+      {/* <ScrollArea className="p-4">
       <ScrollArea className="p-4">
-      <ScrollArea className="p-4">
-        {/* <Button variant="ghost" className="w-full justify-start gap-2 font-normal" onClick={toggleUserMenu}>
+        <Button variant="ghost" className="w-full justify-start gap-2 font-normal" onClick={toggleUserMenu}>
           <div className="flex items-center gap-2">
             <div className="w-8 h-8 rounded-full bg-primary flex items-center justify-center">
               <span className="text-xs font-medium text-primary-foreground">SC</span>
@@ -235,10 +235,10 @@ export default function AppSidebar() {
             </div>
             <ChevronDown className={cn("w-4 h-4 ml-auto transition-transform", { "-rotate-180": userMenuOpen })} />
           </div>
-        </Button> */}
+        </Button>
 
       
-        {/* {userMenuOpen && (
+        {userMenuOpen && (
           <div className="mt-2 pl-8">
             <Button variant="ghost" className="w-full justify-start gap-2 font-normal text-sm">
               Profile
@@ -250,9 +250,9 @@ export default function AppSidebar() {
               Logout
             </Button>
           </div>
-        )} */}
+        )}
       </ScrollArea> 
-      </ScrollArea>
+      </ScrollArea> */}
     </Sidebar>
   );
 }
