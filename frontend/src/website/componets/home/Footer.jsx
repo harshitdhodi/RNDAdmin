@@ -1,26 +1,34 @@
 import { Mail, MapPin, Phone } from 'lucide-react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
+import axios from 'axios';
 import img from '../../images/footerbg.jpg';
 
 export default function Footer() {
   const location = useLocation();
   const navigate = useNavigate();
+  const [contactInfo, setContactInfo] = useState(null);
 
   useEffect(() => {
-    window.scrollTo({
-      top: 0,
-      behavior: 'smooth',
-    });
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   }, [location.pathname]);
+
+  useEffect(() => {
+    axios
+      .get('/api/contactInfo/get')
+      .then((response) => {
+        console.log(response.data[0]);
+        setContactInfo(response.data[0]);
+      })
+      .catch((error) => {
+        console.error('Error fetching contact info:', error);
+      });
+  }, []);
 
   const ScrollLink = ({ to, children, className }) => {
     const handleClick = (e) => {
       e.preventDefault();
-      window.scrollTo({
-        top: 0,
-        behavior: 'smooth',
-      });
+      window.scrollTo({ top: 0, behavior: 'smooth' });
       setTimeout(() => {
         navigate(to);
       }, 500);
@@ -94,38 +102,42 @@ export default function Footer() {
             {/* Corporate Office */}
             <div>
               <h2 className="text-xl font-medium mb-6">Corporate Office:</h2>
-              <div className="space-y-6 text-sm">
-                <div className="flex items-start gap-3">
-                  <MapPin className="w-5 h-5 text-orange-500 flex-shrink-0" />
-                  <p>V2 Signature, 135-136, Chala, Vapi, Gujarat 396191 (INDIA).</p>
+              {contactInfo ? (
+                <div className="space-y-6 text-sm">
+                  <div className="flex items-start gap-3">
+                    <MapPin className="w-5 h-5 text-orange-500 flex-shrink-0" />
+                    <p>{contactInfo.address}</p>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <Mail className="w-5 h-5 text-orange-500 flex-shrink-0" />
+                    <a href={`mailto:${contactInfo.email}`} className="hover:text-gray-200">
+                      {contactInfo.emails}
+                    </a>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <Phone className="w-5 h-5 text-orange-500 flex-shrink-0" />
+                    <p><span>{contactInfo.mobiles[0]}</span>, <span>{contactInfo.mobiles[1]}</span></p>
+                  </div>
+                  <div className="flex gap-4 text-gray-300 mt-6">
+                    <ScrollLink to="/privacy-policy" className="hover:text-gray-200">
+                      Privacy Policy
+                    </ScrollLink>
+                    <ScrollLink to="/terms-and-conditions" className="hover:text-gray-200">
+                      Terms & Conditions
+                    </ScrollLink>
+                  </div>
                 </div>
-                <div className="flex items-center gap-3">
-                  <Mail className="w-5 h-5 text-orange-500 flex-shrink-0" />
-                  <a href="mailto:sales@cdhfinechemical.com" className="hover:text-gray-200">
-                    hello@rndtechnosoft.com
-                  </a>
-                </div>
-                <div className="flex items-center gap-3">
-                  <Phone className="w-5 h-5 text-orange-500 flex-shrink-0" />
-                  <p>+91-730 494 5823</p>
-                </div>
-                <div className="flex gap-4 text-gray-300 mt-6">
-                  <ScrollLink to="/privacy-policy" className="hover:text-gray-200">
-                    Privacy Policy
-                  </ScrollLink>
-                  <ScrollLink to="/terms-and-conditions" className="hover:text-gray-200">
-                    Terms & Conditions
-                  </ScrollLink>
-                </div>
-              </div>
+              ) : (
+                <p>Loading contact information...</p>
+              )}
             </div>
           </div>
         </div>
       </footer>
       <div className="w-full bg-black/95 p-2">
-      <div className="max-w-[75rem] mx-auto text-left text-gray-500 text-sm">
-      <p>&copy; {new Date().getFullYear()} Your Company. All rights reserved.</p>
-    </div>
+        <div className="max-w-[75rem] mx-auto text-left text-gray-500 text-sm">
+          <p>&copy; {new Date().getFullYear()} Your Company. All rights reserved.</p>
+        </div>
       </div>
     </>
   );

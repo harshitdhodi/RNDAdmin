@@ -27,6 +27,8 @@ import { logoApi } from '../slice/logo/LogoSlice';
 import { contactInfoApi } from '../slice/contactInfo/contactInfo';
 import { metaApi } from '@/slice/staticMeta/staticMeta';
 import { menuListingApi } from '@/slice/menuListing/menuList';
+import{whatsUpInfoApi} from '@/slice/whatsUpInfo/WhatsUpInfo';
+
 const store = configureStore({
   reducer: {
     [chemicalApi.reducerPath]: chemicalApi.reducer, // RTK Query reducer for chemicals
@@ -55,6 +57,7 @@ const store = configureStore({
     [contactInfoApi.reducerPath]: contactInfoApi.reducer,
     [metaApi.reducerPath]: metaApi.reducer,
     [menuListingApi.reducerPath]: menuListingApi.reducer,
+    [whatsUpInfoApi.reducerPath]:whatsUpInfoApi.reducer 
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
@@ -85,7 +88,8 @@ const store = configureStore({
       .concat(logoApi.middleware)
       .concat(contactInfoApi.middleware)
       .concat(metaApi.middleware)
-      .concat(menuListingApi.middleware),
+      .concat(menuListingApi.middleware)
+      .concat(whatsUpInfoApi.middleware)
 });
 
 export default store;

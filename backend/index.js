@@ -170,6 +170,8 @@ app.use('/api/companyLogo', companyLogo);
 app.use('/api/meta', staticMeta);
 app.use("/api/menulist", menuListing);
 app.use("/api/slideshow",slideShow);
+app.use('/api/whatsup', require('./route/whatsUpInfo'));
+app.use('/api/events', require('./route/events'));
 // 2. Then serve static files
 // Using 'dist' since you're using Vite instead of Create React App
 app.use(express.static(path.join(__dirname, 'dist')));

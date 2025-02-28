@@ -6,7 +6,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
 import { ChevronDown, LayoutDashboard, PlusSquare, List, TruckIcon, Settings, ArrowLeftRightIcon, UsersRoundIcon, Truck, Flower, MailQuestion, FileQuestion, ChartNoAxesGanttIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { Link , useLocation } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 
 // Updated JSON structure with parent-child relationships
 const menuData = [
@@ -14,7 +14,7 @@ const menuData = [
     title: "Dashboard",
     icon: LayoutDashboard,
     url: "/dashboard",
-    
+
   },
   {
     title: "Chemical",
@@ -46,7 +46,7 @@ const menuData = [
       { title: "List", icon: List, url: "/customer-table" },
       { title: "Add New", icon: PlusSquare, url: "/customer-form" },
       { title: "Chemical Mapping ", icon: ArrowLeftRightIcon, url: "/customer-chemical-mapping" },
-    
+
     ]
   },
   {
@@ -57,7 +57,7 @@ const menuData = [
       { title: "Email Template", icon: PlusSquare, url: "/email-template-table" },
       { title: "Send Email ", icon: ArrowLeftRightIcon, url: "/email-form" },
       { title: "Email Category", icon: ArrowLeftRightIcon, url: "/email-category" },
-     ]
+    ]
   },
   {
     title: "Inquiry",
@@ -67,18 +67,19 @@ const menuData = [
       { title: "Add New", icon: PlusSquare, url: "/add-inquiry" },
       { title: "Inquiry Sources ", icon: List, url: "source-table" },
       { title: "Inquiry Status ", icon: List, url: "status-table" },
-    
+
     ]
   },
   {
     title: "Website",
     icon: LayoutDashboard,
     children: [
-      { title: "Logo", icon: List,
+      {
+        title: "Logo", icon: List,
         children: [
-        
+
           { title: "Logo Form", icon: PlusSquare, url: "/add-logo" },
-        ] 
+        ]
       },
       {
         title: "Menu",
@@ -115,12 +116,14 @@ const menuData = [
         title: "Banner",
         icon: FileQuestion,
         children: [
-          { title: "List", icon: List, url: 
-            "/banner-table" },
+          {
+            title: "List", icon: List, url:
+              "/banner-table"
+          },
           { title: "Add New", icon: PlusSquare, url: "/add-banner" },
 
         ]
-      } , 
+      },
       {
         title: "Worldwide",
         icon: FileQuestion,
@@ -151,8 +154,22 @@ const menuData = [
           { title: "slide show", icon: List, url: "/slideShow-form" },
         ]
       },
-
- {
+      {
+        title: "WhatsUp Info",
+        icon: FileQuestion,
+        children: [
+          // {title:"List",icon:List,url:"/whatsUpInfo-table"},
+          { title: "Add New", icon: PlusSquare, url: "/whatsUpInfo-form" }
+        ]
+      },
+      {
+        title: "Events",
+        icon: FileQuestion,
+        children: [
+          { title: "List", icon: List, url: "/events" },
+        ]
+      },
+      {
         title: "Meta Info",
         icon: FileQuestion,
         children: [
@@ -161,7 +178,7 @@ const menuData = [
           // { title: "Add New", icon: PlusSquare, url: "/contact-info/add" },
         ]
       }
-    ] 
+    ]
   }
 ];
 

@@ -101,6 +101,9 @@ import ImageUploadForm from './website/componets/slideshow/SlideShowForm';
 import SlideShowTable from './website/componets/slideshow/SlideShowTable';
 import PrivacyPolicy from './website/pages/PrivacyPolicy';
 import TermsAndConditions from './website/pages/TermsandCondition';
+import WhatsUpInfoTable from './websiteBackend/whatsUpInfo/WhatsUpTable';
+import WhatsUpInfoForm from './websiteBackend/whatsUpInfo/WhatUpForm';
+import EventForm from './websiteBackend/event/Events';
 // Auth Components
 const PrivateRoute = ({ children }) => {
   const token = Cookies.get('jwt');
@@ -272,6 +275,12 @@ function App() {
           {path : 'slideShow-form' ,  element:<ImageUploadForm/>},
           {path : 'slideShow-table' ,  element:<SlideShowTable/>},
 
+          //whatsup info
+          {path : 'whatsUpInfo-table' ,  element:<WhatsUpInfoTable/>},
+          {path : 'whatsUpInfo-form' ,  element:<WhatsUpInfoForm/>},
+
+          //Events
+          {path : 'events' ,  element:<EventForm/>}, 
         ]
         }
       ]

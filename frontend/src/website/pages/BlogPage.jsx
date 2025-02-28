@@ -143,9 +143,11 @@ export default function BlogPage() {
                   <p className="mb-4 text-lg text-gray-400">
                     Submit Your Inquiry Below to Explore Tailored Industrial Products for Your Business
                   </p>
-                  <button className="btn bg-[#ffffff] text-[052852] w-1/2 py-2 rounded">
+                 <Link to="/contact-us">
+                 <button className="btn bg-[#ffffff] text-[052852] w-1/2 py-2 rounded">
                     Get Inquiry
                   </button>
+                 </Link>
                 </div>
               </div>
 
