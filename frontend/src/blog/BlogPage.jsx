@@ -1,118 +1,138 @@
-'use client';
-
 import React, { useState } from 'react';
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/components/ui/table';
-import { Button } from '@/components/ui/button';
-import { Edit, Plus, Trash2 } from 'lucide-react';
-
+import { Table, Button, Popconfirm, Typography, Image } from 'antd';
+import { EditOutlined, PlusOutlined, DeleteOutlined } from '@ant-design/icons';
 import { Link, useNavigate } from 'react-router-dom';
-import { useGetAllBlogsQuery ,useDeleteBlogMutation} from '@/slice/blog/blog';
-const BlogRow = ({ blog, refetch }) => {
-  const [isExpanded, setIsExpanded] = useState(false);
-  const navigate = useNavigate();
-  const toggleDetails = () => {
-    setIsExpanded((prev) => !prev);
-  };
- 
-  return (
-    <TableRow>
-      <TableCell >{blog.title}</TableCell>
-      <TableCell>{blog.date}</TableCell>
-      <TableCell>
-        <div
-          style={{
-            maxHeight: isExpanded ? 'none' : '5em', // Adjust for approximate 5-line height
-            overflow: 'hidden',
-            position: 'relative',
-          }}
-        >
-          <div
-            dangerouslySetInnerHTML={{
-              __html: blog.details,
-            }}
-          />
-        </div>
-        <button
-          onClick={toggleDetails}
-          className="text-blue-500 hover:underline mt-2"
-        >
-          {isExpanded ? 'Show Less' : 'Read More'}
-        </button>
-      </TableCell>
-      <TableCell>
-        {blog.image.map((img, index) => (
-          <img
-            key={index}
-            src={`/api/image/download/${img}`}
-            alt={`Blog Image ${index + 1}`}
-            className="h-10 w-10 object-cover rounded"
-          />
-        ))}
-      </TableCell>
-      <TableCell>
-        <div className="flex justify-end space-x-2">
-          <Button variant="ghost" size="icon" onClick={() => navigate(`/edit-blog-form/${blog._id}`)}>
-            <Edit className="h-4 w-4" />
-          </Button>
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={async () => {
-              await deleteBlog(blog._id).unwrap();
-              refetch();
-            }}
-          >
-            <Trash2 className="h-4 w-4" />
-          </Button>
-        </div>
-      </TableCell>
-    </TableRow>
-  );
-};
+import { useGetAllBlogsQuery, useDeleteBlogMutation } from '@/slice/blog/blog';
 
+const { Text } = Typography;
 
-export default function BlogTable() {
+const BlogTable = () => {
   const { data: blogs, error, isLoading, refetch } = useGetAllBlogsQuery();
+  const [deleteBlog, { isLoading: isDeleting }] = useDeleteBlogMutation();
+  const navigate = useNavigate();
+  const [expandedRows, setExpandedRows] = useState({});
 
   if (isLoading) return <div>Loading...</div>;
   if (error) return <div>Error: {error.message || 'An error occurred'}</div>;
 
-  const blogsArray = Array.isArray(blogs) ? blogs : [blogs];
+  const handleDelete = async (id) => {
+    try {
+      await deleteBlog(id).unwrap();
+      refetch();
+    } catch (error) {
+      console.error('Failed to delete blog:', error);
+    }
+  };
 
+  const toggleDetails = (id) => {
+    setExpandedRows((prev) => ({
+      ...prev,
+      [id]: !prev[id],
+    }));
+  };
+
+  const columns = [
+    {
+      title: 'Title',
+      dataIndex: 'title',
+      key: 'title',
+      width: 150, // Increased width (Adjust as needed)
+      render: (text) => <Text strong>{text}</Text>,
+    },
+    {
+      title: 'Date',
+      dataIndex: 'date',
+      key: 'date',
+      width: 50,
+    },
+    {
+      title: 'Details',
+      dataIndex: 'details',
+      key: 'details',
+      render: (text, record) => (
+        <div>
+          <div
+            style={{
+              maxHeight: expandedRows[record._id] ? 'none' : '5em',
+              overflow: 'hidden',
+              position: 'relative',
+            }}
+            dangerouslySetInnerHTML={{ __html: text }}
+          />
+          <Button
+            type="link"
+            onClick={() => toggleDetails(record._id)}
+            size="small"
+          >
+            {expandedRows[record._id] ? 'Show Less' : 'Read More'}
+          </Button>
+        </div>
+      ),
+    },
+    {
+      title: 'Images',
+      dataIndex: 'image',
+      key: 'image',
+      width: 100,
+      render: (images) =>
+        images && images.length > 0 ? (
+          images.map((img, index) => (
+            <Image
+              key={index}
+              src={`/api/image/download/${img}`}
+              alt={`Blog Image ${index + 1}`}
+              width={50}
+              height={50}
+              style={{ objectFit: 'cover', borderRadius: '5px' }}
+            />
+          ))
+        ) : (
+          <Text type="secondary">No Image</Text>
+        ),
+    },
+    {
+      title: 'Actions',
+      key: 'actions',
+      width: 150,
+      render: (_, record) => (
+        <div className="flex space-x-2">
+          <Button
+            icon={<EditOutlined />}
+            onClick={() => navigate(`/edit-blog-form/${record._id}`)}
+          />
+          <Popconfirm
+            title="Are you sure you want to delete this blog?"
+            onConfirm={() => handleDelete(record._id)}
+            okText="Yes"
+            cancelText="No"
+          >
+            <Button danger icon={<DeleteOutlined />} />
+          </Popconfirm>
+        </div>
+      ),
+    },
+  ];
+  
   return (
     <div className="space-y-4">
-        <div className="flex justify-end">
+      <div className="flex justify-between mb-4 p-5">
+        <div>
+          <h2 className='text-2xl font-semibold'>Blogs</h2>
+        </div>
         <Link to="/blog-form">
-          <Button>
-            <Plus className="mr-2 h-4 w-4" /> Add Blog
+          <Button type="primary" icon={<PlusOutlined />}>
+            Add Blog
           </Button>
         </Link>
       </div>
-      <div className="border rounded-lg overflow-hidden">
-        <Table className="shadow-none border-none">
-          <TableHeader className="bg-gray-200">
-            <TableRow>
-              <TableHead className="font-semibold text-md text-blue-950">Title</TableHead>
-              <TableHead className="font-semibold text-md text-blue-950">Date</TableHead>
-              <TableHead className="font-semibold text-md text-blue-950">Details</TableHead>
-              <TableHead className="font-semibold text-md text-blue-950">Images</TableHead>
-              <TableHead className="font-semibold text-md text-blue-950">Actions</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {blogsArray.map((blog) => (
-              <BlogRow key={blog._id} blog={blog} refetch={refetch} />
-            ))}
-          </TableBody>
-        </Table>
-      </div>
+      <Table
+        columns={columns}
+        dataSource={blogs}
+        rowKey="_id"
+        pagination={{ pageSize: 5 }}
+      />
     </div>
   );
-}
+};
+
+export default BlogTable;

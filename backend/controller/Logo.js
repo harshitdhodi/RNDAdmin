@@ -1,196 +1,106 @@
 const Logo = require('../model/Logo');
 const fs = require('fs');
 const path = require('path');
-
-const logoController = {
-    // Add new logo
-    addLogo: async (req, res) => {
-        try {
-            const { headerLogo, favIcon } = req.body;
-
-            // Validate input
-            if (!headerLogo || !favIcon) {
-                return res.status(400).json({
-                    success: false,
-                    message: 'Both headerLogo and favIcon are required'
-                });
-            }
-
-            // Check if logo already exists
-            const existingLogo = await Logo.findOne();
-            if (existingLogo) {
-                // Delete the uploaded files since we can't use them
-                try {
-                    fs.unlinkSync(path.join(__dirname, '..', headerLogo));
-                    fs.unlinkSync(path.join(__dirname, '..', favIcon));
-                } catch (err) {
-                    console.error('Error deleting uploaded files:', err);
-                }
-
-                return res.status(400).json({
-                    success: false,
-                    message: 'Logo already exists. Use update route to modify.'
-                });
-            }
-
-            // Create new logo
-            const logo = await Logo.create({ headerLogo, favIcon });
-
-            res.status(201).json({
-                success: true,
-                data: logo,
-                message: 'Logo created successfully'
-            });
-
-        } catch (error) {
-            // Clean up uploaded files in case of error
-            if (req.body.headerLogo) {
-                try {
-                    fs.unlinkSync(path.join(__dirname, '..', req.body.headerLogo));
-                    fs.unlinkSync(path.join(__dirname, '..', req.body.favIcon));
-                } catch (err) {
-                    console.error('Error deleting uploaded files:', err);
-                }
-            }
-
-            res.status(500).json({
-                success: false,
-                message: error.message
-            });
+const multer = require('multer');
+// Add new logo
+const addLogo = async (req, res) => {
+    try {
+        if (!req.files || !req.files.headerLogo || !req.files.favIcon) {
+            return res.status(400).json({ success: false, message: 'Both headerLogo and favIcon are required' });
         }
-    },
 
-    // Update logo
-
-    updateLogo: async (req, res) => {
-        try {
-            const { headerLogo, favIcon } = req.body;
-
-            // Find existing logo
-            let logo = await Logo.findOne();
-
-            if (logo) {
-                // If no new logo is provided, use the existing data
-                const newHeaderLogo = headerLogo || logo.headerLogo;
-                const newFavIcon = favIcon || logo.favIcon;
-
-                // Update the logo if there are changes
-                if (headerLogo || favIcon) {
-                    // Store old file paths
-                    const oldHeaderLogo = headerLogo ? logo.headerLogo : null;
-                    const oldFavIcon = favIcon ? logo.favIcon : null;
-
-                    // Update logo details
-                    logo.headerLogo = newHeaderLogo;
-                    logo.favIcon = newFavIcon;
-                    await logo.save();
-
-                    // Delete old files only if new files are provided
-                    if (oldHeaderLogo) {
-                        try {
-                            fs.unlinkSync(path.join(__dirname, '..', oldHeaderLogo));
-                        } catch (err) {
-                            console.error('Error deleting old headerLogo:', err);
-                        }
-                    }
-
-                    if (oldFavIcon) {
-                        try {
-                            fs.unlinkSync(path.join(__dirname, '..', oldFavIcon));
-                        } catch (err) {
-                            console.error('Error deleting old favIcon:', err);
-                        }
-                    }
-                }
-
-                res.status(200).json({
-                    success: true,
-                    data: logo,
-                    message: 'Logo updated successfully'
-                });
-            } else {
-              
-                logo = await Logo.create({ headerLogo, favIcon });
-                res.status(201).json({
-                    success: true,
-                    data: logo,
-                    message: 'Logo created successfully'
-                });
-            }
-        } catch (error) {
-            // Clean up uploaded files in case of error
-            if (headerLogo) {
-                try {
-                    fs.unlinkSync(path.join(__dirname, '..', headerLogo));
-                } catch (err) {
-                    console.error('Error deleting uploaded headerLogo:', err);
-                }
-            }
-
-            if (favIcon) {
-                try {
-                    fs.unlinkSync(path.join(__dirname, '..', favIcon));
-                } catch (err) {
-                    console.error('Error deleting uploaded favIcon:', err);
-                }
-            }
-
-            res.status(500).json({
-                success: false,
-                message: error.message
-            });
+        // Check if a logo already exists
+        const existingLogo = await Logo.findOne();
+        if (existingLogo) {
+            return res.status(400).json({ success: false, message: 'Logo already exists. Use update instead.' });
         }
-    },
 
-    // Get logo
-    getLogo: async (req, res) => {
-        try {
-            const logo = await Logo.findOne();
+        // Create a new logo record
+        const logo = await Logo.create({
+            headerLogo: req.files.headerLogo[0].filename,
+            headerLogoName: req.body.headerLogoName || '',
+            headerLogoAltName: req.body.headerLogoAltName || '',
+            favIcon: req.files.favIcon[0].filename,
+            favIconName: req.body.favIconName || '',
+            favIconAltName: req.body.favIconAltName || ''
+        });
 
-            if (!logo) {
-                return res.status(404).json({
-                    success: false,
-                    message: 'Logo not found'
-                });
-            }
+        res.status(201).json({ success: true, data: logo, message: 'Logo added successfully' });
 
-            res.status(200).json({
-                success: true,
-                data: logo
-            });
-
-        } catch (error) {
-            res.status(500).json({
-                success: false,
-                message: error.message
-            });
-        }
-    },
-
-    // Delete logo
-    deleteLogo: async (req, res) => {
-        try {
-            const logo = await Logo.findOneAndDelete();
-
-            if (!logo) {
-                return res.status(404).json({
-                    success: false,
-                    message: 'Logo not found'
-                });
-            }
-
-            res.status(200).json({
-                success: true,
-                message: 'Logo deleted successfully'
-            });
-
-        } catch (error) {
-            res.status(500).json({
-                success: false,
-                message: error.message
-            });
-        }
+    } catch (error) {
+        res.status(500).json({ success: false, message: error.message });
     }
 };
 
-module.exports = logoController;
+// Update logo
+const updateLogo = async (req, res) => {
+    try {
+        let logo = await Logo.findOne();
+        if (!logo) return res.status(404).json({ success: false, message: 'Logo not found' });
+
+        // Store old values before updating
+        const updatedLogo = {
+            headerLogo: req.files?.headerLogo ? req.files.headerLogo[0].filename : logo.headerLogo,
+            favIcon: req.files?.favIcon ? req.files.favIcon[0].filename : logo.favIcon,
+            headerLogoName: req.body.headerLogoName ?? logo.headerLogoName,
+            headerLogoAltName: req.body.headerLogoAltName ?? logo.headerLogoAltName,
+            favIconName: req.body.favIconName ?? logo.favIconName,
+            favIconAltName: req.body.favIconAltName ?? logo.favIconAltName
+        };
+
+        // Update database
+        Object.assign(logo, updatedLogo);
+        await logo.save();
+
+        res.status(200).json({ success: true, data: updatedLogo, message: 'Logo updated successfully' });
+
+    } catch (error) {
+        console.error("Error updating logo:", error);
+        res.status(500).json({ success: false, message: error.message });
+    }
+};
+
+
+
+// Get logo
+const getLogo = async (req, res) => {
+    try {
+        const logo = await Logo.findOne();
+        if (!logo) return res.status(404).json({ success: false, message: 'Logo not found' });
+
+        res.status(200).json({ success: true, data: logo });
+
+    } catch (error) {
+        res.status(500).json({ success: false, message: error.message });
+    }
+};
+
+// Delete logo
+const deleteLogo = async (req, res) => {
+    try {
+        const logo = await Logo.findOneAndDelete();
+        if (!logo) return res.status(404).json({ success: false, message: 'Logo not found' });
+
+        // Delete associated files
+        const deleteFile = (filePath) => {
+            const fullPath = path.join(__dirname, '..', 'uploads', 'logos', filePath);
+            if (fs.existsSync(fullPath)) fs.unlink(fullPath, (err) => console.error(`Error deleting file:`, err));
+        };
+
+        deleteFile(logo.headerLogo);
+        deleteFile(logo.favIcon);
+
+        res.status(200).json({ success: true, message: 'Logo deleted successfully' });
+
+    } catch (error) {
+        res.status(500).json({ success: false, message: error.message });
+    }
+};
+
+module.exports = {
+    addLogo,
+    updateLogo,
+    getLogo,
+    deleteLogo
+    
+};

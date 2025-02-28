@@ -1,11 +1,9 @@
 import React, { useState } from 'react';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Button } from '@/components/ui/button';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Table, Button, Select, Space } from 'antd';
 
-export function ChemicalTable({ chemicals, onRemoveChemical, refetch }) {
-  const [page, setPage] = React.useState(1);
-  const [itemsPerPage, setItemsPerPage] = React.useState(10);
+export function ChemicalTable({ chemicals, onRemoveChemical }) {
+  const [page, setPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(10);
 
   // Calculate pagination
   const totalPages = Math.ceil((chemicals?.length || 0) / itemsPerPage);
@@ -13,84 +11,76 @@ export function ChemicalTable({ chemicals, onRemoveChemical, refetch }) {
   const endIndex = startIndex + itemsPerPage;
   const currentChemicals = chemicals?.slice(startIndex, endIndex);
 
-  return (
-    <div className="border rounded-md mt-4">
-      <Table>
-        <TableHeader>
-          <TableRow>
-            <TableHead>Action</TableHead>
-            <TableHead>Chemical Name</TableHead>
-            <TableHead>CAS Number</TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {chemicals?.length === 0 ? (
-            <TableRow>
-              <TableCell colSpan={3} className="text-center">
-                No chemicals found for this customer.
-              </TableCell>
-            </TableRow>
-          ) : (
-            currentChemicals?.map((chemical) => (
-              <TableRow key={chemical._id}>
-                <TableCell>
-                  <Button
-                    variant="destructive"
-                    size="sm"
-                    onClick={() => onRemoveChemical(chemical)}
-                  >
-                    Delete
-                  </Button>
-                </TableCell>
-                <TableCell>{chemical.name}</TableCell>
-                <TableCell>{chemical.cas_number}</TableCell>
-              </TableRow>
-            ))
-          )}
-        </TableBody>
-      </Table>
+  const columns = [
+    {
+      title: 'Action',
+      dataIndex: 'action',
+      render: (_, record) => (
+        <Button type="primary" danger size="small" onClick={() => onRemoveChemical(record)}>
+          Delete
+        </Button>
+      ),
+    },
+    {
+      title: 'Chemical Name',
+      dataIndex: 'name',
+    },
+    {
+      title: 'CAS Number',
+      dataIndex: 'cas_number',
+    },
+  ];
 
-      {/* Pagination */}
-      <div className="flex items-center justify-between px-4 py-2 border-t">
+  return (
+    <div className="border rounded-md mt-4 p-4">
+      <Table
+        columns={columns}
+        dataSource={currentChemicals}
+        rowKey="_id"
+        pagination={false}
+      />
+
+      {/* Pagination Controls */}
+      <div className="flex items-center justify-between mt-4">
         <div className="text-sm text-gray-500">
           Items per page:{' '}
-          <select
-            className="border rounded"
+          <Select
             value={itemsPerPage}
-            onChange={(e) => {
-              setItemsPerPage(Number(e.target.value));
+            onChange={(value) => {
+              setItemsPerPage(value);
               setPage(1); // Reset to first page when changing items per page
             }}
-          >
-            <option value={10}>10</option>
-            <option value={20}>20</option>
-            <option value={50}>50</option>
-          </select>
+            options={[
+              { value: 10, label: '10' },
+              { value: 20, label: '20' },
+              { value: 50, label: '50' },
+            ]}
+            style={{ width: 80 }}
+          />
         </div>
-        <div className="flex gap-2">
+
+        <Space>
           <Button
-            variant="outline"
-            size="sm"
+            type="default"
+            size="small"
             onClick={() => setPage(page - 1)}
             disabled={page === 1}
           >
             Previous
           </Button>
-          <span className="flex items-center gap-1">
-            <span className="text-sm text-gray-500">
-              {startIndex + 1} - {Math.min(endIndex, chemicals?.length || 0)} of{' '}
-              {chemicals?.length || 0}
-            </span>
+          <span className="text-sm text-gray-500">
+            {startIndex + 1} - {Math.min(endIndex, chemicals?.length || 0)} of{' '}
+            {chemicals?.length || 0}
           </span>
           <Button
-            variant="outline"
-            size="sm"
+            type="default"
+            size="small"
             onClick={() => setPage(page + 1)}
             disabled={page === totalPages}
           >
             Next
           </Button>
-        </div>
+        </Space>
       </div>
     </div>
   );

@@ -247,9 +247,9 @@ const navigate = useNavigate();
                 <TableCell>
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
-                      <Button variant="ghost" size="icon">
+                      <button className="p-3">
                         <MoreVertical className="h-4 w-4" />
-                      </Button>
+                      </button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent>
                       <DropdownMenuItem onClick={() => handleEdit(chemical)}>

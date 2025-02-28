@@ -1,121 +1,84 @@
-import React from 'react'
-import { Button } from '@/components/ui/button'
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/components/ui/table'
-import { useDeleteChemicalFromSupplierMutation } from '@/slice/supplierSlice/SupplierSlice'
-export function S_ChemicalTable({ chemicals, supplierId, onRemoveChemical }) {
-  console.log(chemicals) // To check the format of the data
-  const [page, setPage] = React.useState(1)
-  const [itemsPerPage, setItemsPerPage] = React.useState(10)
-  const [deleteChemicalFromSupplier] = useDeleteChemicalFromSupplierMutation()
+import React, { useState } from 'react';
+import { Table, Button, Modal, Pagination } from 'antd';
+import { useDeleteChemicalFromSupplierMutation } from '@/slice/supplierSlice/SupplierSlice';
 
-  const handleRemoveChemical = async (chemical) => {
+export function S_ChemicalTable({ chemicals, refetch, supplierId, onRemoveChemical }) {
+  const [page, setPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(10);
+  const [deleteChemicalFromSupplier] = useDeleteChemicalFromSupplierMutation();
+  const [selectedChemical, setSelectedChemical] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const handleConfirmDelete = (chemical) => {
+    setSelectedChemical(chemical);
+    setIsModalOpen(true);
+  };
+
+  const handleRemoveChemical = async () => {
+    if (!supplierId || !selectedChemical) return;
     try {
-      if (!supplierId) {
-        console.error('No supplier ID provided');
-        return;
-      }
-
       await deleteChemicalFromSupplier({
         supplierId: supplierId,
-        chemicalId: chemical._id
-      })
-      onRemoveChemical(chemical)
-      // Reset to first page if current page becomes empty
+        chemicalId: selectedChemical._id,
+      });
+      onRemoveChemical(selectedChemical);
+      refetch();
+      setIsModalOpen(false);
+      setSelectedChemical(null);
       if (currentChemicals.length === 1 && page > 1) {
-        setPage(1)
+        setPage(1);
       }
     } catch (error) {
-      console.error('Error removing chemical:', error)
+      console.error('Error removing chemical:', error);
     }
-  }
-  // Calculate pagination
-  const totalPages = Math.ceil(chemicals.length / itemsPerPage)
-  const startIndex = (page - 1) * itemsPerPage
-  const endIndex = startIndex + itemsPerPage
-  const currentChemicals = chemicals.slice(startIndex, endIndex)
+  };
+
+  const totalPages = Math.ceil(chemicals.length / itemsPerPage);
+  const startIndex = (page - 1) * itemsPerPage;
+  const endIndex = startIndex + itemsPerPage;
+  const currentChemicals = chemicals.slice(startIndex, endIndex);
+
+  const columns = [
+    {
+      title: 'Action',
+      dataIndex: 'action',
+      render: (_, chemical) => (
+        <Button danger size="small" onClick={() => handleConfirmDelete(chemical)}>
+          Delete
+        </Button>
+      ),
+    },
+    { title: 'Chemical Name', dataIndex: 'name' },
+    { title: 'CAS Number', dataIndex: 'cas_number' },
+  ];
 
   return (
-    <div className="border rounded-md mt-4">
-      <Table>
-        <TableHeader>
-          <TableRow>
-            <TableHead>Action</TableHead>
-            <TableHead>Chemical Name</TableHead>
-            <TableHead>CAS Number</TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {chemicals?.length === 0 ? (
-            <TableRow>
-              <TableCell colSpan={3} className="text-center">
-                No chemicals found for this Supplier.
-              </TableCell>
-            </TableRow>
-          ) : (
-            chemicals?.map((chemical) => (
-              <TableRow key={chemical._id}>
-                <TableCell>
-                  <Button
-                    variant="destructive"
-                    size="sm"
-                    onClick={() => handleRemoveChemical(chemical)}
-                  >
-                    Delete
-                  </Button>
-                </TableCell>
-                <TableCell>{chemical.name}</TableCell>
-                <TableCell>{chemical.cas_number}</TableCell>
-              </TableRow>
-            ))
-          )}
-        </TableBody>
-      </Table>
-       {/* Pagination */}
-        <div className="flex items-center justify-between px-4 py-2 border-t">
-          <div className="text-sm text-gray-500">
-            Items per page:{' '}
-            <select
-              className="border rounded"
-              value={itemsPerPage}
-              onChange={(e) => setItemsPerPage(Number(e.target.value))}
-            >
-              <option value={10}>10</option>
-              <option value={20}>20</option>
-              <option value={50}>50</option>
-            </select>
-          </div>
-          <div className="flex gap-2">
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => setPage(page - 1)}
-              disabled={page === 1}
-            >
-              Previous
-            </Button>
-            <span className="flex items-center gap-1">
-              <span className="text-sm text-gray-500">
-                {startIndex + 1} - {Math.min(endIndex, chemicals.length)} of{' '}
-                {chemicals.length}
-              </span>
-            </span>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => setPage(page + 1)}
-              disabled={page === totalPages}
-            >
-              Next
-            </Button>
-          </div>
-        </div>
+    <div className="border rounded-md mt-4 p-4">
+      <Table
+        dataSource={currentChemicals}
+        columns={columns}
+        rowKey="_id"
+        pagination={false}
+      />
+      <Pagination
+        current={page}
+        total={chemicals.length}
+        pageSize={itemsPerPage}
+        onChange={(page) => setPage(page)}
+        showSizeChanger
+        onShowSizeChange={(_, size) => setItemsPerPage(size)}
+        className="mt-4 float-end pt-5"
+      />
+      <Modal
+        title="Confirm Deletion"
+        open={isModalOpen}
+        onCancel={() => setIsModalOpen(false)}
+        onOk={handleRemoveChemical}
+        okText="Delete"
+        okButtonProps={{ danger: true }}
+      >
+        <p>Are you sure you want to delete "{selectedChemical?.name}"?</p>
+      </Modal>
     </div>
-  )
+  );
 }

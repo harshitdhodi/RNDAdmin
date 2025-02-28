@@ -10,7 +10,8 @@ exports.createBanner = async (req, res) => {
             imgName: req.body.imgName,
             altName: req.body.altName,
             title: req.body.title,
-            details: req.body.details
+            details: req.body.details,
+            pageSlug: req.body.pageSlug
         });
 
         const savedBanner = await banner.save();
@@ -35,6 +36,17 @@ exports.getAllBanners = async (req, res) => {
 exports.getBannerById = async (req, res) => {
     try {
         const banner = await Banner.findById(req.query.id);
+        if (!banner) return res.status(404).json({ message: 'Banner not found' });
+        res.status(200).json(banner);
+    } catch (err) {
+        res.status(400).json({ message: err.message });
+    }
+};
+
+// Get banner by pageSlug 
+exports.getBannerByPageSlug = async (req, res) => {
+    try {
+        const banner = await Banner.findOne({ pageSlug: req.query.pageSlug });
         if (!banner) return res.status(404).json({ message: 'Banner not found' });
         res.status(200).json(banner);
     } catch (err) {

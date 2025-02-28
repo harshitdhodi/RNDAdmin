@@ -91,7 +91,7 @@ export function ChemicalSearch({ selectedCustomer, refetchCustomer }) {
         disabled={isAdding || !selectedChemical || !selectedCustomer}
         className="mt-4 w-[10%] py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
       >
-        {isAdding ? 'Adding...' : 'Add Chemical'}
+        {isAdding ? 'Adding...' : 'Add '}
       </Button>
     </div>
   );

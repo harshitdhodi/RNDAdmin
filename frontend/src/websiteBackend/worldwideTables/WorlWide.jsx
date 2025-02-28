@@ -97,26 +97,29 @@ const WorldWideBackend = () => {
     };
 
     return (
-        <div style={{ padding: '20px' }}>
-            <Breadcrumb
+        <div >
+          <div className='flex justify-between items-center'>
+          <Breadcrumb
                 items={[
                     { 
-                        title: <span onClick={() => navigate('/dashboard')} style={{ cursor: 'pointer' }}>Dashboard</span>
+                        title: <span onClick={() => navigate('/dashboard')} className='cursor-pointer'>Dashboard</span>
                     },
                     { title: 'Worldwide Locations' }
                 ]}
-                style={{ marginBottom: '16px' }}
+                className='mb-4'
+               
             />
 
             <Button 
                 type="primary" 
                 onClick={() => navigate('/worldwide/add')}
-                style={{ marginBottom: '16px' }}
+               className='mb-4'
             >
                 Add New Location
             </Button>
+          </div>
 
-            <h2>International Locations</h2>
+            <h2 className='text-2xl font-semibold mb-3'>International Locations</h2>
             <Table 
                 columns={internationalColumns}
                 dataSource={internationalData}
@@ -125,7 +128,7 @@ const WorldWideBackend = () => {
                 pagination={{ pageSize: 10 }}
             />
 
-            <h2 style={{ marginTop: '40px' }}>Indian Locations</h2>
+            <h2 className='text-2xl font-semibold mb-3 mt-8'>Indian Locations</h2>
             <Table 
                 columns={indianColumns}
                 dataSource={indianData}

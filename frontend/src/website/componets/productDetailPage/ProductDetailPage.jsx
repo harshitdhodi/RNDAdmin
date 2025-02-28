@@ -9,7 +9,6 @@ import { useParams } from "react-router-dom";
 import InquiryForm from "./InquiryForm";
 import Footer from "../home/Footer";
 import RecentProduct from "./RecentProduct";
-import { Helmet } from "react-helmet";
 
 export default function ProductDetailPage() {
   const [selectedImage, setSelectedImage] = useState(0);
@@ -53,13 +52,34 @@ export default function ProductDetailPage() {
     };
   }, [showInquiryForm]);
 
+  // Updated title management
   useEffect(() => {
-    if (productData) {
+    // Set default title
+    const defaultTitle = "Chemical Products";
+    
+    // Update title when product data is available
+    if (productData?.metatitle) {
       document.title = `${productData.metatitle} - Product Details`;
+      
+      // Also update meta description if needed
+      const metaDescription = document.querySelector('meta[name="description"]');
+      if (metaDescription) {
+        metaDescription.setAttribute('content', productData.metadescription || `Details about ${productData.name}`);
+      } else {
+        const newMetaDescription = document.createElement('meta');
+        newMetaDescription.setAttribute('name', 'description');
+        newMetaDescription.setAttribute('content', productData.metadescription || `Details about ${productData.name}`);
+        document.head.appendChild(newMetaDescription);
+      }
     } else {
-      document.title = "Loading...";
+      document.title = isLoading ? "Loading..." : defaultTitle;
     }
-  }, [productData]);
+
+    // Cleanup function to reset title when component unmounts
+    return () => {
+      document.title = defaultTitle;
+    };
+  }, [productData, isLoading]);
 
   const fallbackImage = "https://via.placeholder.com/300x300?text=No+Image+Available";
 
@@ -100,77 +120,69 @@ export default function ProductDetailPage() {
     : fallbackDetails;
 
   return (
-    <>
-      <Helmet>
-        <title>{productData ? `${productData.metatitle} - Product Details` : "Loading..."}</title>
-      </Helmet>
-      <div className="max-w-6xl mx-auto mb-10 px-4 py-2 relative">
-        {showInquiryForm && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 z-50">
-            <InquiryForm
-              productName={productData?.name}
-              onClose={() => setShowInquiryForm(false)}
+    <div className="max-w-6xl mx-auto mb-10 px-4 py-2 relative">
+      {showInquiryForm && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 z-50">
+          <InquiryForm
+            productName={productData?.name}
+            onClose={() => setShowInquiryForm(false)}
+          />
+        </div>
+      )}
+      <Breadcrumb chemicals={productData?.category.name} slug={productData?.category.slug} categorySlug={productData?.name} />
+      {isLoading ? (
+        <div>Loading...</div>
+      ) : isError ? (
+        <div>Error fetching product data</div>
+      ) : (
+        <>
+          <div className="md:flex gap-12">
+            <ImageSection
+              images={images}
+              selectedImage={selectedImage}
+              setSelectedImage={setSelectedImage}
+            />
+            <div className="w-[100%]">
+              <ProductInfo
+                productDetails={productDetails}
+                name={productData?.name}
+                cas={productData?.cas_number}
+              />
+              <MSDSSection
+                batchNumber={batchNumber}
+                setBatchNumber={setBatchNumber}
+                msds={productData?.msds}
+                specs={productData?.specs}
+                name={productData?.name}
+                onInquiry={() => setShowInquiryForm(true)}
+              />
+            </div>
+          </div>
+          <div className="mt-12 bg-gradient-to-r from-blue-50 to-blue-100 p-8 rounded-lg shadow-md border border-blue-200">
+            <h2 className="text-2xl font-semibold mb-6 text-blue-900 border-b border-blue-200 pb-3">
+              Product Description
+            </h2>
+            <div 
+              className="text-gray-700 leading-relaxed prose prose-sm max-w-none
+                prose-headings:text-blue-900 
+                prose-p:text-gray-600 
+                prose-strong:text-blue-800
+                prose-ul:list-disc 
+                prose-ul:pl-5
+                prose-li:my-1
+                prose-a:text-blue-600 
+                prose-a:hover:text-blue-800"
+              dangerouslySetInnerHTML={{ 
+                __html: productData?.description || "No description available for this product." 
+              }}
             />
           </div>
-        )}
-        <Breadcrumb chemicals={productData?.category.name} slug={productData?.category.slug} categorySlug={productData?.name} />
-        {isLoading ? (
-          <div>Loading...</div>
-        ) : isError ? (
-          <div>Error fetching product data</div>
-        ) : (
-          <>
-            <div className="md:flex gap-12">
-              <ImageSection
-                images={images}
-                selectedImage={selectedImage}
-                setSelectedImage={setSelectedImage}
-              />
-              <div className="w-[100%]">
-                <ProductInfo
-                  productDetails={productDetails}
-                  name={productData?.name}
-                  cas={productData?.cas_number}
-                />
-                <MSDSSection
-                  batchNumber={batchNumber}
-                  setBatchNumber={setBatchNumber}
-                  msds={productData?.msds}
-                  specs={productData?.specs}
-                  name={productData?.name}
-                  onInquiry={() => setShowInquiryForm(true)}
-                />
-              </div>
-             
-            </div>
-            <div className="mt-12 bg-gradient-to-r from-blue-50 to-blue-100 p-8 rounded-lg shadow-md border border-blue-200">
-              <h2 className="text-2xl font-semibold mb-6 text-blue-900 border-b border-blue-200 pb-3">
-                Product Description
-              </h2>
-              <div 
-                className="text-gray-700 leading-relaxed prose prose-sm max-w-none
-                  prose-headings:text-blue-900 
-                  prose-p:text-gray-600 
-                  prose-strong:text-blue-800
-                  prose-ul:list-disc 
-                  prose-ul:pl-5
-                  prose-li:my-1
-                  prose-a:text-blue-600 
-                  prose-a:hover:text-blue-800"
-                dangerouslySetInnerHTML={{ 
-                  __html: productData?.description || "No description available for this product." 
-                }}
-              />
-            </div>
-          </>
-        )}
-        <div>
-          <RecentProduct/>
-        </div>
-        <MadeInIndia global_tagline={productData?.global_tagline} name={productData?.name} cas={productData?.cas_number} />
+        </>
+      )}
+      <div>
+        <RecentProduct/>
       </div>
-      
-    </>
+      <MadeInIndia global_tagline={productData?.global_tagline} name={productData?.name} cas={productData?.cas_number} />
+    </div>
   );
 }
-

@@ -37,7 +37,7 @@ export default function EmailForm({ defaultTo = "", onSuccess }) {
   const [attachment, setAttachment] = useState(null);
   const [ccEmails, setCcEmails] = useState([]); // Array to store CC emails
   const [filteredTemplates, setFilteredTemplates] = useState([]);
-
+console.log(templates.data)
   const {
     register,
     handleSubmit,

@@ -75,58 +75,37 @@ const uploadLogo = async (req, res, next) => {
     uploadFields(req, res, async (err) => {
       if (err) {
         console.error('Multer Error:', err);
-        return res.status(400).json({
-          error: 'Error uploading files',
-          details: err.message
-        });
-      }
-
-      if (!req.files || !req.files.headerLogo || !req.files.favIcon) {
-        console.error('Missing required files');
-        return res.status(400).json({
-          error: 'Both headerLogo and favIcon are required'
-        });
+        return res.status(400).json({ error: 'Error uploading files', details: err.message });
       }
 
       try {
-        // Process headerLogo
-        const headerLogoTemp = req.files.headerLogo[0].path;
-        const headerLogoFinal = path.join(uploadDir, req.files.headerLogo[0].filename);
-        await processLogoImage(headerLogoTemp, headerLogoFinal, false);
+        if (req.files?.headerLogo) {
+          const headerLogoTemp = req.files.headerLogo[0].path;
+          const headerLogoFinal = path.join(uploadDir, req.files.headerLogo[0].filename);
+          await processLogoImage(headerLogoTemp, headerLogoFinal, false);
+          req.body.headerLogo = req.files.headerLogo[0].filename;
+          fs.unlink(headerLogoTemp, (err) => err && console.error('Error deleting temp headerLogo:', err));
+        }
 
-        // Process favIcon
-        const favIconTemp = req.files.favIcon[0].path;
-        const favIconFinal = path.join(uploadDir, req.files.favIcon[0].filename);
-        await processLogoImage(favIconTemp, favIconFinal, true);
-
-        // Update req.body with just the filenames
-        req.body.headerLogo = req.files.headerLogo[0].filename;
-        req.body.favIcon = req.files.favIcon[0].filename;
-
-        // Clean up temp files
-        fs.unlink(headerLogoTemp, err => {
-          if (err) console.error('Error deleting temp headerLogo:', err);
-        });
-        fs.unlink(favIconTemp, err => {
-          if (err) console.error('Error deleting temp favIcon:', err);
-        });
+        if (req.files?.favIcon) {
+          const favIconTemp = req.files.favIcon[0].path;
+          const favIconFinal = path.join(uploadDir, req.files.favIcon[0].filename);
+          await processLogoImage(favIconTemp, favIconFinal, true);
+          req.body.favIcon = req.files.favIcon[0].filename;
+          fs.unlink(favIconTemp, (err) => err && console.error('Error deleting temp favIcon:', err));
+        }
 
         next();
       } catch (processError) {
         console.error('Processing Error Details:', processError);
-        return res.status(500).json({
-          error: 'Error processing the images',
-          details: processError.message
-        });
+        return res.status(500).json({ error: 'Error processing the images', details: processError.message });
       }
     });
   } catch (err) {
     console.error('Server Error:', err);
-    return res.status(500).json({
-      error: 'Server error during upload',
-      details: err.message
-    });
+    return res.status(500).json({ error: 'Server error during upload', details: err.message });
   }
 };
+
 
 module.exports = { uploadLogo };

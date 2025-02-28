@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
 import { Button } from '@/components/ui/button';
@@ -8,22 +8,36 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Mail } from 'lucide-react';
 import { useGetAllTemplatesQuery } from '@/slice/template/emailTemplate';
 
-const EmailForm = ({ selectedSupplier, supplier, email, name, chemicalName }) => {
+const EmailForm = ({ selectedSupplier, supplier, email, name,type, chemicalName }) => {
+  console.log("Type:", type);
+  console.log("Supplier Array:", supplier);
+  console.log("Supplier Email:", supplier[0]?.email);
+
+  console.log("Condition Check:", type === "Customer", supplier.length > 0);
+
   const [message, setMessage] = useState('');
   const [subject, setSubject] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [selectedTemplate, setSelectedTemplate] = useState(null);
   const { data: templateResponse, isLoading: templatesLoading, error: templatesError } = useGetAllTemplatesQuery();
   const templates = templateResponse?.data || [];
-
+  const recipientEmail = type === "Customer" && Array.isArray(supplier) && supplier[0]?.email
+  ? supplier[0].email
+  : email;
+  console.log("Recipient Email:", recipientEmail);
+  
+  useEffect(() => {
+    console.log("Supplier updated:", supplier);
+  }, [supplier]);
+  
   const handleSendEmail = async () => {
     try {
-      setIsLoading(true);
+      setIsLoading(true); 
       
       const emailData = {
         subject: subject,
         message: message,
-        recipients: Array.isArray(email) ? email : [email],
+        recipients: Array.isArray(recipientEmail) ? recipientEmail : [recipientEmail],
         chemicalNames: Array.isArray(chemicalName) ? chemicalName : [chemicalName]
       };
 
@@ -78,7 +92,7 @@ const EmailForm = ({ selectedSupplier, supplier, email, name, chemicalName }) =>
               <div>
                 <h3 className="mb-2 text-sm font-medium">Selected Suppliers</h3>
                 <div className="p-2 border rounded-lg max-h-[100px] overflow-y-auto">
-                  {name}
+                  {recipientEmail}
                 </div>
               </div>
               <div>

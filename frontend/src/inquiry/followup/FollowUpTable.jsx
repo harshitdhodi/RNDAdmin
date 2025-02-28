@@ -1,7 +1,8 @@
 import { Table, Modal } from "antd";
 import { useUpdateMessageMutation, useGetMessagesQuery } from "@/slice/followUp/followUp";
-import { Delete, Edit } from "lucide-react";
+
 import { useState } from "react";
+import { DeleteOutlined, EditOutlined } from '@ant-design/icons';
 
 export function FollowUpTable({
     followUps,
@@ -87,13 +88,13 @@ export function FollowUpTable({
             title: 'Action',
             key: 'action',
             render: (_, record) => (
-                <div className="flex gap-4">
-                    <Edit
-                        className="cursor-pointer"
+                <div className="flex gap-4 ">
+                    <EditOutlined
+                        className="cursor-pointer bg-blue-700 text-white p-2 rounded-full"
                         onClick={() => onEdit(record._id)}
                     />
-                    <Delete
-                        className="cursor-pointer"
+                    <DeleteOutlined
+                        className="cursor-pointer bg-red-600 text-white p-2 rounded-full"
                         onClick={() => handleDeleteClick(record._id)}
                     />
                 </div>
@@ -121,6 +122,7 @@ export function FollowUpTable({
                 onCancel={() => setIsDeleteModalOpen(false)}
                 okText="Yes, delete"
                 cancelText="Cancel"
+                className="mt-16"
             >
                 <p>Are you sure you want to delete this follow-up?</p>
             </Modal>
