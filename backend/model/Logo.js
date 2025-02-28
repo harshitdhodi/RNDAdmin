@@ -1,27 +1,46 @@
 const mongoose = require('mongoose');
 
-const logoSchema = new mongoose.Schema({
+const logoSchema = new mongoose.Schema(
+  {
     headerLogo: {
-        type: String,
-        required: true
+      type: String,
+     
     },
-    favIcon: {
+    headerLogoName: {
+      type: String,
+     
+    },
+    headerLogoAltName: {
         type: String,
-        required: true
-    }
-}, {
-    timestamps: true // This automatically adds createdAt and updatedAt fields
-});
+       
+      },
+    favIcon: {
+      type: String,
+     
+    },
+    favIconName: {
+      type: String,
+     
+    },
+    favIconAltName: {
+        type: String,
+       
+      },
+  },
+  {
+    timestamps: true, // Automatically adds createdAt and updatedAt fields
+  }
+);
 
 // Ensure only one logo record exists
-logoSchema.pre('save', async function(next) {
-    if (this.isNew) {
-        const count = await this.constructor.countDocuments();
-        if (count > 0) {
-            throw new Error('Only one logo record can exist');
-        }
+logoSchema.pre('save', async function (next) {
+  if (this.isNew) {
+    const count = await this.constructor.countDocuments();
+    if (count > 0) {
+      throw new Error('Only one logo record can exist');
     }
-    next();
+  }
+  next();
 });
 
 module.exports = mongoose.model('Logo', logoSchema);

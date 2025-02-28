@@ -13,9 +13,10 @@ import { ChevronLeft, ChevronRight, Plus, Trash2 } from "lucide-react";
 import EmailForm from "../EmailForm";
 import { ChemicalContext } from "../ChemicalContext";
 import AddSupplierModal from "./AddSupplierModel";  // Adjust modal import
-import { useGetCustomersQuery,useGetCustomersByChemicalIdQuery,useRemoveChemicalFromCustomerMutation } from "@/slice/customerSlice/customerApiSlice";
+import { useGetCustomersQuery, useGetCustomersByChemicalIdQuery, useRemoveChemicalFromCustomerMutation } from "@/slice/customerSlice/customerApiSlice";
 
 export default function CustomersTable({ chemicalName, supplier }) {
+
     const [selectedCustomers, setSelectedCustomers] = useState([]);
     const { selectedItem } = useContext(ChemicalContext);
     const [showAddCustomerModal, setShowAddCustomerModal] = useState(false);
@@ -43,7 +44,7 @@ export default function CustomersTable({ chemicalName, supplier }) {
                 : [...prev, customerId]
         );
     };
-
+    console.log(selectedCustomers)
     const handleDeleteCustomer = async (customerId) => {
         try {
             await removeChemicalFromCustomer({
@@ -79,11 +80,11 @@ export default function CustomersTable({ chemicalName, supplier }) {
                 refetch={refetch}
             />
 
-{selectedCustomers.length > 0 && (
-        <div className="p-4 border-b">
-          <EmailForm selectedSupplier={selectedCustomers} supplier={customers} />
-        </div>
-      )}
+            {selectedCustomers.length > 0 && (
+                <div className="p-4 border-b">
+                    <EmailForm selectedSupplier={selectedCustomers} supplier={customers} chemicalName={chemicalName.name} type={supplier} />
+                </div>
+            )}
 
             <div className="border rounded-lg">
                 <Table>
@@ -134,9 +135,9 @@ export default function CustomersTable({ chemicalName, supplier }) {
                                     <TableCell>{customer.mobile}</TableCell>
                                     <TableCell>{customer.country}</TableCell>
                                     <TableCell>
-                                        <Button 
-                                            variant="ghost" 
-                                            size="icon" 
+                                        <Button
+                                            variant="ghost"
+                                            size="icon"
                                             className="text-red-500 hover:text-red-600"
                                             onClick={() => handleDeleteCustomer(customer._id)}
                                         >

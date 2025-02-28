@@ -81,6 +81,14 @@ const menuData = [
         ] 
       },
       {
+        title: "Menu",
+        icon: List,
+        children: [
+          { title: "Menu List", icon: List, url: "/menu-listing-table" },
+          { title: "Add New", icon: PlusSquare, url: "/menu-listing-form" },
+        ]
+      },
+      {
         title: "Blog",
         icon: List,
         children: [
@@ -134,8 +142,25 @@ const menuData = [
           { title: "List", icon: List, url: "/contact-info-table" },
           // { title: "Add New", icon: PlusSquare, url: "/contact-info/add" },
         ]
-      }
+      },
+      {
+        title: "Slide Show",
+        icon: FileQuestion,
+        children: [
+          { title: "slideshow Table", icon: PlusSquare, url: "/slideShow-table" },
+          { title: "slide show", icon: List, url: "/slideShow-form" },
+        ]
+      },
 
+ {
+        title: "Meta Info",
+        icon: FileQuestion,
+        children: [
+          { title: "Meta List", icon: List, url: "/meta-table" },
+          { title: "Meta Form", icon: List, url: "/meta-form" },
+          // { title: "Add New", icon: PlusSquare, url: "/contact-info/add" },
+        ]
+      }
     ] 
   }
 ];
@@ -197,9 +222,9 @@ export default function AppSidebar() {
         </SidebarGroup>
       </SidebarContent>
       {/* <Separator className="my-4" /> */}
+      {/* <ScrollArea className="p-4">
       <ScrollArea className="p-4">
-      <ScrollArea className="p-4">
-        {/* <Button variant="ghost" className="w-full justify-start gap-2 font-normal" onClick={toggleUserMenu}>
+        <Button variant="ghost" className="w-full justify-start gap-2 font-normal" onClick={toggleUserMenu}>
           <div className="flex items-center gap-2">
             <div className="w-8 h-8 rounded-full bg-primary flex items-center justify-center">
               <span className="text-xs font-medium text-primary-foreground">SC</span>
@@ -210,10 +235,10 @@ export default function AppSidebar() {
             </div>
             <ChevronDown className={cn("w-4 h-4 ml-auto transition-transform", { "-rotate-180": userMenuOpen })} />
           </div>
-        </Button> */}
+        </Button>
 
       
-        {/* {userMenuOpen && (
+        {userMenuOpen && (
           <div className="mt-2 pl-8">
             <Button variant="ghost" className="w-full justify-start gap-2 font-normal text-sm">
               Profile
@@ -225,9 +250,9 @@ export default function AppSidebar() {
               Logout
             </Button>
           </div>
-        )} */}
+        )}
       </ScrollArea> 
-      </ScrollArea>
+      </ScrollArea> */}
     </Sidebar>
   );
 }

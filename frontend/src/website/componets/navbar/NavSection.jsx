@@ -1,0 +1,147 @@
+import { useState } from "react";
+import { Link } from "react-router-dom";
+import { motion } from "framer-motion";
+import { NavLink } from "./NavLink";
+
+const NavSection
+ = ({ 
+    categories, 
+    parsedBlogCategories, 
+    isHomeActive, 
+    isProductsActive, 
+    isBlogActive, 
+    isContactActive,
+    mobileMenuOpen, 
+    setMobileMenuOpen 
+}) => {
+    const [corporateDropdownOpen, setCorporateDropdownOpen] = useState(false);
+    const [blogDropdownOpen, setBlogDropdownOpen] = useState(false);
+
+    return (
+        <nav className="bg-[#2d4899] text-white">
+            <div className="max-w-[75rem] mx-auto px-4 flex items-center justify-evenly">
+                <div className="space-x-2 lg:space-x-3 hidden md:flex text-sm items-center lg:text-[16px] font-bold">
+                    {/* Corporate Dropdown */}
+                    <div
+                        className="relative"
+                        onMouseEnter={() => setCorporateDropdownOpen(true)}
+                        onMouseLeave={() => setCorporateDropdownOpen(false)}
+                    >
+                        <NavLink 
+                            href="/introduction" 
+                            className={() => isHomeActive ? "text-orange-400" : ""}
+                            end
+                        >
+                            Corporate
+                        </NavLink>
+                        {corporateDropdownOpen && (
+                            <motion.div
+                                initial={{ opacity: 0, y: -10 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                exit={{ opacity: 0, y: -10 }}
+                                className="absolute left-0 w-64 bg-blue-800 text-white shadow-lg z-50 font-normal"
+                            >
+                                <Link
+                                    to="/introduction"
+                                    className="block px-4 py-2 hover:bg-blue-600 transition-colors"
+                                >
+                                    <span>Introduction</span>
+                                </Link>
+                                <Link
+                                    to="/vision-mission"
+                                    className="block px-4 py-2 hover:bg-blue-600 transition-colors"
+                                >
+                                    Vision
+                                </Link>
+                            </motion.div>
+                        )}
+                    </div>
+
+                    {/* Products Dropdown */}
+                    <NavLink
+                        href="/categories"
+                        hasDropdown={true}
+                        categories={categories}
+                        state={{ categoryName: "Products" }}
+                        className={() => `font-bold ${isProductsActive ? "text-orange-400" : ""}`}
+                    >
+                        Products
+                    </NavLink>
+
+                    {/* Static Links */}
+                    <NavLink 
+                        href="/worldwide"
+                        className={({ isActive }) => isActive ? "text-orange-400" : ""}
+                    >
+                        Worldwide
+                    </NavLink>
+                    <NavLink 
+                        href="/careers"
+                        className={({ isActive }) => isActive ? "text-orange-400" : ""}
+                    >
+                        Careers
+                    </NavLink>
+
+                    {/* Blog Dropdown */}
+                    <div
+                        className="relative"
+                        onMouseEnter={() => setBlogDropdownOpen(true)}
+                        onMouseLeave={() => setBlogDropdownOpen(false)}
+                    >
+                        <NavLink 
+                            href="/blogs"
+                            className={() => `block py-2 px-4 hover:text-orange-400 transition-colors ${isBlogActive ? "text-orange-400" : ""}`}
+                        >
+                            Blog
+                        </NavLink>
+                        {blogDropdownOpen && (
+                            <motion.div
+                                initial={{ opacity: 0, y: -10 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                exit={{ opacity: 0, y: -10 }}
+                                className="absolute left-0 w-64 bg-blue-800 text-white shadow-lg z-50 font-normal"
+                            >
+                                {parsedBlogCategories.length > 0 ? (
+                                    parsedBlogCategories.map((category) => (
+                                        <Link
+                                            key={category.id}
+                                            to={`/blog/${category.slug}`}
+                                            className="block px-4 py-2 hover:bg-blue-600 transition-colors"
+                                        >
+                                            {category.name}
+                                        </Link>
+                                    ))
+                                ) : (
+                                    <p className="px-4 py-2">No blog categories available</p>
+                                )}
+                            </motion.div>
+                        )}
+                    </div>
+
+                    {/* Contact Us Link */}
+                    <NavLink 
+                        href="/contact-us"
+                        className={() => isContactActive ? "text-orange-400" : ""}
+                    >
+                        Contact Us
+                    </NavLink>
+                </div>
+
+                {/* Advanced Search Button */}
+                {!mobileMenuOpen && (
+                    <div className="hidden md:flex justify-center items-center">
+                        <Link 
+                            to="/advance-search"
+                            className="text-white bg-orange-500 rounded-none px-4 lg:px-7 py-6 lg:py-8 hover:bg-orange-500 hover:text-white text-sm lg:text-[16px] font-bold"
+                        >
+                            Advanced Search
+                        </Link>
+                    </div>
+                )}
+            </div>
+        </nav>
+    );
+};
+
+export default NavSection
+;

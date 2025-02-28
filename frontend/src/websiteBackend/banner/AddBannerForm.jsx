@@ -1,16 +1,38 @@
-import React from 'react';
-import { Form, Input, Button, message, Upload, Breadcrumb } from 'antd';
+import React, { useEffect, useState } from 'react';
+import { Form, Input, Button, message, Upload, Breadcrumb, Select } from 'antd';
 import { useNavigate, Link } from 'react-router-dom';
 import { useCreateBannerMutation } from '../../slice/banner/banner';
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
 import { UploadOutlined, HomeOutlined } from '@ant-design/icons';
+import axios from 'axios';
+
+const { Option } = Select;
 
 const AddBannerForm = () => {
   const navigate = useNavigate();
   const [form] = Form.useForm();
   const [createBanner] = useCreateBannerMutation();
-  const [previewUrl, setPreviewUrl] = React.useState(null);
+  const [previewUrl, setPreviewUrl] = useState(null);
+  const [menuList, setMenuList] = useState([]);
+  
+  useEffect(() => {
+    const fetchMenuList = async () => {
+      try {
+        const response = await axios.get('/api/menulist/get-menu');
+        if (response.data.success) {
+          setMenuList(response.data.data);
+        } else {
+          message.error('Failed to load menu list');
+        }
+      } catch (error) {
+        console.error('Error fetching menu list:', error);
+        message.error('Error fetching menu list');
+      }
+    };
+
+    fetchMenuList();
+  }, []);
 
   const onFinish = async (values) => {
     try {
@@ -26,12 +48,13 @@ const AddBannerForm = () => {
       formData.append('title', values.title);
       formData.append('altName', values.altName);
       formData.append('details', values.details);
+      formData.append('pageSlug', values.pageSlug);
       
       await createBanner(formData);
       message.success('Banner created successfully');
       navigate('/banner-table');
     } catch (error) {
-      console.log(error);
+      console.error(error);
       message.error('Failed to create banner');
     }
   };
@@ -70,60 +93,42 @@ const AddBannerForm = () => {
 
       <div style={{ padding: '24px' }}>
         <h1 className="text-2xl font-bold mb-6">Add New Banner</h1>
-        <Form
-          form={form}
-          layout="vertical"
-          onFinish={onFinish}
-        >
-          <Form.Item
-            name="image"
-            label="Banner Image"
-            rules={[{ required: true, message: 'Please upload an image!' }]}
-          >
-            <Upload
-              maxCount={1}
-              listType="picture"
-              beforeUpload={() => false}
-              onChange={handleImageChange}
-            >
+        <Form form={form} layout="vertical" onFinish={onFinish}>
+        <Form.Item name="pageSlug" label="Page Slug" rules={[{ required: true, message: 'Please select a page slug!' }]}> 
+            <Select placeholder="Select a menu item">
+              {menuList.map(menu => (
+                <Option key={menu._id} value={menu.parent.path}>
+                  {menu.parent.name}
+                </Option>
+              ))}
+            </Select>
+          </Form.Item>
+          <Form.Item name="image" label="Banner Image" rules={[{ required: true, message: 'Please upload an image!' }]}> 
+            <Upload maxCount={1} listType="picture" beforeUpload={() => false} onChange={handleImageChange}>
               <Button icon={<UploadOutlined />}>Upload Image</Button>
             </Upload>
           </Form.Item>
-
-          <Form.Item
-            name="imgName"
-            label="Image Name"
-            rules={[{ required: true, message: 'Please input image name!' }]}
-          >
+          
+          <Form.Item name="imgName" label="Image Name" rules={[{ required: true, message: 'Please input image name!' }]}> 
             <Input />
           </Form.Item>
 
-          <Form.Item
-            name="title"
-            label="Title"
-          >
+          <Form.Item name="title" label="Title"> 
             <Input />
           </Form.Item>
 
-          <Form.Item
-            name="altName"
-            label="Alt Name"
-            rules={[{ required: true, message: 'Please input alt name!' }]}
-          >
+          <Form.Item name="altName" label="Alt Name" rules={[{ required: true, message: 'Please input alt name!' }]}> 
             <Input />
           </Form.Item>
-
-          <Form.Item
-            name="details"
-            label="Details"
-          >
+          
+          <Form.Item name="details" label="Details"> 
             <ReactQuill theme="snow" />
           </Form.Item>
 
+         
+
           <Form.Item>
-            <Button type="primary" htmlType="submit">
-              Submit
-            </Button>
+            <Button type="primary" htmlType="submit">Submit</Button>
           </Form.Item>
         </Form>
       </div>
@@ -131,4 +136,4 @@ const AddBannerForm = () => {
   );
 };
 
-export default AddBannerForm; 
+export default AddBannerForm;

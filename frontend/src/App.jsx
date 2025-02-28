@@ -92,6 +92,15 @@ import Logo from './websiteBackend/companyLogo/CompanyLogoTable';
 import LogoForm from './websiteBackend/companyLogo/LogoForm';
 import ContactInfoForm from './websiteBackend/contactInfo/ContactInfoData';
 import ContactForm from './websiteBackend/contactInfo/contactInfoForm';
+import MenuListingForm from './websiteBackend/MenuListing/MenuListingForm';
+import MenuListingTable from './websiteBackend/MenuListing/MenuListingTable';
+import StaticMetaForm from './websiteBackend/staticMetaKeyword/StaticMetaForm';
+import MetaList from './websiteBackend/staticMetaKeyword/StaticTable';
+import useDocumentTitle from './websiteBackend/staticMetaKeyword/DynamicMeta';
+import ImageUploadForm from './website/componets/slideshow/SlideShowForm';
+import SlideShowTable from './website/componets/slideshow/SlideShowTable';
+import PrivacyPolicy from './website/pages/PrivacyPolicy';
+import TermsAndConditions from './website/pages/TermsandCondition';
 // Auth Components
 const PrivateRoute = ({ children }) => {
   const token = Cookies.get('jwt');
@@ -103,42 +112,11 @@ const LoginRoute = () => {
   return token ? <Navigate to="/dashboard" /> : <AdminLogin />;
 };
 
-// Custom Hook for Document Title
-const useDocumentTitle = (defaultTitle) => {
-  const location = useLocation();
 
-  React.useEffect(() => {
-    const path = location.pathname;
-    let title = defaultTitle;
-
-    if (path.includes('product')) {
-      title = 'Product Details';
-    } else if (path.includes('blog')) {
-      const slug = path.split('/').pop(); // Extract the slug from the path
-      console.log('Slug:', slug); // Debugging: Log the slug
-      title = slug
-        .split('-') // Split the slug by hyphens
-        .map(word => {
-          // Check if the word is a number
-          if (!isNaN(word)) {
-            return word; // Return the number as is
-          }
-          // Capitalize each word
-          return word.charAt(0).toUpperCase() + word.slice(1);
-        })
-        .join(' '); // Join the words with spaces
-    } else if (path.includes('contact')) {
-      title = 'Contact Us';
-    }
-    // Add more conditions as needed
-
-    document.title = title;
-  }, [location, defaultTitle]);
-};
 
 // Wrapper Component to use the hook
 const AppContent = () => {
-  useDocumentTitle('CDH Chemicals'); // Use the hook here
+  useDocumentTitle(); // Use the hook here
 
   return <Outlet />; // Render the rest of the app
 };
@@ -175,7 +153,10 @@ function App() {
             { path: '/vision-mission', element: <MainContent /> },
             { path: '/worldwide', element: <WorldWide /> },
             { path: '/careers', element: <CareerForm /> },
-            {path:'/advance-search' , element:<AdvanceSearch />}
+            {path:'/advance-search' , element:<AdvanceSearch />},
+            {path:'/privacy-policy' , element:<PrivacyPolicy />},
+            {path:'/terms-and-conditions' , element:<TermsAndConditions />}
+            
           ]
         },
         // Authentication Route
@@ -274,6 +255,23 @@ function App() {
           { path: 'contact-info-table', element: <ContactInfoForm /> },
           // { path: 'contact-info/add', element: <ContactForm /> },
           // { path: 'contact-info/edit/:id', element: <ContactForm /> },
+       
+          // Menu Listing Routes
+          {path: 'menu-listing-table', element: <MenuListingTable />},
+          {path: 'menu-listing-form', element: <MenuListingForm />},
+          {path: 'menu-listing-form/:id', element: <MenuListingForm />},
+
+
+          // Meta Routes
+          {path : 'meta-table' ,  element:<MetaList/>},
+          {path : 'meta-form' ,  element:<StaticMetaForm/>},
+          {path : 'edit-meta-form/:id' ,  element:<StaticMetaForm/>},
+
+
+          //slide show
+          {path : 'slideShow-form' ,  element:<ImageUploadForm/>},
+          {path : 'slideShow-table' ,  element:<SlideShowTable/>},
+
         ]
         }
       ]

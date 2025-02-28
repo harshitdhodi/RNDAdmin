@@ -144,6 +144,7 @@ export default function EditFollowUpModal({
                 variant="outline" 
                 onClick={onClose}
                 disabled={isUpdating}
+                className="bg-red-600"
               >
                 Cancel
               </Button>

@@ -123,9 +123,9 @@ export default function Footer() {
         </div>
       </footer>
       <div className="w-full bg-black/95 p-2">
-        <div className="max-w-[75rem] mx-auto text-left text-gray-500 text-sm">
-          <p>&copy; 2024 Your Company. All rights reserved.</p>
-        </div>
+      <div className="max-w-[75rem] mx-auto text-left text-gray-500 text-sm">
+      <p>&copy; {new Date().getFullYear()} Your Company. All rights reserved.</p>
+    </div>
       </div>
     </>
   );
