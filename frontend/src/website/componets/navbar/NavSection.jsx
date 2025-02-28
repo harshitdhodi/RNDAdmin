@@ -92,7 +92,7 @@ const NavSection
                             href="/blogs"
                             className={() => `block py-2 px-4 hover:text-orange-400 transition-colors ${isBlogActive ? "text-orange-400" : ""}`}
                         >
-                            Blog
+                            Blogs
                         </NavLink>
                         {blogDropdownOpen && (
                             <motion.div
