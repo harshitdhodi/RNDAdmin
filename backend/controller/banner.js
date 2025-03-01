@@ -46,7 +46,7 @@ exports.getBannerById = async (req, res) => {
 // Get banner by pageSlug 
 exports.getBannerByPageSlug = async (req, res) => {
     try {
-        const banner = await Banner.findOne({ pageSlug: req.query.pageSlug });
+        const banner = await Banner.find({ pageSlug: req.query.pageSlug });
         if (!banner) return res.status(404).json({ message: 'Banner not found' });
         res.status(200).json(banner);
     } catch (err) {

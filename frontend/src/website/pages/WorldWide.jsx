@@ -1,11 +1,17 @@
-import img from '../images/introduction.png'
-import { Banner } from "../componets/Banner"
-import CountriesTable from "../componets/worldwide/CountriesTable"
-import { Link } from 'react-router-dom'
-import { useGetAllWorldwideQuery } from '../../slice/worldwide/worldwide'
+import React from 'react';
+import img from '../images/introduction.png';
+import { Banner } from "../componets/Banner";
+import CountriesTable from "../componets/worldwide/CountriesTable";
+import { Link, useLocation } from 'react-router-dom';
+import { useGetAllWorldwideQuery } from '../../slice/worldwide/worldwide';
+import { useGetBannerByPageSlugQuery } from '@/slice/banner/banner';
 
 export default function WorldWide() {
-    const { data: worldwideData, isLoading } = useGetAllWorldwideQuery();
+    const location = useLocation();
+    const path = location.pathname.replace(/^\//, '') || 'worldwide'; // Remove leading slash and default to 'worldwide'
+    console.log(path);
+    const { data: banners, isLoading: isBannerLoading } = useGetBannerByPageSlugQuery(path);
+    const { data: worldwideData, isLoading: isWorldwideLoading } = useGetAllWorldwideQuery();
     const allData = worldwideData?.data || [];
 
     const internationalData = allData.filter(item => item.category === 'international');
@@ -13,10 +19,14 @@ export default function WorldWide() {
 
     return (
         <main className="min-h-screen bg-white">
-            <Banner imageUrl={img} />
+            {isBannerLoading ? (
+                <div>Loading banner...</div>
+            ) : (
+                <Banner imageUrl={banners && banners.length > 0 ? `/api/image/download/${banners[0].image}` : img} />
+            )}
             <div className="max-w-[75rem] mx-auto px-4 sm:px-6">
                 <nav className="py-2 border-b border-gray-200">
-                    <div className="flex items-center  space-x-2 text-sm">
+                    <div className="flex items-center space-x-2 text-sm">
                         <Link to="/" className="text-gray-600 hover:text-gray-900">
                             Home
                         </Link>
@@ -40,7 +50,7 @@ export default function WorldWide() {
                         <p className="text-gray-600 mb-8 text-left">
                             We are having distributors network for more than 50 countries of the world.
                         </p>
-                        {isLoading ? (
+                        {isWorldwideLoading ? (
                             <div className="text-center">Loading...</div>
                         ) : (
                             <CountriesTable data={internationalData} />
@@ -55,7 +65,7 @@ export default function WorldWide() {
                         <p className="text-gray-600 mb-8 text-left ">
                             Our presence across Indian states and cities
                         </p>
-                        {isLoading ? (
+                        {isWorldwideLoading ? (
                             <div className="text-center">Loading...</div>
                         ) : (
                             <CountriesTable
@@ -65,11 +75,7 @@ export default function WorldWide() {
                         )}
                     </div>
                 </div>
-
             </div>
         </main>
     );
 }
-
-
-

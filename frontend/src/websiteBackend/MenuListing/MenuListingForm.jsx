@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 import { Form, Input, Button, Space, Card } from "antd";
 import { MinusCircleOutlined, PlusOutlined } from "@ant-design/icons";
-import { useCreateMenuListingMutation, useUpdateMenuListingMutation, useGetMenuListingByIdQuery } from "@/slice/menuListing/menuList";
+import { useCreateMenuListingMutation, useUpdateMenuListingMutation, useGetMenuListingByIdQuery, useGetAllMenuListingsQuery } from "@/slice/menuListing/menuList";
 import { useNavigate, useParams } from "react-router-dom";
 
 const MenuListingForm = () => {
@@ -10,7 +10,8 @@ const MenuListingForm = () => {
   
   const [form] = Form.useForm();
   
-  const { data, isLoading ,refetch} = useGetMenuListingByIdQuery(id, { skip: !id });
+  const { data, isLoading } = useGetMenuListingByIdQuery(id, { skip: !id });
+  const { refetch: refetchAllMenuListings } = useGetAllMenuListingsQuery();
   const [createMenuListing] = useCreateMenuListingMutation();
   const [updateMenuListing] = useUpdateMenuListingMutation();
 
@@ -26,7 +27,7 @@ const MenuListingForm = () => {
     } else {
       await createMenuListing(values);
     }
-    refetch()
+    await refetchAllMenuListings();
     navigate("/menu-listing-table");
   };
 

@@ -11,18 +11,60 @@ const useDocumentTitle = () => {
   useEffect(() => {
     const fetchMetaData = async () => {
       try {
-        const response = await axios.get("/api/meta/get-meta");
-        if (response.data && Array.isArray(response.data.data)) {
-          const metaDataList = response.data.data;
-          const currentPath = location.pathname.toLowerCase();
+        const currentPath = location.pathname.toLowerCase();
+        const categoryResponse = await axios.get("/api/chemicalCategory/getAll");
+console.log(categoryResponse.data)
+        if (categoryResponse.data && Array.isArray(categoryResponse.data)) {
+          const categoryList = categoryResponse.data;
 
-          // Check for exact match
+          // Function to find match in nested structure
+          const findMatchingCategory = (categories) => {
+            console.log(categories)
+            for (const category of categories) {
+              // Check top-level category
+              if (`/${category.slug.toLowerCase()}` === currentPath) {
+                return category;
+              }
+
+              // Check subcategories
+              if (category.subCategories && category.subCategories.length > 0) {
+                for (const subCat of category.subCategories) {
+                  if (`/${subCat.slug.toLowerCase()}` === currentPath) {
+                    return subCat;
+                  }
+
+                  // Check sub-subcategories
+                  if (subCat.subSubCategory && subCat.subSubCategory.length > 0) {
+                    const subSubMatch = subCat.subSubCategory.find(
+                      (subSub) => `/${subSub.slug.toLowerCase()}` === currentPath
+                    );
+                    if (subSubMatch) return subSubMatch;
+                  }
+                }
+              }
+            }
+            return null;
+          };
+
+          const matchedCategory = findMatchingCategory(categoryList);
+
+          if (matchedCategory) {
+            setMetaTitle(matchedCategory.metatitle || "Static Page");
+            setMetaDescription(matchedCategory.metadescription || "");
+            setMetaKeyword(matchedCategory.metakeywords || "");
+            return;
+          }
+        }
+
+        // Fallback to meta API
+        const metaResponse = await axios.get("/api/meta/get-meta");
+        if (metaResponse.data && Array.isArray(metaResponse.data.data)) {
+          const metaDataList = metaResponse.data.data;
           let matchedMeta = metaDataList.find(
             (meta) => `/${meta.pageSlug.toLowerCase()}` === currentPath
           );
 
           if (!matchedMeta) {
-            // Fallback to "static-page" if no exact match
             matchedMeta = metaDataList.find(
               (meta) => meta.pageSlug.toLowerCase() === "static-page"
             );
@@ -43,10 +85,8 @@ const useDocumentTitle = () => {
     fetchMetaData();
   }, [location]);
 
-  // Update document title and meta tags
   useEffect(() => {
     document.title = metaTitle;
-
     const updateMetaTag = (name, content) => {
       let tag = document.querySelector(`meta[name="${name}"]`);
       if (!tag) {

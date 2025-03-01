@@ -104,6 +104,9 @@ import TermsAndConditions from './website/pages/TermsandCondition';
 import WhatsUpInfoTable from './websiteBackend/whatsUpInfo/WhatsUpTable';
 import WhatsUpInfoForm from './websiteBackend/whatsUpInfo/WhatUpForm';
 import EventForm from './websiteBackend/event/Events';
+import BlogCardForm from './websiteBackend/blogCard/BlogCard';
+import NavigationLinkTable from './websiteBackend/navigationLinks/NavigationLinkTable';
+import NavigationLinkForm from './websiteBackend/navigationLinks/NavigationLinkForm';
 // Auth Components
 const PrivateRoute = ({ children }) => {
   const token = Cookies.get('jwt');
@@ -117,7 +120,7 @@ const LoginRoute = () => {
 
 
 
-// Wrapper Component to use the hook
+// Dynamic meta function
 const AppContent = () => {
   useDocumentTitle(); // Use the hook here
 
@@ -281,6 +284,14 @@ function App() {
 
           //Events
           {path : 'events' ,  element:<EventForm/>}, 
+
+          //blog card
+          {path : 'blogCard' ,  element:<BlogCardForm/>},
+      
+          //Navigation Link
+          {path : 'navigationLink' ,  element:<NavigationLinkTable/>},
+          {path : 'navigationLink-form' ,  element:<NavigationLinkForm/>},  
+          {path : 'edit-navigation-link/:id' ,  element:<NavigationLinkForm/>},
         ]
         }
       ]

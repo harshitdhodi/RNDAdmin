@@ -1,78 +1,96 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import axios from 'axios';
-import { Form, Input, Button, message } from 'antd';
-import ReactQuill from 'react-quill';
-import 'react-quill/dist/quill.snow.css';
+import { Form, Button, message } from 'antd';
+import JoditEditor from 'jodit-react';
 
 const EventForm = () => {
   const [form] = Form.useForm();
   const [events, setEvents] = useState('');
+  const [eventId, setEventId] = useState(null); // Added to store the event ID
 
-  // Quill Image Handler
-  const handleImageUpload = () => {
-    const input = document.createElement('input');
-    input.setAttribute('type', 'file');
-    input.setAttribute('accept', 'image/*');
-    input.click();
+  const editorRef = useRef(null);
+   
+  const config = {
+    uploader: { insertImageAsBase64URI: true },
+    toolbarAdaptive: false,
+    toolbarSticky: false,
+    buttons: [
+      'bold',
+      'italic',
+      'underline',
+      'ul',
+      'ol',
+      'fontsize',
+      'paragraph',
+      'link',
+      'image',
+      'video',
+      'table',
+      'align',
+      'undo',
+      'redo',
+    ],
+  };
 
-    input.onchange = async () => {
-      const file = input.files[0];
-      if (file) {
-        const reader = new FileReader();
-        reader.onload = () => {
-          const base64Image = reader.result;
-          const quill = document.querySelector('.ql-editor');
-          const range = quill.getSelection();
-          quill.insertEmbed(range.index, 'image', base64Image);
-        };
-        reader.readAsDataURL(file);
+  useEffect(() => {
+    const fetchEvent = async () => {
+      try {
+        const response = await axios.get('/api/events/getEvent');
+        const eventData = response.data[0];
+        setEventId(eventData._id); // Store the ID in state
+        setEvents(eventData.events);
+        form.setFieldsValue({ events: eventData.events });
+      } catch (error) {
+        console.error('Failed to fetch event:', error);
+        message.error('Failed to fetch event.');
       }
     };
-  };
 
-  const modules = {
-    toolbar: {
-      container: [
-        [{ header: '1' }, { header: '2' }, { font: [] }],
-        [{ list: 'ordered' }, { list: 'bullet' }],
-        ['bold', 'italic', 'underline', 'strike'],
-        [{ align: [] }],
-        [{ color: [] }, { background: [] }],
-        ['link', 'image'], // Image button added
-        ['clean'],
-      ],
-      handlers: {
-        image: handleImageUpload,
-      },
-    },
-  };
+    fetchEvent();
+  }, [form]);
 
-  const onFinish = async (values) => {
+  const onFinish = async (values) => { // Changed to accept form values
     try {
-      await axios.post('/api/events/addEvent', {
-        events, // Sending only events field
+      if (!eventId) {
+        message.error('No event ID available');
+        return;
+      }
+
+      await axios.put(`/api/events/editEvent/${eventId}`, {
+        events: events,
       });
-      message.success('Event added successfully!');
+      message.success('Event updated successfully!');
       form.resetFields();
       setEvents('');
     } catch (error) {
-      console.error('Failed to add event:', error);
-      message.error('Failed to add event.');
+      console.error('Failed to update event:', error);
+      message.error('Failed to update event.');
     }
   };
 
   return (
-    <Form form={form} layout="vertical" onFinish={onFinish}>
+    <Form 
+      form={form} 
+      layout="vertical" 
+      onFinish={onFinish}
+      name="event_form" // Added form name
+    >
       <Form.Item
+        name="events" // Added name prop to link with form
         label="Event Description"
         rules={[{ required: true, message: 'Please input the event details!' }]}
       >
-        <ReactQuill value={events} onChange={setEvents} modules={modules} />
+        <JoditEditor 
+          ref={editorRef} 
+          value={events} 
+          config={config} 
+          onChange={(newContent) => setEvents(newContent)} // Fixed onChange handler
+        />
       </Form.Item>
 
       <Form.Item>
         <Button type="primary" htmlType="submit">
-          Add Event
+          Update Event
         </Button>
       </Form.Item>
     </Form>

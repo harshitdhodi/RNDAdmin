@@ -5,42 +5,8 @@ const path = require('path');
 const NodeCache = require('node-cache');
 
 const mongoose = require('mongoose');
-const supplier = require('./route/supplier');
-const chemicalCategory = require('./route/chemicalCategory')
-const chemical = require('./route/chemical')
-const customer = require('./route/customer')
-const chemicalType = require('./route/chemicalType')
-const unit = require('./route/unit')
-const smtp = require('./route/smtp_setting')
-const inquiry = require('./route/inquiry')
-const followup = require('./route/followUp')
-const status = require('./route/statusMaster')
-const source = require('./route/sourceMaster')
 const admin = require("./route/admin")
-const logo = require("./route/logo")
-const count = require("./route/dashboard")
-const blogCategory = require("./route/blogCategory")
-const blog = require("./route/blog")
-const image = require("./route/image")
-const email = require("./route/email")
-const template = require("./route/emailTemplate")
-const {generateAllSitemaps} = require("./route/sitemap")
-const productInquiry = require("./route/productInquiry")
-const sitemapRoute = require("./route/sitemapRoute")   
-const banner = require("./route/banner")
-const aboutUsRoute = require('./route/aboutUs');
-const contactForm = require('./route/contactForm');
-const chemicalMail = require('./route/chemicalMail')
-const career = require('./route/carrer')
-const worldwide = require('./route/worldwide')
-const emailCategory = require('./route/emailCategory')
-const companyLogo = require('./route/companyLogo')
-const contactinfo = require('./route/contactinfo')
-const staticMeta = require('./route/staticMeta');
-const menuListing = require('./route/menuListing');
-const slideShow = require('./route/slideShow')
 const app = express();
- 
 require('dotenv').config(); 
 const cookieParser = require('cookie-parser');
 
@@ -138,40 +104,43 @@ app.get('/api/cache/stats', async (req, res) => {
 
 // 1. First, define all your API routes
 app.use('/api/admin', admin);
-app.use('/api/supplier', supplier);
-app.use('/api/chemicalCategory', chemicalCategory);
-app.use('/api/chemical', chemical);
-app.use('/api/customer', customer);
-app.use('/api/chemicalType', chemicalType);
-app.use('/api/unit', unit);
-app.use('/api/smtp', smtp);
-app.use('/api/inquiry', inquiry)
-app.use('/api/followUp' , followup)
-app.use('/api/status', status)
-app.use('/api/source', source)
-app.use('/api/logo',logo)
-app.use('/api/count', count)
-app.use('/api/image', image)
-app.use('/api/blogCategory', blogCategory)
-app.use("/api/blog",blog);
-app.use('/api/email',email)
-app.use('/api/template', template)
-app.use('/api/productInquiry', productInquiry)
-app.use('/api/sitemap', sitemapRoute)
-app.use('/api/banner', banner)
-app.use('/api/aboutus', aboutUsRoute);
-app.use('/api/contactForm', contactForm);
-app.use('/api/chemicalMail',chemicalMail)
-app.use('/api/career', career); 
-app.use('/api/worldwide', worldwide);
-app.use('/api/contactinfo', contactinfo);
-app.use('/api/emailCategory', emailCategory);
-app.use('/api/companyLogo', companyLogo);
-app.use('/api/meta', staticMeta);
-app.use("/api/menulist", menuListing);
-app.use("/api/slideshow",slideShow);
+app.use('/api/supplier', require('./route/supplier'));``
+app.use('/api/chemicalCategory', require('./route/chemicalCategory'));
+app.use('/api/chemical', require('./route/chemical'));
+app.use('/api/customer', require('./route/customer'));
+app.use('/api/chemicalType', require('./route/chemicalType'));
+app.use('/api/unit', require('./route/unit'));
+app.use('/api/smtp', require('./route/smtp_setting'));
+app.use('/api/inquiry', require('./route/inquiry'));
+app.use('/api/followUp' , require('./route/followUp'));
+app.use('/api/status', require('./route/statusMaster'));
+app.use('/api/source', require('./route/sourceMaster'));
+app.use('/api/logo',require('./route/logo'))
+app.use('/api/count', require('./route/dashboard'))
+app.use('/api/image', require('./route/image'))
+app.use('/api/blogCategory', require('./route/blogCategory'))
+app.use("/api/blog",require('./route/blog'));
+app.use('/api/email',require('./route/email'))
+app.use('/api/template', require('./route/emailTemplate'))
+app.use('/api/productInquiry', require('./route/productInquiry'))
+app.use('/api/sitemap', require('./route/sitemapRoute'))
+app.use('/api/banner', require('./route/banner'))
+app.use('/api/aboutus', require('./route/aboutUs'));
+app.use('/api/contactForm', require('./route/contactForm'));
+app.use('/api/chemicalMail',require('./route/chemicalMail'))
+app.use('/api/career', require('./route/carrer')); 
+app.use('/api/worldwide', require('./route/worldwide'));
+app.use('/api/contactinfo', require('./route/contactinfo'));
+app.use('/api/emailCategory', require('./route/emailCategory'));
+app.use('/api/companyLogo', require('./route/companyLogo'));
+app.use('/api/meta', require('./route/staticMeta'));
+app.use("/api/menulist", require('./route/menuListing'));
+app.use("/api/slideshow",require('./route/slideShow'));
 app.use('/api/whatsup', require('./route/whatsUpInfo'));
 app.use('/api/events', require('./route/events'));
+app.use('/api/blogCard', require('./route/blogCard'));
+app.use('/api/navigationLink', require('./route/NavigationLink'));
+app.use('/api/catalogue', require('./route/catalogue'));
 // 2. Then serve static files
 // Using 'dist' since you're using Vite instead of Create React App
 app.use(express.static(path.join(__dirname, 'dist')));

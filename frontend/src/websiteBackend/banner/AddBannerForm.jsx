@@ -15,7 +15,8 @@ const AddBannerForm = () => {
   const [createBanner] = useCreateBannerMutation();
   const [previewUrl, setPreviewUrl] = useState(null);
   const [menuList, setMenuList] = useState([]);
-  
+  const [loading, setLoading] = useState(true);
+
   useEffect(() => {
     const fetchMenuList = async () => {
       try {
@@ -28,6 +29,8 @@ const AddBannerForm = () => {
       } catch (error) {
         console.error('Error fetching menu list:', error);
         message.error('Error fetching menu list');
+      } finally {
+        setLoading(false);
       }
     };
 
@@ -39,17 +42,17 @@ const AddBannerForm = () => {
       const formData = new FormData();
       if (values.image?.[0]?.originFileObj) {
         formData.append('image', values.image[0].originFileObj);
-        formData.append('imgName', values.image[0].name);
+        formData.append('imgName', values.imgName); // Use the manually entered imgName
       } else {
         message.error('Please select an image');
         return;
       }
-      
+
       formData.append('title', values.title);
       formData.append('altName', values.altName);
       formData.append('details', values.details);
       formData.append('pageSlug', values.pageSlug);
-      
+
       await createBanner(formData);
       message.success('Banner created successfully');
       navigate('/banner-table');
@@ -67,14 +70,36 @@ const AddBannerForm = () => {
         setPreviewUrl(reader.result);
       };
       reader.readAsDataURL(file.originFileObj);
-      
+
+      // Only set the image field, not imgName
       form.setFieldsValue({
         image: info.fileList,
-        imgName: file.name
       });
     } else {
       setPreviewUrl(null);
     }
+  };
+
+  const renderMenuOptions = (menu) => {
+    return (
+      <React.Fragment key={menu._id}>
+        <Option value={menu.parent.path} style={{ fontWeight: "bold" }}>
+          {menu.parent.name}
+        </Option>
+        {menu.children.map((child) => (
+          <React.Fragment key={child._id}>
+            <Option value={child.path} style={{ paddingLeft: 20 }}>
+              <span> ├── </span>{child.name}
+            </Option>
+            {child.subChildren.map((subChild) => (
+              <Option key={subChild._id} value={subChild.path} style={{ paddingLeft: 40 }}>
+                <span>├────</span> {subChild.name}
+              </Option>
+            ))}
+          </React.Fragment>
+        ))}
+      </React.Fragment>
+    );
   };
 
   return (
@@ -94,38 +119,32 @@ const AddBannerForm = () => {
       <div style={{ padding: '24px' }}>
         <h1 className="text-2xl font-bold mb-6">Add New Banner</h1>
         <Form form={form} layout="vertical" onFinish={onFinish}>
-        <Form.Item name="pageSlug" label="Page Slug" rules={[{ required: true, message: 'Please select a page slug!' }]}> 
-            <Select placeholder="Select a menu item">
-              {menuList.map(menu => (
-                <Option key={menu._id} value={menu.parent.path}>
-                  {menu.parent.name}
-                </Option>
-              ))}
+          <Form.Item name="pageSlug" label="Page Slug" rules={[{ required: true, message: 'Please select a page slug!' }]}>
+            <Select placeholder="Select a menu item" loading={loading}>
+              {menuList.map(menu => renderMenuOptions(menu))}
             </Select>
           </Form.Item>
-          <Form.Item name="image" label="Banner Image" rules={[{ required: true, message: 'Please upload an image!' }]}> 
+          <Form.Item name="image" label="Banner Image" rules={[{ required: true, message: 'Please upload an image!' }]}>
             <Upload maxCount={1} listType="picture" beforeUpload={() => false} onChange={handleImageChange}>
               <Button icon={<UploadOutlined />}>Upload Image</Button>
             </Upload>
           </Form.Item>
-          
-          <Form.Item name="imgName" label="Image Name" rules={[{ required: true, message: 'Please input image name!' }]}> 
+
+          <Form.Item name="imgName" label="Image Name" rules={[{ required: true, message: 'Please input image name!' }]}>
             <Input />
           </Form.Item>
 
-          <Form.Item name="title" label="Title"> 
+          <Form.Item name="title" label="Title">
             <Input />
           </Form.Item>
 
-          <Form.Item name="altName" label="Alt Name" rules={[{ required: true, message: 'Please input alt name!' }]}> 
+          <Form.Item name="altName" label="Alt Name" rules={[{ required: true, message: 'Please input alt name!' }]}>
             <Input />
           </Form.Item>
-          
-          <Form.Item name="details" label="Details"> 
+
+          <Form.Item name="details" label="Details">
             <ReactQuill theme="snow" />
           </Form.Item>
-
-         
 
           <Form.Item>
             <Button type="primary" htmlType="submit">Submit</Button>

@@ -95,6 +95,7 @@ const menuData = [
         children: [
           { title: "Blog Categories", icon: List, url: "/blog-category-table" },
           { title: "Blog", icon: PlusSquare, url: "/blog-table" },
+          { title: "Blog Card", icon: PlusSquare, url: "/blogCard" },
         ]
       },
       // {
@@ -177,7 +178,15 @@ const menuData = [
           { title: "Meta Form", icon: List, url: "/meta-form" },
           // { title: "Add New", icon: PlusSquare, url: "/contact-info/add" },
         ]
-      }
+      },
+      {
+        title: "Navigation Link",
+        icon: FileQuestion,
+        children: [
+          { title: "List", icon: List, url: "/navigationLink" },
+          { title: "Add New", icon: PlusSquare, url: "/navigationLink-form" },
+        ]
+      },  
     ]
   }
 ];
