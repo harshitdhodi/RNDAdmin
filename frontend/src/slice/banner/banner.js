@@ -20,6 +20,14 @@ export const bannerApi = createApi({
       providesTags: ['Banner'],
     }),
 
+    // Get banner by pageSlug
+    getBannerByPageSlug: builder.query({
+      query: (pageSlug) => ({
+        url: '/getByPageSlug',
+        params: { pageSlug },
+      }),
+      providesTags: ['Banner'],
+    }),
     // Create new banner
     createBanner: builder.mutation({
       query: (bannerData) => ({
@@ -56,6 +64,7 @@ export const bannerApi = createApi({
 export const {
   useGetAllBannersQuery,
   useGetBannerByIdQuery,
+  useGetBannerByPageSlugQuery,
   useCreateBannerMutation,
   useUpdateBannerMutation,
   useDeleteBannerMutation,

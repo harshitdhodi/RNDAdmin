@@ -12,9 +12,22 @@ export default function SearchBar() {
     const searchRef = useRef(null);
     const navigate = useNavigate();
     const searchInputRef = useRef(null);
-    // Fetch chemicals effect
+
+    // Add debounce to prevent excessive re-renders
+    const [debouncedSearchTerm, setDebouncedSearchTerm] = useState('');
+
     useEffect(() => {
-        if (!searchTerm || searchTerm.length < 2) {
+        const timerId = setTimeout(() => {
+            setDebouncedSearchTerm(searchTerm);
+        }, 1000); // 1 second debounce
+
+        return () => {
+            clearTimeout(timerId);
+        };
+    }, [searchTerm]);
+
+    useEffect(() => {
+        if (!debouncedSearchTerm) {
             setChemicals([]);
             return;
         }
@@ -23,7 +36,7 @@ export default function SearchBar() {
             setIsLoading(true);
             setError(null);
             try {
-                const response = await fetch(`/api/chemical/search?query=${searchTerm}`);
+                const response = await fetch(`/api/chemical/search?query=${debouncedSearchTerm}`);
                 if (!response.ok) {
                     throw new Error('Failed to fetch chemicals.');
                 }
@@ -38,7 +51,8 @@ export default function SearchBar() {
         };
 
         fetchChemicals();
-    }, [searchTerm]);
+    }, [debouncedSearchTerm]);
+
 
     // Click outside effect
     useEffect(() => {
@@ -54,7 +68,6 @@ export default function SearchBar() {
 
     const handleChemicalSelect = (chemical) => {
         setShowSuggestions(false);
-        setSearchTerm("");
         setIsExpanded(false);
         navigate(`/search?tab=${chemical.slug}`);
     };
@@ -62,30 +75,51 @@ export default function SearchBar() {
     const handleSearch = () => {
         const selectedChemical = chemicals.find((chemical) => chemical.name === searchTerm);
         if (selectedChemical?.slug) {
-            setSearchTerm("");
+            // setSearchTerm("");
             setIsExpanded(false);
             navigate(`/search?tab=${selectedChemical.slug}`);
         } else {
             alert('Please select a valid chemical to search.');
         }
     };
+    // Restore focus after searchTerm updates
+    useEffect(() => {
+        if (searchInputRef.current) {
+            searchInputRef.current.focus(); // Force focus back to the input
+        }
+    }, [searchTerm]);
+
+    // Improved input change handler
+    const handleInputChange = (e) => {
+        const { selectionStart, selectionEnd } = e.target;
+        setSearchTerm(e.target.value);
+
+        setShowSuggestions(true);
+
+        requestAnimationFrame(() => {
+            if (searchInputRef.current) {
+                searchInputRef.current.setSelectionRange(selectionStart, selectionEnd);
+            }
+        });
+    };
+
+
 
     // Desktop Search Bar Component
     const DesktopSearchBar = () => (
         <div className="hidden md:block relative w-full max-w-[35rem] mx-auto" ref={searchRef}>
             <div className="flex rounded-full">
                 <input
-                    ref={searchInputRef}
+                    ref={searchInputRef}  // Ensure ref is attached
                     type="text"
                     value={searchTerm}
-                    onChange={(e) => {
-                        setSearchTerm(e.target.value);
-                        setShowSuggestions(true);
-                    }}
-                    onBlur={() => setTimeout(() => searchInputRef.current?.focus(), 100)} // Keeps focus
+                    onChange={handleInputChange}
                     className="w-full px-4 py-2 border-2 rounded-l-full border-orange-500 focus:outline-none placeholder:text-sm"
                     placeholder="Product Code / Name / CAS / Grade"
                 />
+
+
+
                 <button
                     onClick={handleSearch}
                     className="px-4 py-2 bg-orange-500 text-white rounded-r-full hover:bg-orange-600 focus:outline-none"
@@ -154,10 +188,7 @@ export default function SearchBar() {
                                 <input
                                     type="text"
                                     value={searchTerm}
-                                    onChange={(e) => {
-                                        setSearchTerm(e.target.value);
-                                        setShowSuggestions(true);
-                                    }}
+                                    onChange={handleInputChange}
                                     className="w-full px-4 py-2 border-2 rounded-l-full border-orange-500 focus:outline-none placeholder:text-sm"
                                     placeholder="Product Code / Name / CAS / Grade"
                                     autoFocus

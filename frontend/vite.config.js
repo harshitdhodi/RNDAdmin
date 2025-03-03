@@ -6,18 +6,18 @@ import path from 'path'
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [react()],
-  server: {
-    mimeTypes: {
-      "application/javascript": ["js"],
-    },             
-    // proxy: {
-    //   "/api": {
-    //     target: "http://localhost:3028",
-    //     changeOrigin: true, // Ensures proper handling of CORS
-    //     secure:false
-    //       },
-    // },
-  },
+  // server: {
+  //   mimeTypes: {
+  //     "application/javascript": ["js"],
+  //   },             
+  //   proxy: {
+  //     "/api": {
+  //       target: "http://localhost:3028",
+  //       changeOrigin: true, // Ensures proper handling of CORS
+  //       secure:false
+  //         },
+  //   },
+  // },
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"), // Shortcut for src directory

@@ -1,17 +1,20 @@
 import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { ArrowRight } from 'lucide-react';
-import { useGetAllBannersQuery } from '@/slice/banner/banner';
-import { Link } from 'react-router-dom';
+import { useGetBannerByPageSlugQuery } from '@/slice/banner/banner';
+import { Link, useParams } from 'react-router-dom';
 
 const Slideshow = () => {
-  const { data: banners, isLoading } = useGetAllBannersQuery();
+  const { pageSlug } = useParams();
+  const slug = pageSlug || '/';
+  const { data: banners, isLoading } = useGetBannerByPageSlugQuery(slug);
+  console.log(banners)
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [isHovered, setIsHovered] = useState(false);
   const [hoveredIndex, setHoveredIndex] = useState(null);
 
   useEffect(() => {
-    if (!banners) return;
+    if (!Array.isArray(banners)) return;
     
     const interval = setInterval(() => {
       setCurrentImageIndex((prevIndex) => (prevIndex + 1) % banners.length);
@@ -22,10 +25,12 @@ const Slideshow = () => {
 
   if (isLoading) return <div>Loading...</div>;
 
+  if (!Array.isArray(banners) || banners.length === 0) return <div>No banners available</div>;
+
   return (
     <>
       <div className="relative w-full h-[25vh] sm:h-[70vh] overflow-hidden">
-        {banners?.map((banner, index) => (
+        {banners.map((banner, index) => (
           <div
             key={banner._id}
             className={`absolute inset-0 transition-opacity duration-1000 ${
@@ -55,4 +60,3 @@ const Slideshow = () => {
 };
 
 export default Slideshow;
-

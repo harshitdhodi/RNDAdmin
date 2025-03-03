@@ -101,6 +101,16 @@ import ImageUploadForm from './website/componets/slideshow/SlideShowForm';
 import SlideShowTable from './website/componets/slideshow/SlideShowTable';
 import PrivacyPolicy from './website/pages/PrivacyPolicy';
 import TermsAndConditions from './website/pages/TermsandCondition';
+import WhatsUpInfoTable from './websiteBackend/whatsUpInfo/WhatsUpTable';
+import WhatsUpInfoForm from './websiteBackend/whatsUpInfo/WhatUpForm';
+import EventForm from './websiteBackend/event/Events';
+import BlogCardForm from './websiteBackend/blogCard/BlogCard';
+import NavigationLinkTable from './websiteBackend/navigationLinks/NavigationLinkTable';
+import NavigationLinkForm from './websiteBackend/navigationLinks/NavigationLinkForm';
+import CatalogueTable from './websiteBackend/catalogue/CatalogueTable';
+import CatalogueForm from './websiteBackend/catalogue/CatalogueForm';
+import PrivacyForm from './websiteBackend/privacy/PrivacyAndTerms';
+import TermsConditionForm from './websiteBackend/privacy/TermsCondtion';
 // Auth Components
 const PrivateRoute = ({ children }) => {
   const token = Cookies.get('jwt');
@@ -114,7 +124,7 @@ const LoginRoute = () => {
 
 
 
-// Wrapper Component to use the hook
+// Dynamic meta function
 const AppContent = () => {
   useDocumentTitle(); // Use the hook here
 
@@ -272,6 +282,32 @@ function App() {
           {path : 'slideShow-form' ,  element:<ImageUploadForm/>},
           {path : 'slideShow-table' ,  element:<SlideShowTable/>},
 
+          //whatsup info
+          {path : 'whatsUpInfo-table' ,  element:<WhatsUpInfoTable/>},
+          {path : 'whatsUpInfo-form' ,  element:<WhatsUpInfoForm/>},
+
+          //Events
+          {path : 'events' ,  element:<EventForm/>}, 
+
+          //blog card
+          {path : 'blogCard' ,  element:<BlogCardForm/>},
+      
+          //Navigation Link
+          {path : 'navigationLink' ,  element:<NavigationLinkTable/>},
+          {path : 'navigationLink-form' ,  element:<NavigationLinkForm/>},  
+          {path : 'edit-navigation-link/:id' ,  element:<NavigationLinkForm/>},
+        
+        
+          // Catagoue Management Routes
+          {path : 'catalogue-table' ,  element:<CatalogueTable/>},
+          {path : 'catalogue-form' ,  element:<CatalogueForm/>},
+          {path : 'edit-catalogue/:id' ,  element:<CatalogueForm/>},
+        
+
+          // Privacy Policy Routes
+          {path : 'privacypolicy-terms' ,  element:<PrivacyForm/>},
+          {path : 'terms-and-conditions-form' ,  element:<TermsConditionForm/>},
+          
         ]
         }
       ]

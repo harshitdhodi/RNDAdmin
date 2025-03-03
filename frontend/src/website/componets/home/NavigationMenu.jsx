@@ -1,54 +1,35 @@
-import { FileText, Files, FolderOpen, Package, Microscope, Phone } from "lucide-react";
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import axios from "axios";
 
 export default function NavigationMenu() {
-  const menuItems = [
-    {
-      title: "Quality Assurance",
-      icon: <FileText className="w-8 h-8" />,
-      href: "/quality-assurance",
-    },
-    {
-      title: "MSDS/COA'S",
-      icon: <Files className="w-8 h-8" />,
-      href: "/msds-coa",
-    },
-    {
-      title: "Catalogs & Price Lists",
-      icon: <FolderOpen className="w-8 h-8" />,
-      href: "/catalogs",
-    },
-    {
-      title: "Packings",
-      icon: <Package className="w-8 h-8" />,
-      href: "/packings",
-    },
-    {
-      title: "R&D & GMP",
-      icon: <Microscope className="w-8 h-8" />,
-      href: "/rd-gmp",
-    },
-    {
-      title: "Contact Us",
-      icon: <Phone className="w-8 h-8" />,
-      href: "/contact",
-    },
-  ];
+  const [menuItems, setMenuItems] = useState([]);
+
+  useEffect(() => {
+    axios.get("/api/navigationLink/")
+      .then((response) => {
+        setMenuItems(response.data); 
+      })
+      .catch((error) => {
+        console.error("Error fetching navigation links:", error);
+      });
+  }, []);
 
   return (
     <nav className="w-full bg-gray-400/20">
       <div className="border-x-2 border-gray-700/10 max-w-6xl mx-auto">
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 divide-x-2 divide-gray-700/10">
           {menuItems.map((item) => (
-            <div
-              key={item.title}
-              className="lg:flex block gap-1 items-center justify-center hover:bg-blue-900 transition-colors group px-4 py-6"
+            <Link
+              key={item._id}
+              to={item.href}
+              className="lg:flex block gap-4 items-center justify-center hover:bg-blue-900 transition-colors hover:text-white group px-4 py-6"
             >
               <div className="text-orange-500 group-hover:scale-110 transition-transform">
-                {item.icon}
+                <img src={`/api/logo/download/${item.icon}`} alt={item.name} className="w-10 h-10 object-fill" />
               </div>
-              <span className="text-center text-md font-bold">{item.title}</span>
-            </div>
+              <span className="text-center  text-md font-bold">{item.name}</span>
+            </Link>
           ))}
         </div>
       </div>

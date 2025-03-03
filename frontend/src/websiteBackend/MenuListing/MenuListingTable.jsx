@@ -30,18 +30,18 @@ const MenuListingTable = () => {
     name: menu.parent.name,
     path: menu.parent.path,
     isParent: true, // Add this flag
-    children: menu.children.map((child) => ({
+    children: menu.children.length > 0 ? menu.children.map((child) => ({
       key: child._id,
       name: `└── ${child.name}`,
       path: child.path,
       isParent: false, // Add this flag
-      children: child.subChildren?.map((sub) => ({
+      children: child.subChildren?.length > 0 ? child.subChildren.map((sub) => ({
         key: sub._id,
         name: `    └── ${sub.name}`,
         path: sub.path,
         isParent: false, // Add this flag
-      })),
-    })),
+      })) : undefined,
+    })) : undefined,
   }));
 
   const columns = [
@@ -60,8 +60,6 @@ const MenuListingTable = () => {
       key: "actions",
       render: (_, record) => (
         <Space>
-          {/* Show Edit button only for parent items (those without └──) */}
-        
           <Popconfirm title="Are you sure?" onConfirm={() => handleDelete(record.key)}>
             <Button type="danger" shape="circle" icon={<DeleteOutlined />} />
           </Popconfirm>
@@ -78,8 +76,6 @@ const MenuListingTable = () => {
       ),
     },
   ];
-  
-  
 
   return (
     <Card>
@@ -89,7 +85,7 @@ const MenuListingTable = () => {
           <Button type="primary" icon={<PlusOutlined />}>Add Menu</Button>
         </Link>
       </div>
-      <Table columns={columns} dataSource={formattedData} expandable={{ defaultExpandAllRows: true }} />
+      <Table columns={columns} dataSource={formattedData} expandable={{ defaultExpandAllRows: false }} />
     </Card>
   );
 };

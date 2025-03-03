@@ -6,10 +6,10 @@ import { chemicalTypeApi } from '@/slice/chemicalType/chemicalType';
 import { unitApi } from '@/slice/chemicalUnit/unitSlice';
 import { chemicalCategoryApi } from '@/slice/chemicalSlice/chemicalCategory';
 import { smtpApi } from '@/slice/smtpSlice/smtp';
-
+import {navigationLinkApi } from '@/slice/navigationLink/navigationSlice';  
 import { inquiryApi } from '@/slice/inquiry/inquiry';
 import { followupApi } from '@/slice/followUp/followUp';
-
+import { catalogueApi } from '@/slice/catalogue/catalogueslice';
 import templateApi from '@/slice/template/emailTemplate';
 import { statusApi } from '@/slice/status/status';
 import { sourceApi } from '@/slice/source/source';
@@ -27,6 +27,8 @@ import { logoApi } from '../slice/logo/LogoSlice';
 import { contactInfoApi } from '../slice/contactInfo/contactInfo';
 import { metaApi } from '@/slice/staticMeta/staticMeta';
 import { menuListingApi } from '@/slice/menuListing/menuList';
+import{whatsUpInfoApi} from '@/slice/whatsUpInfo/WhatsUpInfo';
+
 const store = configureStore({
   reducer: {
     [chemicalApi.reducerPath]: chemicalApi.reducer, // RTK Query reducer for chemicals
@@ -55,6 +57,9 @@ const store = configureStore({
     [contactInfoApi.reducerPath]: contactInfoApi.reducer,
     [metaApi.reducerPath]: metaApi.reducer,
     [menuListingApi.reducerPath]: menuListingApi.reducer,
+    [whatsUpInfoApi.reducerPath]:whatsUpInfoApi.reducer ,
+    [navigationLinkApi.reducerPath]: navigationLinkApi.reducer,
+    [catalogueApi.reducerPath]: catalogueApi.reducer
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
@@ -85,7 +90,10 @@ const store = configureStore({
       .concat(logoApi.middleware)
       .concat(contactInfoApi.middleware)
       .concat(metaApi.middleware)
-      .concat(menuListingApi.middleware),
+      .concat(menuListingApi.middleware)
+      .concat(whatsUpInfoApi.middleware)
+      .concat(navigationLinkApi.middleware)
+      .concat(catalogueApi.middleware)
 });
 
 export default store;

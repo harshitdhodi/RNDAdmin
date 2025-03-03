@@ -1,13 +1,13 @@
-import { useState } from "react";
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Textarea } from "@/components/ui/textarea"
-import { Label } from "@/components/ui/label"
-import img from '../images/introduction.png'
-import { Banner } from "../componets/Banner"
-import { Link } from "react-router-dom"
-import career from '../images/career.jpg'
-import { useSubmitApplicationMutation } from "@/slice/career/CareerForm"
+import { useState, useEffect } from "react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Label } from "@/components/ui/label";
+import { useNavigate, Link, useLocation } from "react-router-dom";
+import { useSubmitApplicationMutation } from "@/slice/career/CareerForm";
+import { useGetBannerByPageSlugQuery } from "@/slice/banner/banner";
+import { Banner } from "../componets/Banner";
+import career from '../images/career.jpg';
 
 export default function CareerForm() {
   const [formData, setFormData] = useState({
@@ -20,6 +20,9 @@ export default function CareerForm() {
   });
   const [resumeFile, setResumeFile] = useState(null);
   const [submitApplication, { isLoading }] = useSubmitApplicationMutation();
+  const location = useLocation();
+  const path = location.pathname.replace(/^\//, '') || 'career';
+  const { data: banners, isLoading: isBannerLoading } = useGetBannerByPageSlugQuery(path);
 
   const handleInputChange = (e) => {
     const { id, value } = e.target;
@@ -66,23 +69,27 @@ export default function CareerForm() {
 
   return (
     <>
-      <Banner imageUrl={img} />
-      <div className="sm:max-w-[75rem]  w-full mx-auto ">
-        <nav className="py-4 px-4  sm:px-0 md:px-6">
+      {isBannerLoading ? (
+        <div>Loading banner...</div>
+      ) : (
+        <Banner imageUrl={banners && banners.length > 0 ? `/api/image/download/${banners[0].image}` : career} />
+      )}
+      <div className="sm:max-w-[75rem] w-full mx-auto">
+        <nav className="py-4 px-4 sm:px-0 md:px-6">
           <div className="flex border-b border-gray-300 pb-4 items-center space-x-2 text-sm">
             <Link to="/" className="text-gray-600 hover:text-gray-900">
               Home
             </Link>
             <span className="text-gray-400">&raquo;</span>
-            <span className="text-orange-500 ">Careers</span>
+            <span className="text-orange-500">Careers</span>
           </div>
-        </nav> 
+        </nav>
         <div className="mb-7 px-4 md:px-6 sm:px-0">
-          <h1 className="text-3xl  font-bold ">Careers</h1>
-          <div className=" bg-orange-500 h-1 w-12"> </div>
+          <h1 className="text-3xl font-bold">Careers</h1>
+          <div className="bg-orange-500 h-1 w-12"></div>
         </div>
         <div className="mb-4">
-          <h2 className="sm:text-2xl text-lg px-4 md:px-6 sm:px-0  text-blue-800 mb-4">We are looking for people for the following Departments</h2>
+          <h2 className="sm:text-2xl text-lg px-4 md:px-6 sm:px-0 text-blue-800 mb-4">We are looking for people for the following Departments</h2>
           <div className="flex flex-wrap items-center gap-4 text-sm px-4 md:px-6 sm:px-0 sm:text-lg">
             {[
               "QUALITY CONTROL",
@@ -92,12 +99,12 @@ export default function CareerForm() {
               "SUPPLY CHAIN",
               "PURCHASE CHAIN"
             ].map((dept, index, array) => (
-              <>
-                <span key={dept} className="text-orange-500">{dept}</span>
+              <span key={dept} className="text-orange-500">
+                {dept}
                 {index < array.length - 1 && (
                   <span className="text-gray-500 text-3xl">•</span>
                 )}
-              </>
+              </span>
             ))}
           </div>
         </div>
@@ -106,7 +113,7 @@ export default function CareerForm() {
           <p className="mb-4 px-4 md:px-6 sm:px-0 sm:text-lg">Please fill in the form below to send us your job application.</p>
           <p className="text-red-500 mb-6 text-lg font-bold px-4 md:px-6 sm:px-0">All fields are mandatory.</p>
         </div>
-        <div className="grid md:grid-cols-2 w-full gap-7 px-4 md:px-6 sm:px-0 ">
+        <div className="grid md:grid-cols-2 w-full gap-7 px-4 md:px-6 sm:px-0">
           <form className="space-y-6 w-full" onSubmit={handleSubmit}>
             <div className="space-y-2">
               <Label htmlFor="name">Name*</Label>
@@ -185,7 +192,7 @@ export default function CareerForm() {
             </div>
           </form>
           <div className="hidden md:flex flex-col items-start justify-start w-full">
-            <div className="w-full ml-10 flex justify-center relative -top-8 items-center  ">
+            <div className="w-full ml-10 flex justify-center relative -top-8 items-center">
               <img
                 src={career}
                 alt="Career growth illustration"
@@ -215,11 +222,9 @@ export default function CareerForm() {
                 <div className="bg-gray-100 px-4 md:px-6 py-2 text-lg font-mono">JX905</div>
               </div>
             </div>
-
           </div>
         </div>
       </div>
     </>
-  )
+  );
 }
-
