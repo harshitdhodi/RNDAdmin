@@ -1,8 +1,8 @@
 import React from 'react';
-import { Table, Button, Space, message } from 'antd';
-import { EditOutlined, DeleteOutlined } from '@ant-design/icons';
-import { useNavigate } from 'react-router-dom';
-import { useGetAllNavigationLinksQuery,useDeleteNavigationLinkMutation} from '@/slice/navigationLink/navigationSlice';
+import { Table, Button, Space, message, Breadcrumb } from 'antd';
+import { EditOutlined, DeleteOutlined, PlusOutlined } from '@ant-design/icons';
+import { useNavigate, Link } from 'react-router-dom';
+import { useGetAllNavigationLinksQuery, useDeleteNavigationLinkMutation } from '@/slice/navigationLink/navigationSlice';
 
 const NavigationLinkTable = () => {
   const navigate = useNavigate();
@@ -17,7 +17,7 @@ const NavigationLinkTable = () => {
       message.error('Failed to delete navigation link');
     }
   };
-         
+
   const columns = [
     {
       title: 'Name',
@@ -53,7 +53,21 @@ const NavigationLinkTable = () => {
   if (isLoading) return <p>Loading...</p>;
 
   return (
-    <Table columns={columns} dataSource={navigationLinks} rowKey="_id" />
+    <>
+      <Breadcrumb style={{ marginBottom: '16px' }}>
+        <Breadcrumb.Item>
+          <Link to="/dashboard">Dashboard</Link>
+        </Breadcrumb.Item>
+        <Breadcrumb.Item>Navigation Links</Breadcrumb.Item>
+      </Breadcrumb>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+        <h1 className='font-bold text-2xl '>Navigation Links</h1>
+        <Button type="primary" icon={<PlusOutlined />} onClick={() => navigate('/navigationLink-form')}>
+          Add Navigation Link
+        </Button>
+      </div>
+      <Table columns={columns} dataSource={navigationLinks} rowKey="_id" />
+    </>
   );
 };
 

@@ -1,8 +1,8 @@
 import React from 'react';
 import { useGetAllCataloguesQuery, useDeleteCatalogueMutation } from '@/slice/catalogue/catalogueSlice';
-import { Table, Button, Space, message } from 'antd';
+import { Table, Button, Space, message, Breadcrumb } from 'antd';
 import { EditOutlined, DeleteOutlined } from '@ant-design/icons';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 
 const CatalogueTable = () => {
   const navigate = useNavigate();
@@ -28,7 +28,13 @@ const CatalogueTable = () => {
       title: 'Catalogue',
       dataIndex: 'catalogue',
       key: 'catalogue',
-      render: (catalogue) => <a href={`/api/catalogues/download/${catalogue}`} target="_blank" rel="noopener noreferrer">Download</a>,
+      render: (catalogue) => <a href={`/api/image/pdf/view/${catalogue}`} target="_blank" rel="noopener noreferrer">Download</a>,
+    },
+    {
+      title: 'Image',
+      dataIndex: 'image',
+      key: 'image',
+      render: (image) => <img src={`/api/image/view/${image}`} alt="Catalogue Image" style={{ width: '100px' }} />,
     },
     {
       title: 'Actions',
@@ -53,7 +59,16 @@ const CatalogueTable = () => {
   if (isLoading) return <p>Loading...</p>;
 
   return (
-    <Table columns={columns} dataSource={catalogues} rowKey="_id" />
+    <>
+      <Breadcrumb style={{ marginBottom: '16px' }}>
+        <Breadcrumb.Item>
+          <Link to="/dashboard">Dashboard</Link>
+        </Breadcrumb.Item>
+        <Breadcrumb.Item>Catalogue Table</Breadcrumb.Item>
+      </Breadcrumb>
+      <h1 className='font-bold text-2xl mb-3'>Catalogue Table</h1>
+      <Table columns={columns} dataSource={catalogues} rowKey="_id" />
+    </>
   );
 };
 

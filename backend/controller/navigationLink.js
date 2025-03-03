@@ -47,7 +47,8 @@ const getNavigationLinkById = async (req, res) => {
 const updateNavigationLink = async (req, res) => {
   try {
     const { name } = req.body;
-    const icon = req.file ? req.file.filename : null;
+    const icon = req.files && req.files.icon ? req.files.icon[0].filename : null;
+  
     const link = await NavigationLink.findByIdAndUpdate(req.params.id, { name, icon }, { new: true });
     if (!link) {
       return res.status(404).json({ error: 'Navigation link not found' });

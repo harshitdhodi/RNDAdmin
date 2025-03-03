@@ -2,7 +2,7 @@ import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 
 export const catalogueApi = createApi({
   reducerPath: 'catalogueApi',
-  baseQuery: fetchBaseQuery({ baseUrl: '/api/catalogues' }),
+  baseQuery: fetchBaseQuery({ baseUrl: '/api/catalogue' }),
   tagTypes: ['Catalogue'],
   endpoints: (builder) => ({
     getAllCatalogues: builder.query({
@@ -44,5 +44,5 @@ export const {
   useGetCatalogueByIdQuery,
   useCreateCatalogueMutation,
   useUpdateCatalogueMutation,
-  useDeleteCatalogueMutation,
+    useDeleteCatalogueMutation,
 } = catalogueApi;

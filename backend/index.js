@@ -3,7 +3,7 @@ const express = require('express');
 const fs = require('fs');
 const path = require('path');
 const NodeCache = require('node-cache');
-
+const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
 const admin = require("./route/admin")
 const app = express();
@@ -13,6 +13,10 @@ const cookieParser = require('cookie-parser');
 app.use(cookieParser());  
 
 app.use(express.json()); // For parsing JSON requests
+
+// Increase payload size limit
+app.use(bodyParser.json({ limit: '500mb' }));
+app.use(bodyParser.urlencoded({ limit: '500mb', extended: true }));
 
 // Enhanced cache configuration with better options
 const cache = new NodeCache({ 
@@ -141,6 +145,8 @@ app.use('/api/events', require('./route/events'));
 app.use('/api/blogCard', require('./route/blogCard'));
 app.use('/api/navigationLink', require('./route/NavigationLink'));
 app.use('/api/catalogue', require('./route/catalogue'));
+app.use('/api/privacy', require('./route/privacy'));
+app.use('/api/terms', require('./route/termscondition'));
 // 2. Then serve static files
 // Using 'dist' since you're using Vite instead of Create React App
 app.use(express.static(path.join(__dirname, 'dist')));

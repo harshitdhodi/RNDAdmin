@@ -5,12 +5,15 @@ import cphi from "../../../assets/CPHI.png";
 import pc from "../../../assets/pc.jpg";
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import { useGetAllCataloguesQuery } from "@/slice/catalogue/catalogueslice";
 
 export default function FeaturedProducts() {
   const [products, setProducts] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
   const [event, setEvent] = useState(null);
+  const { data: catalogues, isLoading: isCataloguesLoading } = useGetAllCataloguesQuery();
+  console.log(catalogues);
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -51,7 +54,7 @@ export default function FeaturedProducts() {
     fetchEvent();
   }, []);
 
-  if (isLoading) {
+  if (isLoading || isCataloguesLoading) {
     return <div>Loading...</div>;
   }
 
@@ -81,6 +84,7 @@ export default function FeaturedProducts() {
                         src={product.image}
                         title={product.title}
                         style={{ zIndex: 1 }}
+                        onError={(e) => { e.target.onerror = null; e.target.src = '/path/to/default/image.jpg'; }} // Fallback image
                       />
                     </div>
                     <div className="bg-[#3B5998] w-full p-2 text-center" style={{ zIndex: 2, position: 'relative' }}>
@@ -111,13 +115,22 @@ export default function FeaturedProducts() {
             {/* Product Catalogue */}
             <div className="w-full pl-4 md:mt-8">
               <div className="border-x border rounded-lg p-4">
-                <h2 className="text-2xl font-bold mb-4">Product Catalogue</h2>
                 <div className="space-y-4">
-                  <img src={pc} alt="Product Catalogue" className="w-1/3" />
-                  <Button className="w-[75%] bg-orange-500 hover:bg-orange-600" onClick={() => window.open('/api/image/view/chemical-space.pdf', '_blank')}>
-                    DOWNLOAD BROCHURE
-                    <ArrowRight className="ml-2 h-4 w-4" />
-                  </Button>
+                  {catalogues && catalogues.map((catalogue, index) => (
+                    <div key={index}>
+                      <h3 className="text-2xl font-bold mb-4">{catalogue.title}</h3>
+                      <img
+                        src={`/api/image/view/${catalogue.image}`}
+                        alt={catalogue.title}
+                        style={{ width: '100px' }}
+                        onError={(e) => { e.target.onerror = null; e.target.src = '/path/to/default/image.jpg'; }} // Fallback image
+                      />
+                      <Button className="w-[75%] bg-orange-500 hover:bg-orange-600" onClick={() => window.open(`/api/image/pdf/view/${catalogue.catalogue}`, '_blank')}>
+                        DOWNLOAD BROCHURE
+                        <ArrowRight className="ml-2 h-4 w-4" />
+                      </Button>
+                    </div>
+                  ))}
                 </div>
               </div>
             </div>

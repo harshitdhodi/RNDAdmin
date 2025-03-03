@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { Form, Input, Button, Upload, message } from 'antd';
+import { Form, Input, Button, Upload, message, Breadcrumb } from 'antd';
 import { UploadOutlined } from '@ant-design/icons';
-import { useNavigate, useParams } from 'react-router-dom';
-import { useCreateNavigationLinkMutation,useUpdateNavigationLinkMutation, useGetNavigationLinkByIdQuery } from '@/slice/navigationLink/navigationSlice';
+import { useNavigate, useParams, Link } from 'react-router-dom';
+import { useCreateNavigationLinkMutation, useUpdateNavigationLinkMutation, useGetNavigationLinkByIdQuery } from '@/slice/navigationLink/navigationSlice';
 
 const NavigationLinkForm = () => {
   const [form] = Form.useForm();
@@ -44,27 +44,38 @@ const NavigationLinkForm = () => {
   const handleFileChange = ({ fileList }) => setFileList(fileList);
 
   return (
-    <Form form={form} layout="vertical" onFinish={handleFinish}>
-      <Form.Item name="name" label="Name" rules={[{ required: true, message: 'Please enter the name' }]}>
-        <Input />
-      </Form.Item>
-      <Form.Item name="icon" label="Icon" rules={[{ required: true, message: 'Please upload an icon' }]}>
-        <Upload
-          listType="picture"
-          maxCount={1}
-          fileList={fileList}
-          beforeUpload={() => false}
-          onChange={handleFileChange}
-        >
-          <Button icon={<UploadOutlined />}>Upload Icon</Button>
-        </Upload>
-      </Form.Item>
-      <Form.Item>
-        <Button type="primary" htmlType="submit" loading={isFetching}>
-          {id ? 'Update' : 'Create'}
-        </Button>
-      </Form.Item>
-    </Form>
+    <>
+      <Breadcrumb style={{ marginBottom: '16px' }}>
+        <Breadcrumb.Item>
+          <Link to="/dashboard">Dashboard</Link>
+        </Breadcrumb.Item>
+        <Breadcrumb.Item>
+          <Link to="/navigationLink">Navigation Links</Link>
+        </Breadcrumb.Item>
+        <Breadcrumb.Item>{id ? 'Edit Navigation Link' : 'Add Navigation Link'}</Breadcrumb.Item>
+      </Breadcrumb>
+      <Form form={form} layout="vertical" onFinish={handleFinish}>
+        <Form.Item name="name" label="Name" rules={[{ required: true, message: 'Please enter the name' }]}>
+          <Input />
+        </Form.Item>
+        <Form.Item name="icon" label="Icon" rules={[{ required: true, message: 'Please upload an icon' }]}>
+          <Upload
+            listType="picture"
+            maxCount={1}
+            fileList={fileList}
+            beforeUpload={() => false}
+            onChange={handleFileChange}
+          >
+            <Button icon={<UploadOutlined />}>Upload Icon</Button>
+          </Upload>
+        </Form.Item>
+        <Form.Item>
+          <Button type="primary" htmlType="submit" loading={isFetching}>
+            {id ? 'Update' : 'Create'}
+          </Button>
+        </Form.Item>
+      </Form>
+    </>
   );
 };
 

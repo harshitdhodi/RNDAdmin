@@ -50,16 +50,20 @@ router.get('/pdf/download/:filename', (req, res) => {
 // Add PDF view route
 router.get('/pdf/view/:filename', (req, res) => {
   const { filename } = req.params;
-  const filePath = path.join(__dirname, '../uploads/images', filename);
+  let filePath = path.join(__dirname, '../uploads/images', filename);
 
-  // Verify file exists
+  // Check if file exists in images directory
   if (!fs.existsSync(filePath)) {
-    return res.status(404).json({ message: 'File not found' });
+    // If not, check in catalogs directory
+    filePath = path.join(__dirname, '../uploads/catalogs', filename);
+    if (!fs.existsSync(filePath)) {
+      return res.status(404).json({ message: 'File not found' });
+    }
   }
 
   res.setHeader('Content-Type', 'application/pdf');
   res.setHeader('Content-Disposition', 'inline');
-  
+
   res.sendFile(filePath, (err) => {
     if (err) {
       console.error(err);

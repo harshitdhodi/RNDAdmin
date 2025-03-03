@@ -5,6 +5,10 @@ const catalogueSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  image: {
+    type: String,
+    required: true,
+  },
   catalogue: {
     type: String,
     required: true,
@@ -13,4 +17,4 @@ const catalogueSchema = new mongoose.Schema({
 
 const Catalogue = mongoose.model('Catalogue', catalogueSchema);
 
-module.exports = Catalogue;
+module.exports = Catalogue; 

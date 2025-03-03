@@ -107,6 +107,10 @@ import EventForm from './websiteBackend/event/Events';
 import BlogCardForm from './websiteBackend/blogCard/BlogCard';
 import NavigationLinkTable from './websiteBackend/navigationLinks/NavigationLinkTable';
 import NavigationLinkForm from './websiteBackend/navigationLinks/NavigationLinkForm';
+import CatalogueTable from './websiteBackend/catalogue/CatalogueTable';
+import CatalogueForm from './websiteBackend/catalogue/CatalogueForm';
+import PrivacyForm from './websiteBackend/privacy/PrivacyAndTerms';
+import TermsConditionForm from './websiteBackend/privacy/TermsCondtion';
 // Auth Components
 const PrivateRoute = ({ children }) => {
   const token = Cookies.get('jwt');
@@ -292,6 +296,18 @@ function App() {
           {path : 'navigationLink' ,  element:<NavigationLinkTable/>},
           {path : 'navigationLink-form' ,  element:<NavigationLinkForm/>},  
           {path : 'edit-navigation-link/:id' ,  element:<NavigationLinkForm/>},
+        
+        
+          // Catagoue Management Routes
+          {path : 'catalogue-table' ,  element:<CatalogueTable/>},
+          {path : 'catalogue-form' ,  element:<CatalogueForm/>},
+          {path : 'edit-catalogue/:id' ,  element:<CatalogueForm/>},
+        
+
+          // Privacy Policy Routes
+          {path : 'privacypolicy-terms' ,  element:<PrivacyForm/>},
+          {path : 'terms-and-conditions-form' ,  element:<TermsConditionForm/>},
+          
         ]
         }
       ]

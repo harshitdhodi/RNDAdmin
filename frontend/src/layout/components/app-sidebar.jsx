@@ -186,7 +186,23 @@ const menuData = [
           { title: "List", icon: List, url: "/navigationLink" },
           { title: "Add New", icon: PlusSquare, url: "/navigationLink-form" },
         ]
-      },  
+      }, 
+      {
+        title:"catalogue Management",
+        icon: FileQuestion,
+        children:[
+          {title:"Catalogue List",icon:List,url:"/catalogue-table"},
+          // {title:"Add New",icon:PlusSquare,url:"/catalogue-form"}
+        ]
+      } ,
+      {
+        title: "PrivacyPolicy and Terms",
+        icon: FileQuestion,
+        children: [
+          { title: "Privacy Policy", icon: List, url: "/privacypolicy-terms" },
+          { title: "Terms and Condition", icon: PlusSquare, url: "/terms-and-conditions-form" },
+        ]
+      }
     ]
   }
 ];
