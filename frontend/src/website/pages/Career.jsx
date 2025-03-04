@@ -18,7 +18,6 @@ export default function CareerForm() {
     email: '',
     contactNo: '',
     postAppliedFor: '',
-    securityCode: '',
   });
   const [resumeFile, setResumeFile] = useState(null);
   const [isUploading, setIsUploading] = useState(false);
@@ -81,7 +80,6 @@ export default function CareerForm() {
       email: '',
       contactNo: '',
       postAppliedFor: '',
-      securityCode: '',
     });
     setResumeFile(null);
   };
@@ -91,11 +89,6 @@ export default function CareerForm() {
 
     if (!captchaValue) {
       alert('Please complete the reCAPTCHA');
-      return;
-    }
-
-    if (formData.securityCode !== 'JX905') {
-      alert('Invalid security code');
       return;
     }
 
@@ -116,13 +109,23 @@ export default function CareerForm() {
         formDataToSend.append('resumeFile', resumeFile);
       }
 
-      await submitApplication(formDataToSend).unwrap();
-      alert('Application submitted successfully!');
-      handleReset(e);
-      e.target.reset();
-      setCaptchaValue(null); // Reset reCAPTCHA value
+      // Directly send data using axios
+      const response = await axios.post('/api/career/add', formDataToSend, {
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        }
+      });
+
+      if (response.status === 200) {
+        alert('Application submitted successfully!');
+        handleReset(e);
+        e.target.reset();
+        setCaptchaValue(null); // Reset reCAPTCHA value
+      } else {
+        // alert('Failed to submit application. Please try again.');
+      }
     } catch (error) {
-      alert('Failed to submit application: ' + error.message);
+      alert('Failed to submit application: ' + error.response?.data?.message || error.message);
     } finally {
       setIsUploading(false);
     }
@@ -194,7 +197,7 @@ export default function CareerForm() {
                   />
                 </div>
 
-                <div className="space-y=2">
+                <div className="space-y-2">
                   <Label htmlFor="contactNo">Contact No*</Label>
                   <Input
                     id="contactNo"
@@ -232,19 +235,6 @@ export default function CareerForm() {
                       onChange={handleInputChange}
                       maxLength={100}
                     />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="securityCode">Security Code*</Label>
-                    <div className="flex gap-4 items-center">
-                      <Input
-                        id="securityCode"
-                        className="max-w-[150px] rounded-none"
-                        required
-                        value={formData.securityCode}
-                        onChange={handleInputChange}
-                      />
-                      <div className="bg-gray-100 px-4 py-2 text-lg font-mono">JX905</div>
-                    </div>
                   </div>
                 </div>
 

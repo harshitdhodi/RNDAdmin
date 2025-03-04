@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useNavigate, useParams, Link } from "react-router-dom";
-import PropTypes from "prop-types";
 import axios from "axios";
 import { CategorySelectionForm } from "./CategorySelect";
 import { ChemicalInfoForm } from "./ChemicalInfo";
@@ -13,7 +12,8 @@ import ImageUploadForm from './ImageUpload';
 export const ChemicalFormPage = () => {
   const { control, handleSubmit, watch, setValue } = useForm({
     defaultValues: {
-      images: []
+      images: [],
+      imagesToDelete: {}
     }
   });
   const navigate = useNavigate();
@@ -28,8 +28,25 @@ export const ChemicalFormPage = () => {
           const response = await axios.get(`/api/chemical/getChemicalById?id=${id}`);
           const chemicalData = response.data;
           
+          // Set the values for category, sub_category, and subsub_category_id
+          if (chemicalData.category) {
+            setValue('category', chemicalData.category._id);
+            setValue('categorySlug', chemicalData.category.slug);
+          }
+          if (chemicalData.sub_category) {
+            setValue('sub_category', chemicalData.sub_category._id);
+            setValue('subCategorySlug', chemicalData.sub_category.slug);
+          }
+          if (chemicalData.subsub_category_id) {
+            setValue('subsub_category_id', chemicalData.subsub_category_id._id);
+            setValue('subSubCategorySlug', chemicalData.subsub_category_id.slug);
+          }
+
+          // Set other values
           Object.entries(chemicalData).forEach(([key, value]) => {
-            setValue(key, value);
+            if (key !== 'category' && key !== 'sub_category' && key !== 'subsub_category_id') {
+              setValue(key, value);
+            }
           });
 
           if (chemicalData.images && chemicalData.images.length > 0) {
@@ -56,12 +73,21 @@ export const ChemicalFormPage = () => {
           formData.append('images', image.file);
           formData.append(`altText-${index}`, image.altText || '');
           formData.append(`title-${index}`, image.title || '');
+        } else if (image.url) {
+          formData.append(`existingImages[${index}][url]`, image.url);
+          formData.append(`existingImages[${index}][altText]`, image.altText || '');
+          formData.append(`existingImages[${index}][title]`, image.title || '');
         }
+      });
+
+      // Append images to delete
+      Object.keys(data.imagesToDelete).forEach((imageId) => {
+        formData.append('imagesToDelete[]', imageId);
       });
   
       // Append other form data, filtering out null, undefined, and empty string values
       Object.entries(data).forEach(([key, value]) => {
-        if (key !== 'images' && value !== undefined && value !== null && value !== '') {
+        if (key !== 'images' && key !== 'imagesToDelete' && value !== undefined && value !== null && value !== '') {
           // Convert numerical strings to numbers where appropriate
           if (key === 'molecular_weight' && value) {
             formData.append(key, Number(value));
@@ -155,7 +181,4 @@ export const ChemicalFormPage = () => {
   );
 };
 
-ChemicalFormPage.propTypes = {};
-
 export default ChemicalFormPage;
-
