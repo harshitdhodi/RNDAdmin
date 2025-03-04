@@ -60,20 +60,38 @@ exports.createChemical = async (req, res) => {
     console.log('Parsed synonyms:', synonyms);
     console.log('Parsed chemical_industries:', chemical_industries);
 
+    // Ensure category and sub_category are valid ObjectIds
+    let category, sub_category;
+    try {
+      category = new mongoose.Types.ObjectId(req.body.category);
+    } catch (e) {
+      return res.status(400).json({ success: false, message: 'Invalid category ID' });
+    }
+    try {
+      sub_category = new mongoose.Types.ObjectId(req.body.sub_category);
+    } catch (e) {
+      return res.status(400).json({ success: false, message: 'Invalid sub_category ID' });
+    }
+
+    // Ensure categorySlug is provided
+    if (!req.body.categorySlug) {
+      return res.status(400).json({ success: false, message: 'categorySlug is required' });
+    }
+
     // Create chemical object
     const chemical = new Chemical({
       ...req.body,
-      packings,
+      category,
+      sub_category,
+      packings: packings.join(', '), // Convert array to comma-separated string
       application,
       synonyms,
       chemical_industries,
       specs,
       msds,
-      images: req.files?.images ? req.files.images.map((file, index) => ({
-        url: file.filename,
-        altText: req.body[`altText-${index}`] || '',
-        title: req.body[`title-${index}`] || ''
-      })) : []
+      images,
+      auto_p_code: uniquePCode,
+      categorySlug: req.body.categorySlug // Ensure categorySlug is provided
     });
 
     const savedChemical = await chemical.save();
@@ -436,7 +454,6 @@ exports.updateChemical = async (req, res) => {
   try {
     const { id } = req.query;
     const existingChemical = await Chemical.findById(id);
-    
     if (!existingChemical) {
       return res.status(404).json({ message: 'Chemical not found' });
     }
@@ -457,12 +474,9 @@ exports.updateChemical = async (req, res) => {
     const safeParseArray = (value) => {
       if (!value) return undefined; // Return undefined to skip updating this field
       try {
-        // Handle case where value is already an array
-        if (Array.isArray(value)) return value;
-        // Try parsing as JSON
-        return JSON.parse(value);
+        if (Array.isArray(value)) return value; // If already an array, return as is
+        return JSON.parse(value); // Try parsing as JSON
       } catch (e) {
-        // If parsing fails, return the original value
         console.warn('Failed to parse array:', e);
         return undefined;
       }
@@ -488,6 +502,41 @@ exports.updateChemical = async (req, res) => {
     if (req.body.application !== undefined) {
       updateData.application = safeParseArray(req.body.application);
     }
+
+    // Handle images
+    let images = existingChemical.images || [];
+
+    if (req.files?.images) {
+      req.files.images.forEach((file, index) => {
+        images.push({
+          url: file.filename,
+          altText: req.body[`altText-${index + 1}`] || 'Default Alt Text',
+          title: req.body[`title-${index + 1}`] || 'Default Title'
+        });
+      });
+    }
+
+    // Handle images to delete
+    if (req.body.imagesToDelete) {
+      const imagesToDelete = Array.isArray(req.body.imagesToDelete)
+        ? req.body.imagesToDelete
+        : JSON.parse(req.body.imagesToDelete);
+
+      images = images.filter(image => !imagesToDelete.includes(image._id.toString()));
+
+      // Delete image files from the server
+      imagesToDelete.forEach(imageId => {
+        const image = existingChemical.images.find(img => img._id.toString() === imageId);
+        if (image) {
+          const imagePath = path.join(__dirname, '../uploads', image.url);
+          fs.unlink(imagePath, (err) => {
+            if (err) console.error('Failed to delete image file:', err);
+          });
+        }
+      });
+    }
+
+    updateData.images = images;
 
     // Remove any undefined values from updateData
     Object.keys(updateData).forEach(key => 
