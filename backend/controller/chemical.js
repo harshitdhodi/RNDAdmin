@@ -3,6 +3,7 @@ const Chemical = require('../model/chemical');  // Assuming the model is in mode
 const Customer = require('../model/customer');
 const Supplier = require('../model/supplier');
 const ChemicalCategory = require('../model/chemicalCategory');
+const { default: mongoose } = require('mongoose');
 // Create new chemical
 exports.createChemical = async (req, res) => {
   try {
@@ -22,7 +23,6 @@ exports.createChemical = async (req, res) => {
     // Initialize the images array if files are provided
     let images = [];
 
-    // Check if 'images' field exists in req.files and process accordingly
     if (req.files && req.files.images) {
       const imageFiles = Array.isArray(req.files.images) ? req.files.images : [req.files.images];
       
@@ -54,24 +54,20 @@ exports.createChemical = async (req, res) => {
     const synonyms = parseArrayField(req.body.synonyms);
     const chemical_industries = parseArrayField(req.body.chemical_industries);
 
-    // Log the parsed arrays for debugging
-    console.log('Parsed packings:', packings);
-    console.log('Parsed application:', application);
-    console.log('Parsed synonyms:', synonyms);
-    console.log('Parsed chemical_industries:', chemical_industries);
+    // Debugging log for request body
+    console.log("Request Body:", req.body);
 
-    // Ensure category and sub_category are valid ObjectIds
-    let category, sub_category;
-    try {
-      category = new mongoose.Types.ObjectId(req.body.category);
-    } catch (e) {
-      return res.status(400).json({ success: false, message: 'Invalid category ID' });
+    // Validate category ID
+    if (!req.body.category || !mongoose.Types.ObjectId.isValid(req.body.category)) {
+      return res.status(400).json({ success: false, message: 'Invalid or missing category ID' });
     }
-    try {
-      sub_category = new mongoose.Types.ObjectId(req.body.sub_category);
-    } catch (e) {
-      return res.status(400).json({ success: false, message: 'Invalid sub_category ID' });
+    const category = new mongoose.Types.ObjectId(req.body.category);
+
+    // Validate sub_category ID
+    if (!req.body.sub_category || !mongoose.Types.ObjectId.isValid(req.body.sub_category)) {
+      return res.status(400).json({ success: false, message: 'Invalid or missing sub_category ID' });
     }
+    const sub_category = new mongoose.Types.ObjectId(req.body.sub_category);
 
     // Ensure categorySlug is provided
     if (!req.body.categorySlug) {
@@ -91,7 +87,7 @@ exports.createChemical = async (req, res) => {
       msds,
       images,
       auto_p_code: uniquePCode,
-      categorySlug: req.body.categorySlug // Ensure categorySlug is provided
+      categorySlug: req.body.categorySlug
     });
 
     const savedChemical = await chemical.save();

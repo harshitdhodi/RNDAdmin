@@ -1,12 +1,12 @@
 const fs = require('fs');
-const Career = require('../model/career');  
+const Career = require('../model/career');
 const { default: axios } = require('axios');
 const nodemailer = require('nodemailer');
 
 const submitApplication = async (req, res) => {
   try {
     const { name, address, email, contactNo, postAppliedFor } = req.body;
-    
+
     // Validate inputs
     if (!name || !address || !email || !contactNo || !postAppliedFor) {
       return res.status(400).json({ message: 'All fields are required' });
@@ -120,9 +120,14 @@ const submitApplication = async (req, res) => {
                             </td>
                         </tr>
                         <tr>
-                            <td align="center" style="font-size: 14px; color: #888; padding-top: 15px; border-top: 1px solid #ddd;">
-                                <p>&copy; 2024 Your Business Name. All rights reserved.</p>
-                            </td>
+                          <td align="center" style="font-size: 14px; color: #888; padding-top: 15px; border-top: 1px solid #ddd;">
+    <p>&copy; <span id="year"></span>  VBRS Chemicals. All rights reserved.</p>
+</td>
+
+<script>
+    document.getElementById("year").textContent = new Date().getFullYear();
+</script>
+
                         </tr>
                     </table>
                 </td>
@@ -135,7 +140,7 @@ const submitApplication = async (req, res) => {
     // **Send Email to Owner**
     if (ownerEmail) {
       const ownerMailOptions = {
-        from: `"Your Business Name" <${smtpConfig.name}>`,
+        from: `"VBRS Chemicals" <${smtpConfig.name}>`,
         to: ownerEmail,
         subject: "New Application Received",
         html: ownerEmailBody,
@@ -155,9 +160,9 @@ const submitApplication = async (req, res) => {
         to: email,
         subject: applicantTemplate.subject,
         html: applicantTemplate.body.replace("[Applicant's Name]", name)
-        .replace("[Job/Position Name]", postAppliedFor)
-        .replace("[Company Name]", "VBRS Chemicals")
-        .replace("[Contact Email]", "vbrs@gmail.com"),
+          .replace("[Job/Position Name]", postAppliedFor)
+          .replace("[Company Name]", "VBRS Chemicals")
+          .replace("[Contact Email]", "vbrs@gmail.com"),
       };
 
       await transporter.sendMail(applicantMailOptions);
@@ -201,7 +206,7 @@ const getAllApplications = async (req, res) => {
 const getApplicationById = async (req, res) => {
   try {
     const application = await Career.findById(req.params.id);
-    
+
     if (!application) {
       return res.status(404).json({
         success: false,
@@ -225,7 +230,7 @@ const getApplicationById = async (req, res) => {
 const updateApplication = async (req, res) => {
   try {
     const { name, address, email, contactNo, postAppliedFor } = req.body;
-    
+
     // Find existing application
     const application = await Career.findById(req.query.id);
     if (!application) {
@@ -289,7 +294,7 @@ const updateApplication = async (req, res) => {
 const deleteApplication = async (req, res) => {
   try {
     const application = await Career.findById(req.query.id);
-    
+
     if (!application) {
       return res.status(404).json({
         success: false,
