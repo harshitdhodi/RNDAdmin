@@ -17,8 +17,11 @@ export default function Footer() {
     axios
       .get('/api/contactInfo/get')
       .then((response) => {
-        console.log(response.data[0]);
-        setContactInfo(response.data[0]);
+        if (response.data && response.data.length > 0) {
+          setContactInfo(response.data[0]);
+        } else {
+          console.error('API response is empty or invalid:', response.data);
+        }
       })
       .catch((error) => {
         console.error('Error fetching contact info:', error);
@@ -116,7 +119,16 @@ export default function Footer() {
                   </div>
                   <div className="flex items-center gap-3">
                     <Phone className="w-5 h-5 text-orange-500 flex-shrink-0" />
-                    <p><span>{contactInfo.mobiles[0]}</span>, <span>{contactInfo.mobiles[1]}</span></p>
+                    <p>
+                      {contactInfo.mobiles && contactInfo.mobiles.length > 0 ? (
+                        <>
+                          <span>{contactInfo.mobiles[0]}</span>
+                          {contactInfo.mobiles[1] && <span>, {contactInfo.mobiles[1]}</span>}
+                        </>
+                      ) : (
+                        'No contact numbers available'
+                      )}
+                    </p>
                   </div>
                   <div className="flex gap-4 text-gray-300 mt-6">
                     <ScrollLink to="/privacy-policy" className="hover:text-gray-200">

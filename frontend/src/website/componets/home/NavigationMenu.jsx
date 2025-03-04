@@ -8,7 +8,11 @@ export default function NavigationMenu() {
   useEffect(() => {
     axios.get("/api/navigationLink/")
       .then((response) => {
-        setMenuItems(response.data); 
+        if (Array.isArray(response.data)) {
+          setMenuItems(response.data);
+        } else {
+          console.error("API response is not an array:", response.data);
+        }
       })
       .catch((error) => {
         console.error("Error fetching navigation links:", error);
@@ -28,7 +32,7 @@ export default function NavigationMenu() {
               <div className="text-orange-500 group-hover:scale-110 transition-transform">
                 <img src={`/api/logo/download/${item.icon}`} alt={item.name} className="w-10 h-10 object-fill" />
               </div>
-              <span className="text-center  text-md font-bold">{item.name}</span>
+              <span className="text-center text-md font-bold">{item.name}</span>
             </Link>
           ))}
         </div>

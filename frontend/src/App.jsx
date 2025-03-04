@@ -111,6 +111,7 @@ import CatalogueTable from './websiteBackend/catalogue/CatalogueTable';
 import CatalogueForm from './websiteBackend/catalogue/CatalogueForm';
 import PrivacyForm from './websiteBackend/privacy/PrivacyAndTerms';
 import TermsConditionForm from './websiteBackend/privacy/TermsCondtion';
+import CareerInfoForm from './websiteBackend/career/CareerInfoForm';
 // Auth Components
 const PrivateRoute = ({ children }) => {
   const token = Cookies.get('jwt');
@@ -255,7 +256,9 @@ function App() {
           { path: 'career-table', element: <CareerTable /> },
           { path: 'career/add', element: <CareerAdminForm /> },
           { path: 'career/edit/:id', element: <CareerAdminForm /> },
-        
+          { path: 'career-info-form', element: <CareerInfoForm /> },
+
+
           // Logo Management Routes
           { path: 'logo-table', element: <Logo /> },
           { path: 'add-logo', element: <LogoForm /> },

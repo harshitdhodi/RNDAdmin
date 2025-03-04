@@ -146,9 +146,9 @@ app.use('/api/blogCard', require('./route/blogCard'));
 app.use('/api/navigationLink', require('./route/NavigationLink'));
 app.use('/api/catalogue', require('./route/catalogue'));
 app.use('/api/privacy', require('./route/privacy'));
-app.use('/api/terms', require('./route/termscondition'));
-// 2. Then serve static files
+app.use('/api/terms', require('./route/termscondition')); // 2. Then serve static files
 // Using 'dist' since you're using Vite instead of Create React App
+app.use('/api/careerInfo', require('./route/careerInfo'));
 app.use(express.static(path.join(__dirname, 'dist')));
 app.use(express.static(path.join(__dirname, "public"), {
     setHeaders: (res, path) => {
