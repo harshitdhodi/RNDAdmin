@@ -5,63 +5,52 @@ import { useGetAllChemicalCategoriesQuery } from '@/slice/chemicalSlice/chemical
 import { Card, CardContent } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
+import { useGetAllUnitsQuery } from '@/slice/chemicalUnit/unitSlice';
 
 export const CategorySelectionForm = ({ control, chemicalData, watch, setValue }) => {
   const [subCategories, setSubCategories] = useState([]);
   const [subSubCategories, setSubSubCategories] = useState([]);
-
-  const { 
-    data: categoriesData, 
-    isLoading: categoriesLoading, 
-    isSuccess: categoriesSuccess, 
-    isError, 
-    error 
+  const { data: unitsData, isLoading: unitsLoading } = useGetAllUnitsQuery()
+  const units = unitsData || []
+  const {
+    data: categoriesData,
+    isLoading: categoriesLoading,
+    isSuccess: categoriesSuccess,
+    isError,
+    error
   } = useGetAllChemicalCategoriesQuery();
 
   const categories = categoriesData || [];
   const watchCategory = watch('category');
   const watchSubCategory = watch('sub_category');
   const watchSubSubCategory = watch('subsub_category_id');
-
+  console.log(watchCategory, watchSubCategory, watchSubSubCategory);
   // Handle category, sub-category, and sub-sub-category changes
   useEffect(() => {
-    if (!categories.length) {
-      setSubCategories([]);
-      setSubSubCategories([]);
-      return;
-    }
+    if (!categories.length) return;
 
-    // Category change
-    const selectedCategory = watchCategory && categories.find(cat => cat._id === watchCategory);
+    const selectedCategory = categories.find(cat => cat._id === watchCategory);
     if (selectedCategory) {
       setSubCategories(selectedCategory.subCategories || []);
-      setValue('categorySlug', selectedCategory.slug);
-      if (!watchSubCategory || !subCategories.some(sub => sub._id === watchSubCategory)) {
-        setValue('sub_category', '');
-        setValue('subCategorySlug', '');
-        setValue('subsub_category_id', '');
-        setValue('subSubCategorySlug', '');
-        setSubSubCategories([]);
-      }
+      setValue("categorySlug", selectedCategory.slug);
     }
 
-    // Sub-category change
-    const selectedSubCategory = watchSubCategory && subCategories.find(subCat => subCat._id === watchSubCategory);
+    const selectedSubCategory = watchSubCategory && selectedCategory?.subCategories?.find(subCat => subCat._id === watchSubCategory);
     if (selectedSubCategory) {
       setSubSubCategories(selectedSubCategory.subSubCategory || []);
-      setValue('subCategorySlug', selectedSubCategory.slug);
-      if (!watchSubSubCategory || !subSubCategories.some(subSub => subSub._id === watchSubSubCategory)) {
-        setValue('subsub_category_id', '');
-        setValue('subSubCategorySlug', '');
-      }
+      setValue("subCategorySlug", selectedSubCategory.slug);
     }
+  }, [categories, watchCategory, watchSubCategory, setValue]);
 
-    // Sub-sub-category change
+  // Separate useEffect for subSubCategory
+  useEffect(() => {
+    if (!subSubCategories.length) return;
+
     const selectedSubSubCategory = watchSubSubCategory && subSubCategories.find(subSubCat => subSubCat._id === watchSubSubCategory);
     if (selectedSubSubCategory) {
-      setValue('subSubCategorySlug', selectedSubSubCategory.slug);
+      setValue("subSubCategorySlug", selectedSubSubCategory.slug);
     }
-  }, [categories, watchCategory, watchSubCategory, watchSubSubCategory, setValue]);
+  }, [subSubCategories, watchSubSubCategory, setValue]);
 
   // Error handling for API failure
   useEffect(() => {
@@ -73,16 +62,27 @@ export const CategorySelectionForm = ({ control, chemicalData, watch, setValue }
   // Pre-load subCategories and subSubCategories for display purposes only (no setValue)
   useEffect(() => {
     if (chemicalData && chemicalData.category && categories.length > 0) {
-      const selectedCategory = categories.find(cat => cat._id === chemicalData.category._id);
+      const selectedCategory = categories.find(cat => cat._id === chemicalData.category);
       if (selectedCategory) {
         setSubCategories(selectedCategory.subCategories || []);
-        const selectedSubCategory = selectedCategory.subCategories?.find(subCat => subCat._id === chemicalData.sub_category?._id);
+        setValue("category", chemicalData.category);
+        setValue("categorySlug", selectedCategory.slug);
+
+        const selectedSubCategory = selectedCategory.subCategories?.find(subCat => subCat._id === chemicalData.sub_category);
         if (selectedSubCategory) {
           setSubSubCategories(selectedSubCategory.subSubCategory || []);
+          setValue("sub_category", chemicalData.sub_category);
+          setValue("subCategorySlug", selectedSubCategory.slug);
+        }
+
+        const selectedSubSubCategory = selectedSubCategory?.subSubCategory?.find(subSubCat => subSubCat._id === chemicalData.subsub_category_id);
+        if (selectedSubSubCategory) {
+          setValue("subsub_category_id", chemicalData.subsub_category_id);
+          setValue("subSubCategorySlug", selectedSubSubCategory.slug);
         }
       }
     }
-  }, [chemicalData, categories]);
+  }, [chemicalData, categories, setValue]);
 
   return (
     <Card className="w-full max-w-2xl border-none mx-auto shadow-none">
@@ -212,6 +212,60 @@ export const CategorySelectionForm = ({ control, chemicalData, watch, setValue }
               )}
             />
           </div>
+
+          {/* //Unit field */}
+          <div className="space-y-2">
+            <Label htmlFor="unit">Unit</Label>
+            <Controller
+              name="unit"
+              control={control}
+              rules={{ required: 'Unit is required' }}
+              render={({ field }) => (
+                <Select onValueChange={field.onChange} value={field.value || undefined}>
+                  <SelectTrigger id="unit">
+                    <SelectValue placeholder="Select Unit" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {unitsLoading ? (
+                      <SelectItem value="loading">Loading...</SelectItem>
+                    ) : (
+                      units.map((unit) => (
+                        <SelectItem key={unit._id} value={unit.name}>
+                          {unit.name}
+                        </SelectItem>
+                      ))
+                    )}
+                  </SelectContent>
+                </Select>
+              )}
+            />
+          </div>
+
+          {/* //assay field */}
+          <div className="space-y-2">
+            <Label htmlFor="assay">Assay (%)</Label>
+            <Controller
+              name="assay"
+              control={control}
+              render={({ field }) => (
+                <div>
+                  <input
+                    type="string"
+                    id="assay"
+                    min="0"
+                    max="100"
+                    step="0.01" // Allows decimal values
+                    value={field.value || 0}
+                    onChange={(e) => field.onChange(e.target.value)}
+                    className="w-full border "
+                  />
+
+                </div>
+              )}
+            />
+          </div>
+
+
         </div>
       </CardContent>
     </Card>

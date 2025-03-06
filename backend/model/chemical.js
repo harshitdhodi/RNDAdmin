@@ -34,7 +34,7 @@ const chemicalSchema = new mongoose.Schema({
     unit: { type: String, default: "" },
     chemical_type: { type: String, default: "" },
     cas_number: { type: String, default: "" },
-    packings: { type: String, default: "" },
+    packings:[ { type: String, default: "" }],
     grade: { type: String, default: "" },
     iupac: { type: String, default: "" },
     h_s_code: { type: String, default: "" },
