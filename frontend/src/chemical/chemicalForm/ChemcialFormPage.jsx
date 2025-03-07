@@ -18,11 +18,37 @@ export const ChemicalFormPage = () => {
       categorySlug: "",
       subCategorySlug: "",
       subSubCategorySlug: "",
-      images: [],
-      imagesToDelete: {},
       name: "",
+      slug: "",
+      images: [],
+      catalog: "",
+      msds: "",
+      specs: "",
+      unit: "",
+      chemical_type: "",
+      cas_number: "",
+      packings: [],
+      grade: "",
+      iupac: "",
+      h_s_code: "",
       molecular_weight: "",
-      // Add other fields as needed with empty defaults
+      molecular_formula: "",
+      synonyms: [],
+      application: [],
+      chemical_industries: [],
+      product_code: "",
+      auto_p_code: "",
+      packing: "",
+      hs_code: "",
+      assay: "",
+      metatitle: "",
+      metadescription: "",
+      metakeywords: "",
+      metacanonical: "",
+      metalanguage: "",
+      metaschema: "",
+      otherMeta: "",
+      imagesToDelete: {}
     }
   });
   const navigate = useNavigate();
@@ -113,7 +139,11 @@ export const ChemicalFormPage = () => {
           value !== null &&
           value !== ""
         ) {
-          if (key === "molecular_weight" && value) {
+          if (Array.isArray(value)) {
+            value.forEach((item, index) => {
+              formData.append(`${key}[${index}]`, item);
+            });
+          } else if (key === "molecular_weight" && value) {
             formData.append(key, Number(value));
           } else {
             formData.append(key, value);

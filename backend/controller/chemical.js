@@ -4,7 +4,7 @@ const Customer = require('../model/customer');
 const Supplier = require('../model/supplier');
 const ChemicalCategory = require('../model/chemicalCategory');
 const { default: mongoose } = require('mongoose');
-
+const fs = require('fs');
 // Create new chemical
 exports.createChemical = async (req, res) => {
   try {
@@ -115,16 +115,33 @@ exports.updateChemical = async (req, res) => {
       return res.status(404).json({ message: 'Chemical not found' });
     }
 
-    // Handle specs file
-    let specs = existingChemical.specs;
+    // Initialize updateData with the request body
+    const updateData = { ...req.body };
+
+    // Handle specs file - fix the logic
     if (req.files?.specs?.[0]) {
-      specs = req.files.specs[0].filename;
+      // New file uploaded - use the new filename
+      updateData.specs = req.files.specs[0].filename;
+    } else if (req.body.specs === '') {
+      // Explicitly set to empty - clear the specs file
+      updateData.specs = '';
+    } else {
+      // No new file and no explicit empty string - keep existing value
+      // Don't add to updateData so it won't get overwritten
+      delete updateData.specs;
     }
 
-    // Handle msds file
-    let msds = existingChemical.msds;
+    // Handle msds file - fix the logic
     if (req.files?.msds?.[0]) {
-      msds = req.files.msds[0].filename;
+      // New file uploaded - use the new filename
+      updateData.msds = req.files.msds[0].filename;
+    } else if (req.body.msds === '') {
+      // Explicitly set to empty - clear the msds file
+      updateData.msds = '';
+    } else {
+      // No new file and no explicit empty string - keep existing value
+      // Don't add to updateData so it won't get overwritten
+      delete updateData.msds;
     }
 
     // Safe parsing function for arrays
@@ -137,13 +154,6 @@ exports.updateChemical = async (req, res) => {
         console.warn('Failed to parse array:', e);
         return undefined;
       }
-    };
-
-    // Only include fields that are actually present in the request
-    const updateData = {
-      ...req.body,
-      specs,
-      msds
     };
 
     // Only add array fields if they exist in the request
