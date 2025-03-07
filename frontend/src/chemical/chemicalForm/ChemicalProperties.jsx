@@ -1,12 +1,11 @@
-import React, { useState } from 'react'
-import { Controller } from 'react-hook-form'
-import { Card, CardContent } from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Textarea } from "@/components/ui/textarea"
-import { Button } from "@/components/ui/button"
-import { X, FileText, Eye } from "lucide-react"
-import PropTypes from 'prop-types'
+import React, { useState } from 'react';
+import { Controller } from 'react-hook-form';
+import { Card, CardContent } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Button } from "@/components/ui/button";
+import { X, FileText, Eye } from "lucide-react";
+import PropTypes from 'prop-types';
 
 export const ChemicalPropertiesForm = ({ control, watch }) => {
   const [isUploading, setIsUploading] = useState({
@@ -20,7 +19,14 @@ export const ChemicalPropertiesForm = ({ control, watch }) => {
   const openPdfInNewTab = (filename, type = 'specs') => {
     if (filename) {
       const endpoint = type === 'msds' ? 'msds' : 'specs';
-      window.open(`/api/image/${endpoint}/view/${filename}`, '_blank');
+      
+      // Extract just the ID part (remove the extension)
+      const fileId = filename.split('.')[0];
+      
+      // OR if the entire filename is the ID:
+      // const fileId = filename;
+      
+      window.open(`/api/image/${endpoint}/view/${fileId}`, '_blank');
     }
   };
 
@@ -326,8 +332,8 @@ export const ChemicalPropertiesForm = ({ control, watch }) => {
         </div>
       </CardContent>
     </Card>
-  )
-}
+  );
+};
 
 ChemicalPropertiesForm.propTypes = {
   control: PropTypes.object.isRequired,
@@ -338,5 +344,4 @@ ChemicalPropertiesForm.defaultProps = {
   watch: () => undefined
 };
 
-export default ChemicalPropertiesForm
-
+export default ChemicalPropertiesForm;
