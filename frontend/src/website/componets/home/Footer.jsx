@@ -154,9 +154,9 @@ export default function Footer() {
                   </div>
                   <div className="flex items-center gap-3">
                     <Mail className="w-5 h-5 text-orange-500 flex-shrink-0" />
-                    <a href={`mailto:${contactInfo.email}`} className="hover:text-gray-200">
+                    <Link to={`mailto:${contactInfo.email}`} className="hover:text-gray-200">
                       {contactInfo.emails}
-                    </a>
+                    </Link>
                   </div>
                   <div className="flex items-center gap-3">
                     <Phone className="w-5 h-5 text-orange-500 flex-shrink-0" />

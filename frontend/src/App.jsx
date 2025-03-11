@@ -86,7 +86,7 @@ const MainContent = lazy(() => import('./website/componets/Introduction/MainCont
 const WorldWide = lazy(() => import('./website/pages/WorldWide'));
 const CareerForm = lazy(() => import('./website/pages/Career'));
 const WorldWideBackend = lazy(() => import('./websiteBackend/worldwideTables/WorlWide'));
-const WorldwideForm = lazy(() => import('./websiteBackend/worldwideTables/WorldwideForm'));
+const WorldwideForm = lazy(() => import('./websiteBackend/worldwideTables/WorldWideForm.jsx'));
 const CareerTable = lazy(() => import('./websiteBackend/career/CareerTable'));
 const CareerAdminForm = lazy(() => import('./websiteBackend/career/CareerForm'));
 const EmailCategoryParent = lazy(() => import('./email/emailCategory/EmailCategoryParent'));

@@ -1,5 +1,5 @@
 import React from 'react';
-import { useGetAllCataloguesQuery, useDeleteCatalogueMutation } from '@/slice/catalogue/catalogueSlice';
+import { useGetAllCataloguesQuery, useDeleteCatalogueMutation } from"@/slice/catalogue/catalogueslice";
 import { Table, Button, Space, message, Breadcrumb } from 'antd';
 import { EditOutlined, DeleteOutlined } from '@ant-design/icons';
 import { useNavigate, Link } from 'react-router-dom';
@@ -28,7 +28,7 @@ const CatalogueTable = () => {
       title: 'Catalogue',
       dataIndex: 'catalogue',
       key: 'catalogue',
-      render: (catalogue) => <a href={`/api/image/pdf/view/${catalogue}`} target="_blank" rel="noopener noreferrer">Download</a>,
+      render: (catalogue) => <Link to={`/api/image/pdf/view/${catalogue}`} target="_blank" rel="noopener noreferrer">Download</Link>,
     },
     {
       title: 'Image',

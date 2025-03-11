@@ -45,16 +45,16 @@ console.log(userData)
                         <p className="font-semibold">{userData.name}</p>    
                         <p className="text-xs text-gray-500">{userData.email}</p>
                     </div>
-                    <a
-                        href="#"
+                    <Link
+                        to="#"
                         className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 md:flex items-center"
                         onClick={openProfileDetails}
                     >
                         <User className="w-4 h-4 mr-2" />
                         View Profile
-                    </a>
-                    <a
-                        href="#"
+                    </Link>
+                    <Link
+                        to="#"
                         className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 md:flex items-center"
                         onClick={() => {
                             setIsEditProfileOpen(true);
@@ -62,15 +62,15 @@ console.log(userData)
                     >
                         <Edit className="w-4 h-4 mr-2" />
                         Edit Profile
-                    </a>
-                    <a
-                        href="#"
+                    </Link>
+                    <Link
+                        to="#"
                         className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 md:flex items-center"
                         onClick={handleLogout}  // Call the handleLogout function
                     >
                         <LogOut className="w-4 h-4 mr-2" />
                         Logout
-                    </a>
+                    </Link>
                 </div>
             )}
         </div>

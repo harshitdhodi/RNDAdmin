@@ -31,7 +31,7 @@ export default function CategoryCards() {
               >
                 <img
                   src={`/api/logo/download/${category.photo}`}
-                  alt={category.name}
+                  alt={category.name || "Download"}
                   className="object-cover w-full h-full transition-transform group-hover:scale-105"
                   width={300}
                   height={300}

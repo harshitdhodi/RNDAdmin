@@ -1,11 +1,11 @@
 const express = require('express');
 const fs = require('fs');
 const path = require('path');
-const admin = require("./route/admin")
+const admin = require("./route/admin");
 const NodeCache = require('node-cache');
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
-const sharp = require('sharp'); // Add sharp for image processing
+const sharp = require('sharp');
 const compression = require('compression');
 const app = express();
 require('dotenv').config();
@@ -14,33 +14,39 @@ const { generateAllSitemaps } = require('./route/sitemap');
 
 app.use(cookieParser());
 app.use(express.json());
-app.use(bodyParser.json({ limit: '10mb' })); // Reduced from 500mb
+app.use(bodyParser.json({ limit: '10mb' }));
 app.use(bodyParser.urlencoded({ limit: '10mb', extended: true }));
-app.use(compression({ threshold: 1024 })); // Compress responses > 1KB
+app.use(compression({ threshold: 1024 }));
 
-// Cache setup
+// Cache setup with 5-hour default TTL
 const cache = new NodeCache({
-  stdTTL: 300,
+  stdTTL: 18000, // 5 hours in seconds
   checkperiod: 600,
   useClones: false,
   deleteOnExpire: true,
   maxKeys: 1000,
 });
 
-// Cache middleware
-const cacheMiddleware = (duration) => (req, res, next) => {
-  if (req.method !== 'GET') return next();
+// Cache middleware - Fixed to avoid overriding res.send incorrectly
+const cacheMiddleware = (duration = 18000) => (req, res, next) => {
+  if (req.method !== 'GET') return next(); // Only cache GET requests
+
   const key = `__express__${req.originalUrl}`;
   const cached = cache.get(key);
+
   if (cached) {
     res.setHeader('X-Cache', 'HIT');
+    res.setHeader('Cache-Control', 'public, max-age=18000');
     return res.send(cached);
   }
+
   res.setHeader('X-Cache', 'MISS');
-  const originalSend = res.send;
-  res.send = (body) => {
-    if (res.statusCode < 300) cache.set(key, body, duration);
-    originalSend.call(this, body);
+  const originalJson = res.json;
+  res.json = function (data) {
+    if (res.statusCode < 300) { // Cache only successful responses
+      cache.set(key, data, duration);
+    }
+    return originalJson.call(this, data);
   };
   next();
 };
@@ -48,7 +54,7 @@ const cacheMiddleware = (duration) => (req, res, next) => {
 // Custom image optimization route
 app.get('/images/:filename', async (req, res) => {
   const { filename } = req.params;
-  const { w = 1200, q = 80, device = 'desktop' } = req.query; // Add device param
+  const { w = 1200, q = 80, device = 'desktop' } = req.query;
   const imagePath = path.join(__dirname, 'public', 'download', filename);
 
   try {
@@ -61,11 +67,10 @@ app.get('/images/:filename', async (req, res) => {
       return res.type('image/webp').send(cachedImage);
     }
 
-    // Adjust width based on device type
     const ua = req.headers['user-agent'] || '';
     let targetWidth = parseInt(w, 10);
     if (ua.includes('Mobile') || device === 'mobile') {
-      targetWidth = Math.min(targetWidth, 600); // Cap at 600px for mobile
+      targetWidth = Math.min(targetWidth, 600);
     }
 
     const optimizedImage = await sharp(imagePath)
@@ -73,7 +78,7 @@ app.get('/images/:filename', async (req, res) => {
       .webp({ quality: parseInt(q, 10) })
       .toBuffer();
 
-    cache.set(cacheKey, optimizedImage, 86400);
+    cache.set(cacheKey, optimizedImage, 18000);
     res.setHeader('Cache-Control', 'public, max-age=31536000');
     res.type('image/webp').send(optimizedImage);
   } catch (err) {
@@ -82,9 +87,9 @@ app.get('/images/:filename', async (req, res) => {
   }
 });
 
-// Static file serving with cache headers
+// Static file serving
 app.use(express.static(path.join(__dirname, 'public'), {
-  maxAge: '30d', // Cache static files for 30 days
+  maxAge: '30d',
   setHeaders: (res, filepath) => {
     if (filepath.match(/\.(jpg|jpeg|png|webp)$/)) {
       res.setHeader('Cache-Control', 'public, max-age=31536000');
@@ -96,78 +101,103 @@ app.use(express.static(path.join(__dirname, 'public'), {
 
 app.use(express.static(path.join(__dirname, 'dist'), { maxAge: '30d' }));
 
-// 1. First, define all your API routes
-app.use('/api/admin', admin); 
-app.use('/api/supplier', require('./route/supplier'));``
-app.use('/api/chemicalCategory', require('./route/chemicalCategory'));
-app.use('/api/chemical', require('./route/chemical'));
-app.use('/api/customer', require('./route/customer'));
-app.use('/api/chemicalType', require('./route/chemicalType'));
-app.use('/api/unit', require('./route/unit'));
-app.use('/api/smtp', require('./route/smtp_setting'));
-app.use('/api/inquiry', require('./route/inquiry'));
-app.use('/api/followUp' , require('./route/followUp'));
-app.use('/api/status', require('./route/statusMaster'));
-app.use('/api/source', require('./route/sourceMaster'));
-app.use('/api/logo',require('./route/logo'))
-app.use('/api/count', require('./route/dashboard'))
-app.use('/api/image', require('./route/image'))
-app.use('/api/blogCategory', require('./route/blogCategory'))
-app.use("/api/blog",require('./route/blog'));
-app.use('/api/email',require('./route/email'))
-app.use('/api/template', require('./route/emailTemplate'))
-app.use('/api/productInquiry', require('./route/productInquiry'))
-app.use('/api/sitemap', require('./route/sitemapRoute'))
-app.use('/api/banner', require('./route/banner'))
-app.use('/api/aboutus', require('./route/aboutUs'));
-app.use('/api/contactForm', require('./route/contactForm'));
-app.use('/api/chemicalMail',require('./route/chemicalMail'))
-app.use('/api/career', require('./route/carrer')); 
-app.use('/api/worldwide', require('./route/worldwide'));
-app.use('/api/contactinfo', require('./route/contactinfo'));
-app.use('/api/emailCategory', require('./route/emailCategory'));
-app.use('/api/companyLogo', require('./route/companyLogo'));
-app.use('/api/meta', require('./route/staticMeta'));
-app.use("/api/menulist", require('./route/menuListing'));
-app.use("/api/slideshow",require('./route/slideShow'));
-app.use('/api/whatsup', require('./route/whatsUpInfo'));
-app.use('/api/events', require('./route/events'));
-app.use('/api/blogCard', require('./route/blogCard'));
-app.use('/api/navigationLink', require('./route/NavigationLink'));
-app.use('/api/catalogue', require('./route/catalogue'));
-app.use('/api/privacy', require('./route/privacy'));
-app.use('/api/terms', require('./route/termscondition')); // 2. Then serve static files
-// Using 'dist' since you're using Vite instead of Create React App
-app.use('/api/careerInfo', require('./route/careerInfo'));
-app.use(express.static(path.join(__dirname, 'dist')));
-app.use(express.static(path.join(__dirname, "public"), {
-    setHeaders: (res, path) => {
-        if (path.endsWith('.xml')) {
-            res.setHeader('Content-Type', 'application/xml');
-        }
-    }
-}));
+// API Routes with caching
+const apiRoutes = [
+  ['/api/admin', admin],
+  ['/api/supplier', require('./route/supplier')],
+  ['/api/chemicalCategory', require('./route/chemicalCategory')],
+  ['/api/chemical', require('./route/chemical')],
+  ['/api/customer', require('./route/customer')],
+  ['/api/chemicalType', require('./route/chemicalType')],
+  ['/api/unit', require('./route/unit')],
+  ['/api/smtp', require('./route/smtp_setting')],
+  ['/api/inquiry', require('./route/inquiry')],
+  ['/api/followUp', require('./route/followUp')],
+  ['/api/status', require('./route/statusMaster')],
+  ['/api/source', require('./route/sourceMaster')],
+  ['/api/logo', require('./route/logo')],
+  ['/api/count', require('./route/dashboard')],
+  ['/api/image', require('./route/image')],
+  ['/api/blogCategory', require('./route/blogCategory')],
+  ['/api/blog', require('./route/blog')],
+  ['/api/email', require('./route/email')],
+  ['/api/template', require('./route/emailTemplate')],
+  ['/api/productInquiry', require('./route/productInquiry')],
+  ['/api/sitemap', require('./route/sitemapRoute')],
+  ['/api/banner', require('./route/banner')],
+  ['/api/aboutus', require('./route/aboutUs')],
+  ['/api/contactForm', require('./route/contactForm')],
+  ['/api/chemicalMail', require('./route/chemicalMail')],
+  ['/api/career', require('./route/carrer')],
+  ['/api/worldwide', require('./route/worldwide')],
+  ['/api/contactinfo', require('./route/contactinfo')],
+  ['/api/emailCategory', require('./route/emailCategory')],
+  ['/api/companyLogo', require('./route/companyLogo')],
+  ['/api/meta', require('./route/staticMeta')],
+  ['/api/menulist', require('./route/menuListing')],
+  ['/api/slideshow', require('./route/slideShow')],
+  ['/api/whatsup', require('./route/whatsUpInfo')],
+  ['/api/events', require('./route/events')],
+  ['/api/blogCard', require('./route/blogCard')],
+  ['/api/navigationLink', require('./route/NavigationLink')],
+  ['/api/catalogue', require('./route/catalogue')],
+  ['/api/privacy', require('./route/privacy')],
+  ['/api/terms', require('./route/termscondition')],
+  ['/api/careerInfo', require('./route/careerInfo')],
+];
 
-// 3. Finally, add the catch-all route LAST
-app.get('*', (req, res) => {
-    res.sendFile(path.join(__dirname, 'dist', 'index.html'));
+// Apply cache middleware to all API routes
+apiRoutes.forEach(([route, handler]) => {
+  app.use(route, cacheMiddleware(18000), handler);
+});
+
+// Catch-all route for SPA
+app.get('*', cacheMiddleware(18000), (req, res) => {
+  res.sendFile(path.join(__dirname, 'dist', 'index.html'));
 });
 
 // MongoDB Connection
-mongoose.connect(process.env.DATABASE_URI).then(() => {
-    console.log('Connected to MongoDB');
+mongoose.connect(process.env.DATABASE_URI, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+}).then(() => {
+  console.log('Connected to MongoDB');
 }).catch(err => {
-    console.error('Failed to connect to MongoDB', err);
+  console.error('Failed to connect to MongoDB', err);
 });
 
+// Server startup
 const PORT = process.env.PORT || 3028;
 app.listen(PORT, () => {
-    console.log(`Server running on port ${PORT}`);
-    generateAllSitemaps(); // Generate the sitemap when the server starts
+  console.log(`Environment Variables:`, {
+    EMAIL_USER: process.env.EMAIL_USER ? 'Set' : 'Not Set',
+    EMAIL_PASS: process.env.EMAIL_PASS ? 'Set' : 'Not Set',
+  });
+  console.log(`Server running on port ${PORT}`);
+  generateAllSitemaps(); // Generate sitemaps on startup
 });
 
-// Add cache cleanup on server shutdown
+// Cache cleanup on shutdown
 process.on('SIGTERM', () => {
   cache.flushAll();
-  // ... rest of shutdown logic ...
+  console.log('Cache flushed on shutdown');
+  process.exit(0);
+});
+
+// SMTP Connection Test (assuming you have nodemailer setup)
+const nodemailer = require('nodemailer');
+const transporter = nodemailer.createTransport({
+  service: 'gmail', // or your email service
+  auth: {
+    user: process.env.EMAIL_USER,
+    pass: process.env.EMAIL_PASS,
+  },
+});
+
+transporter.verify((error, success) => {
+  if (error) {
+    console.error('SMTP connection failed:', error);
+  } else {
+    console.log('SMTP connection successful');
+  }
 });
