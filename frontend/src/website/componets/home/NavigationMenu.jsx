@@ -12,7 +12,7 @@ const NavigationSkeleton = memo(() => {
       {skeletonItems.map((_, index) => (
         <div 
           key={index}
-          className={`md:flex flex-col block gap-4 items-center justify-center lg:px-4 py-3 lg:py-6 animate-pulse ${index % 2 === 1 ? 'border-t-2 md:border-t-0' : ''}`}
+          className={`flex md:flex-col  gap-4 items-center justify-center lg:px-4 py-3 lg:py-6 animate-pulse ${index % 2 === 1 ? 'border-t-2 md:border-t-0' : ''}`}
         >
           <div className="bg-gray-300 rounded-full w-10 h-10 mx-auto"></div>
           <div className="bg-gray-300 h-4 w-16 mx-auto mt-2 rounded"></div>
@@ -26,7 +26,7 @@ const NavigationSkeleton = memo(() => {
 const MenuItem = memo(({ item, index }) => (
   <Link
     to={item.href}
-    className={`md:flex flex-col block gap-4 items-center justify-center hover:bg-blue-900 transition-colors hover:text-white group lg:px-4 py-3 lg:py-6 ${index % 2 === 1 ? 'border-t-2 md:border-t-0' : ''}`}
+    className={`flex md:flex-col gap-4 items-center sm:justify-center pl-3 sm:pl-0 hover:bg-blue-900 transition-colors hover:text-white group lg:px-4 py-3 lg:py-6 ${index % 2 === 1 ? 'border-t-2 md:border-t-0' : ''}`}
   >
     <div className="text-orange-500 group-hover:scale-110 transition-transform">
       <img 

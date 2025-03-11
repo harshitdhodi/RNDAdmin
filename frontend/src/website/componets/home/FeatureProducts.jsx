@@ -92,7 +92,7 @@ export default function FeaturedProducts() {
           {/* Featured Products Section */}
           <div className="flex-1 w-full">
             <h2 className="text-2xl font-bold mb-6">Featured Products</h2>
-            <div className="grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 justify-center sm:justify-start">
+            <div className="grid grid-cols-1  md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-6 justify-center sm:justify-start">
               {isLoading ? (
                 // Skeleton loaders for products
                 Array(6).fill().map((_, index) => (
@@ -103,10 +103,10 @@ export default function FeaturedProducts() {
                   <Link
                     key={index}
                     to={`/${product.slug}`}
-                    className="overflow-hidden w-full lg:w-[250px] lg:h-[220px] md:w-full md:h-auto border hover:shadow-lg transition-shadow"
+                    className="overflow-hidden w-full lg:w-[250px] lg:h-[220px] h-[200px] md:w-full md:h-[220px] border hover:shadow-lg transition-shadow"
                   >
                     <div className="h-full flex flex-col items-center justify-between">
-                      <div className="relative w-full h-[50%] flex items-center justify-center">
+                      <div className="relative w-full h-[50%]  md:h-[60%]  flex items-center justify-center">
                         {product.image ? (
                           <img
                             alt={product.title}
@@ -159,7 +159,7 @@ export default function FeaturedProducts() {
             </div>
 
             {/* Product Catalogue */}
-            <div className="w-full pl-4 md:mt-8">
+            <div className="sm:w-1/2 lg:w-full w-full  pl-4 md:mt-8">
               <div className="border-x border rounded-lg p-4">
                 <div className="space-y-4">
                   {isCataloguesLoading ? (
@@ -177,7 +177,7 @@ export default function FeaturedProducts() {
                           onError={(e) => { e.target.onerror = null; e.target.src = defaultImage; }}
                         />
                         <Button className="w-[75%] bg-orange-500 hover:bg-orange-600" onClick={() => window.open(`/api/image/pdf/view/${catalogue.catalogue}`, '_blank')}>
-                          DOWNLOAD BROCHURE
+                          DOWNLOAD 
                           <ArrowRight className="ml-2 h-4 w-4" />
                         </Button>
                       </div>
