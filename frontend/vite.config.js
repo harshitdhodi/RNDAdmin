@@ -41,13 +41,13 @@ export default defineConfig({
     mimeTypes: {
       "application/javascript": ["js"],
     },
-    // proxy: {
-    //   "/api": {
-    //     target: "http://localhost:3028",
-    //     changeOrigin: true,
-    //     secure: false,
-    //   },
-    // },
+    proxy: {
+      "/api": {
+        target: "http://localhost:3028",
+        changeOrigin: true,
+        secure: false,
+      },
+    },
   },
   build: {
     rollupOptions: {
