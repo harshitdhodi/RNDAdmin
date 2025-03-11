@@ -4,10 +4,10 @@ const axios = require("axios");
 const Sitemap = require("../model/sitemap");
 
 // API endpoints
-const BLOG_API_URL = "http://localhost:3000/api/blog/get";
-const CHEMICAL_API_URL = "http://localhost:3000/api/chemical/get";
-const BASE_URL = "http://localhost:3000";
-const SITEMAP_API_URL = "http://localhost:3000/api/sitemap/get";
+const BLOG_API_URL = "http://localhost:3028/api/blog/get";
+const CHEMICAL_API_URL = "http://localhost:3028/api/chemical/get";
+const BASE_URL = "http://localhost:3028";
+const SITEMAP_API_URL = "http://localhost:3028/api/sitemap/get";
 
 // Update the file paths
 const PUBLIC_DIR = path.join(__dirname, "..", "public"); // Go up one level to reach the main backend directory
