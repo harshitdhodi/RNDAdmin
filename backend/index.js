@@ -9,6 +9,8 @@ const admin = require("./route/admin")
 const app = express();
 require('dotenv').config(); 
 const cookieParser = require('cookie-parser');
+const { generateAllSitemaps } = require('./route/sitemap');
+const compression = require('compression');
 
 app.use(cookieParser());  
 
@@ -17,6 +19,7 @@ app.use(express.json()); // For parsing JSON requests
 // Increase payload size limit
 app.use(bodyParser.json({ limit: '500mb' }));
 app.use(bodyParser.urlencoded({ limit: '500mb', extended: true }));
+app.use(compression()); // Enable Gzip compression for responses
 
 // Enhanced cache configuration with better options
 const cache = new NodeCache({ 
@@ -173,7 +176,7 @@ mongoose.connect(process.env.DATABASE_URI).then(() => {
 const PORT = process.env.PORT || 3028;
 app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
-    // generateAllSitemaps(); // Generate the sitemap when the server starts
+    generateAllSitemaps(); // Generate the sitemap when the server starts
 });
 
 // Add cache cleanup on server shutdown
