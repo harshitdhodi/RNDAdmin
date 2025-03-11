@@ -136,7 +136,7 @@ const Slideshow = () => {
       {!lcpImageLoaded && <SkeletonLoader />}
 
       <div
-        className={`relative w-full h-[40vh] sm:h-[50vh] md:h-[60vh] lg:h-[70vh] overflow-hidden ${!lcpImageLoaded ? "hidden" : ""}`}
+        className={`relative w-full h-[35vh] sm:h-[50vh] md:h-[60vh] lg:h-[70vh] overflow-hidden ${!lcpImageLoaded ? "hidden" : ""}`}
       >
         {banners.map((banner, index) => {
           // Only render visible images or soon-to-be-visible images to save resources
@@ -159,7 +159,7 @@ const Slideshow = () => {
                 ref={index === 0 ? lcpImageRef : null}
                 src={`/api/image/download/${banner.image}`}
                 alt={banner.altName || `Slide ${index + 1}`}
-                className="w-full h-full object-cover"
+                className="w-full h-full object-cover "
                 title={hoveredIndex === index ? banner.title : ""}
                 fetchPriority={index === 0 ? "high" : "auto"}
                 loading={index === 0 ? "eager" : "lazy"}
@@ -177,7 +177,7 @@ const Slideshow = () => {
                   }
                 }}
               />
-            </div>
+            </div> 
           )
         })}
       </div>

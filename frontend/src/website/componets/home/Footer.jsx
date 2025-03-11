@@ -1,18 +1,22 @@
 import { Mail, MapPin, Phone } from 'lucide-react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import axios from 'axios';
-import img from '../../images/footerbg.jpg';
 
 export default function Footer() {
   const location = useLocation();
   const navigate = useNavigate();
   const [contactInfo, setContactInfo] = useState(null);
-
+  // Use an empty string or data URI as placeholder instead of undefined variable
+  const [bgImage, setBgImage] = useState(''); // Empty string as initial background
+  const footerRef = useRef(null);
+  
+  // For scroll behavior
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }, [location.pathname]);
-
+  
+  // For contact info API
   useEffect(() => {
     axios
       .get('/api/contactInfo/get')
@@ -26,6 +30,42 @@ export default function Footer() {
       .catch((error) => {
         console.error('Error fetching contact info:', error);
       });
+  }, []);
+  
+  // For lazy loading the background image
+  useEffect(() => {
+    // Create an intersection observer
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach(entry => {
+          // When footer is about to enter viewport
+          if (entry.isIntersecting) {
+            // Dynamically import the actual image
+            import('../../images/footerbg.jpg').then(imgModule => {
+              setBgImage(imgModule.default);
+            }).catch(error => {
+              console.error('Failed to load footer background image:', error);
+              // Fallback to a dark color if image fails to load
+              setBgImage('');
+            });
+            // Unobserve after loading
+            observer.unobserve(entry.target);
+          }
+        });
+      },
+      // Start loading when footer is 200px from entering viewport
+      { rootMargin: '200px' }
+    );
+    
+    if (footerRef.current) {
+      observer.observe(footerRef.current);
+    }
+    
+    return () => {
+      if (footerRef.current) {
+        observer.unobserve(footerRef.current);
+      }
+    };
   }, []);
 
   const ScrollLink = ({ to, children, className }) => {
@@ -47,9 +87,10 @@ export default function Footer() {
   return (
     <>
       <footer
-        className="text-white py-12"
+        ref={footerRef}
+        className="text-white py-12 bg-gray-800" // Add a bg color as fallback
         style={{
-          backgroundImage: `url(${img})`,
+          backgroundImage: bgImage ? `url(${bgImage})` : 'none',
           backgroundSize: 'cover',
           backgroundPosition: 'center',
         }}
@@ -140,7 +181,20 @@ export default function Footer() {
                   </div>
                 </div>
               ) : (
-                <p>Loading contact information...</p>
+                <div className="space-y-6 text-sm animate-pulse">
+                  <div className="flex items-start gap-3">
+                    <MapPin className="w-5 h-5 text-orange-500 flex-shrink-0" />
+                    <div className="h-4 bg-gray-700 rounded w-3/4"></div>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <Mail className="w-5 h-5 text-orange-500 flex-shrink-0" />
+                    <div className="h-4 bg-gray-700 rounded w-1/2"></div>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <Phone className="w-5 h-5 text-orange-500 flex-shrink-0" />
+                    <div className="h-4 bg-gray-700 rounded w-2/3"></div>
+                  </div>
+                </div>
               )}
             </div>
           </div>
