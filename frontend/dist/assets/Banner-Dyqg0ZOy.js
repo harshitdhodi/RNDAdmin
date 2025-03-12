@@ -1,0 +1,1 @@
+import{j as l}from"./react-BfBsRgn0.js";function e({imageUrl:e}){return l.jsx("div",{className:"relative w-full h-[30vh] lg:h-[250px]",children:l.jsx("img",{src:e,alt:"Banner",className:"w-full h-full object-cover"})})}export{e as B};

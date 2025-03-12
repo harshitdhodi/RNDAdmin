@@ -1,113 +1,103 @@
-// app.js
 const express = require('express');
 const fs = require('fs');
 const path = require('path');
+const admin = require("./route/admin")
 const NodeCache = require('node-cache');
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
-const admin = require("./route/admin")
+const sharp = require('sharp'); // Add sharp for image processing
+const compression = require('compression');
 const app = express();
-require('dotenv').config(); 
+require('dotenv').config();
 const cookieParser = require('cookie-parser');
+const { generateAllSitemaps } = require('./route/sitemap');
 
-app.use(cookieParser());  
+app.use(cookieParser());
+app.use(express.json());
+app.use(bodyParser.json({ limit: '10mb' })); // Reduced from 500mb
+app.use(bodyParser.urlencoded({ limit: '10mb', extended: true }));
+app.use(compression({ threshold: 1024 })); // Compress responses > 1KB
 
-app.use(express.json()); // For parsing JSON requests
-
-// Increase payload size limit
-app.use(bodyParser.json({ limit: '500mb' }));
-app.use(bodyParser.urlencoded({ limit: '500mb', extended: true }));
-
-// Enhanced cache configuration with better options
-const cache = new NodeCache({ 
-  stdTTL: 300, // 5 minutes default TTL
+// Cache setup
+const cache = new NodeCache({
+  stdTTL: 300,
   checkperiod: 600,
   useClones: false,
   deleteOnExpire: true,
-  maxKeys: 1000 // Limit maximum cache entries
+  maxKeys: 1000,
 });
 
-// Improved cache middleware with better error handling and selective caching
-const cacheMiddleware = (duration) => {
-  return (req, res, next) => {
-    // Skip caching for specific conditions
-    if (req.method !== 'GET' || 
-        req.headers['cache-control'] === 'no-cache' ||
-        req.headers['authorization']) {
-      return next();
-    }
-
-    // Create unique cache key including query parameters
-    const key = `__express__${req.originalUrl || req.url}`;
-    
-    try {
-      const cachedResponse = cache.get(key);
-      if (cachedResponse) {
-        // Add cache hit headers
-        res.setHeader('X-Cache', 'HIT');
-        return res.send(cachedResponse);
-      }
-
-      res.setHeader('X-Cache', 'MISS');
-      
-      // Enhanced response interceptor
-      const originalSend = res.send;
-      res.send = function(body) {
-        // Only cache successful responses
-        if (res.statusCode >= 200 && res.statusCode < 300) {
-          cache.set(key, body, duration);
-        }
-        originalSend.call(this, body);
-      };
-
-      next();
-    } catch (error) {
-      console.error('Cache middleware error:', error);
-      next(); // Continue without caching on error
-    }
+// Cache middleware
+const cacheMiddleware = (duration) => (req, res, next) => {
+  if (req.method !== 'GET') return next();
+  const key = `__express__${req.originalUrl}`;
+  const cached = cache.get(key);
+  if (cached) {
+    res.setHeader('X-Cache', 'HIT');
+    return res.send(cached);
+  }
+  res.setHeader('X-Cache', 'MISS');
+  const originalSend = res.send;
+  res.send = (body) => {
+    if (res.statusCode < 300) cache.set(key, body, duration);
+    originalSend.call(this, body);
   };
+  next();
 };
 
-// Add cache monitoring and management endpoints
-app.post('/api/cache/clear/:route', async (req, res) => {
+// Custom image optimization route
+app.get('/images/:filename', async (req, res) => {
+  const { filename } = req.params;
+  const { w = 1200, q = 80, device = 'desktop' } = req.query; // Add device param
+  const imagePath = path.join(__dirname, 'public', 'download', filename);
+
   try {
-    const route = req.params.route;
-    const keys = cache.keys();
-    let cleared = 0;
-    
-    keys.forEach(key => {
-      if (key.includes(route)) {
-        cache.del(key);
-        cleared++;
-      }
-    });
-    
-    res.json({ 
-      message: `Cache cleared for ${route}`,
-      entriesCleared: cleared 
-    });
-  } catch (error) {
-    res.status(500).json({ error: 'Failed to clear cache' });
+    if (!fs.existsSync(imagePath)) return res.status(404).send('Image not found');
+
+    const cacheKey = `image_${filename}_${w}_${q}`;
+    const cachedImage = cache.get(cacheKey);
+    if (cachedImage) {
+      res.setHeader('X-Cache', 'HIT');
+      return res.type('image/webp').send(cachedImage);
+    }
+
+    // Adjust width based on device type
+    const ua = req.headers['user-agent'] || '';
+    let targetWidth = parseInt(w, 10);
+    if (ua.includes('Mobile') || device === 'mobile') {
+      targetWidth = Math.min(targetWidth, 600); // Cap at 600px for mobile
+    }
+
+    const optimizedImage = await sharp(imagePath)
+      .resize({ width: targetWidth, withoutEnlargement: true })
+      .webp({ quality: parseInt(q, 10) })
+      .toBuffer();
+
+    cache.set(cacheKey, optimizedImage, 86400);
+    res.setHeader('Cache-Control', 'public, max-age=31536000');
+    res.type('image/webp').send(optimizedImage);
+  } catch (err) {
+    console.error('Image processing error:', err);
+    res.status(500).send('Image processing failed');
   }
 });
 
-app.get('/api/cache/stats', async (req, res) => {
-  try {
-    const stats = cache.getStats();
-    res.json({
-      keys: cache.keys().length,
-      hits: stats.hits,
-      misses: stats.misses,
-      ksize: stats.ksize,
-      vsize: stats.vsize
-    });
-  } catch (error) {
-    res.status(500).json({ error: 'Failed to get cache stats' });
-  }
-});
+// Static file serving with cache headers
+app.use(express.static(path.join(__dirname, 'public'), {
+  maxAge: '30d', // Cache static files for 30 days
+  setHeaders: (res, filepath) => {
+    if (filepath.match(/\.(jpg|jpeg|png|webp)$/)) {
+      res.setHeader('Cache-Control', 'public, max-age=31536000');
+    } else if (filepath.endsWith('.xml')) {
+      res.setHeader('Content-Type', 'application/xml');
+    }
+  },
+}));
+
+app.use(express.static(path.join(__dirname, 'dist'), { maxAge: '30d' }));
 
 // 1. First, define all your API routes
-app.use('/api/admin', admin);
+app.use('/api/admin', admin); 
 app.use('/api/supplier', require('./route/supplier'));``
 app.use('/api/chemicalCategory', require('./route/chemicalCategory'));
 app.use('/api/chemical', require('./route/chemical'));
@@ -146,9 +136,9 @@ app.use('/api/blogCard', require('./route/blogCard'));
 app.use('/api/navigationLink', require('./route/NavigationLink'));
 app.use('/api/catalogue', require('./route/catalogue'));
 app.use('/api/privacy', require('./route/privacy'));
-app.use('/api/terms', require('./route/termscondition'));
-// 2. Then serve static files
+app.use('/api/terms', require('./route/termscondition')); // 2. Then serve static files
 // Using 'dist' since you're using Vite instead of Create React App
+app.use('/api/careerInfo', require('./route/careerInfo'));
 app.use(express.static(path.join(__dirname, 'dist')));
 app.use(express.static(path.join(__dirname, "public"), {
     setHeaders: (res, path) => {
@@ -173,7 +163,7 @@ mongoose.connect(process.env.DATABASE_URI).then(() => {
 const PORT = process.env.PORT || 3028;
 app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
-    // generateAllSitemaps(); // Generate the sitemap when the server starts
+    generateAllSitemaps(); // Generate the sitemap when the server starts
 });
 
 // Add cache cleanup on server shutdown

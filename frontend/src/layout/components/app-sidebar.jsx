@@ -137,6 +137,7 @@ const menuData = [
         icon: FileQuestion,
         children: [
           { title: "List", icon: List, url: "/career-table" },
+          { title: "Career Info", icon: PlusSquare, url: "/career-info-form" },
         ]
       },
       {

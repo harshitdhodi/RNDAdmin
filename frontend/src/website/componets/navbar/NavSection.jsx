@@ -125,8 +125,6 @@ const NavSection
                     >
                         Contact Us
                     </NavLink>
-                </div>
-
                 {/* Advanced Search Button */}
                 {!mobileMenuOpen && (
                     <div className="hidden md:flex justify-center items-center">
@@ -138,6 +136,8 @@ const NavSection
                         </Link>
                     </div>
                 )}
+                </div>
+
             </div>
         </nav>
     );
