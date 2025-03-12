@@ -1,0 +1,5 @@
+# robots.txt for your web application
+
+# Allow all web crawlers
+User-agent: *
+Allow: /
