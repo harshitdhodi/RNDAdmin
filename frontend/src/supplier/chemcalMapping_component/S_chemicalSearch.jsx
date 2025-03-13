@@ -4,7 +4,7 @@ import axios from 'axios';
 import { Button } from '@/components/ui/button';
 import { useAddChemicalIdsToSupplierMutation } from '@/slice/supplierSlice/chemicalBySupplier';
 
-export function S_ChemicalSearch({ selectedSupplier }) {
+export function S_ChemicalSearch({ selectedSupplier, onAddChemical }) {
   const [chemicalSearch, setChemicalSearch] = useState('');
   const [queryString, setQueryString] = useState('');
   const [selectedChemical, setSelectedChemical] = useState(null);
@@ -63,9 +63,14 @@ export function S_ChemicalSearch({ selectedSupplier }) {
         chemical_ids: [chemicalId],
       }).unwrap();
 
-      alert('Chemical added successfully!');
+      // Clear selection
       setSelectedChemical(null);
       setChemicalSearch('');
+      
+      // Notify parent to refresh data
+      if (onAddChemical) {
+        onAddChemical();
+      }
     } catch (error) {
       alert(`Failed to add chemical: ${error.message || 'Unknown error occurred'}`);
     }

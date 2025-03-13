@@ -1,12 +1,40 @@
 import { CalendarIcon, ClockIcon, MailIcon, PhoneIcon } from 'lucide-react';
 import { Link, useParams } from 'react-router-dom';
 import { useGetAllBlogsExceptLatestQuery, useGetBlogsByCategoryQuery, useGetLatestBlogQuery } from '@/slice/blog/blog';
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import Footer from '../componets/home/Footer';
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
+
 export default function BlogPage() {
   const { slug } = useParams();
   const navigate = useNavigate();
+
+  const [blogCard, setBlogCard] = useState(null);
+  const [contactInfo, setContactInfo] = useState(null);
+
+  useEffect(() => {
+    const fetchBlogCard = async () => {
+      try {
+        const response = await axios.get('/api/blogCard/getCard');
+        setBlogCard(response.data[0]);
+      } catch (error) {
+        console.error('Failed to fetch blog card:', error);
+      }
+    };
+
+    const fetchContactInfo = async () => {
+      try {
+        const response = await axios.get('/api/contactInfo/get');
+        setContactInfo(response.data[0]);
+      } catch (error) {
+        console.error('Failed to fetch contact info:', error);
+      }
+    };
+
+    fetchBlogCard();
+    fetchContactInfo();
+  }, []);
 
   // Fetch blogs based on the presence of slug
   const { data: blogsByCategory, isLoading: loadingBlogsByCategory, error: errorBlogsByCategory } =
@@ -61,9 +89,9 @@ export default function BlogPage() {
                       </div>
                       <div className="md:w-3/5 h-[50vh] p-4">
                         <h3 className="text-2xl font-bold mb-2 text-gray-800">
-                          <a href="#" className="hover:underline text-[#052852]">
+                          <Link to="#" className="hover:underline text-[#052852]">
                             {latestBlog.title}
-                          </a>
+                          </Link>
                         </h3>
                         <p
                           className="text-gray-600 mb-4"
@@ -108,9 +136,9 @@ export default function BlogPage() {
                     />
                     <div className="card-header px-4 mt-3">
                       <h3 className="text-xl font-bold text-gray-800">
-                        <a href="#" className="hover:underline hover:text-[#1290ca] transition-colors duration-300">
+                        <Link to="#" className="hover:underline hover:text-[#1290ca] transition-colors duration-300">
                           {post.title}
-                        </a>
+                        </Link>
                       </h3>
                     </div>
                     <div className="card-content px-4 flex justify-between items-center">
@@ -131,50 +159,46 @@ export default function BlogPage() {
 
           {/* Sidebar */}
           <div className="lg:w-1/3 mt-8 lg:mt-10">
-            <div className="sticky top-24 mb-8 p-7">
+            <div className="sticky top-[30%] mb-8 p-7">
               {/* Share Your Thoughts Card */}
-              <div className="bg-[#052852] py-10 px-5 shadow-lg hover:shadow-md hover:shadow-[#052852] shadow-[#052852]/50 border border-gray-200">
-                <div className="card-header p-4">
-                  <h3 className="card-title text-3xl text-white font-bold">
-                    Connect with Us for Custom Solutions
-                  </h3>
-                </div>
-                <div className="px-4 pb-4">
-                  <p className="mb-4 text-lg text-gray-400">
-                    Submit Your Inquiry Below to Explore Tailored Industrial Products for Your Business
-                  </p>
-                  <button className="btn bg-[#ffffff] text-[052852] w-1/2 py-2 rounded">
-                    Get Inquiry
-                  </button>
-                </div>
-              </div>
+              {blogCard && (
+                <div
+                  className="bg-[#052852] py-10 px-5 shadow-lg hover:shadow-md hover:shadow-[#052852] shadow-[#052852]/50 border border-gray-200"
+                  dangerouslySetInnerHTML={{ __html: blogCard.blogCard }}
+                />
+              )}
 
               {/* Contact Card */}
-              <div className="mt-5">
-                <div className="bg-[#052852] flex flex-col gap-4 shadow-lg hover:shadow-md hover:shadow-[#052852] shadow-[#052852]/50 border border-gray-200 p-10">
-                  <div className="card-header">
-                    <h3 className="card-title text-2xl font-bold text-[#ffffff]">Get in Touch</h3>
-                  </div>
-                  <div className="card-content flex flex-col gap-2">
-                    <div className="flex items-center">
-                      <PhoneIcon className="h-6 w-6 mr-2 text-[#ffffff]" />
-                      <span className="text-lg text-[#ffffff]">+1 (555) 123-4567</span>
+              {contactInfo && (
+                <div className="mt-5">
+                  <div className="bg-[#052852] flex flex-col gap-4 shadow-lg hover:shadow-md hover:shadow-[#052852] shadow-[#052852]/50 border border-gray-200 p-10">
+                    <div className="card-header">
+                      <h3 className="card-title text-2xl font-bold text-[#ffffff]">Get in Touch</h3>
                     </div>
-                    <div className="flex items-center">
-                      <MailIcon className="h-6 text-[#ffffff] w-6 mr-2" />
-                      <a href="mailto:contact@example.com" className="text-lg text-[#ffffff] hover:underline">
-                        contact@example.com
-                      </a>
+                    <div className="card-content flex flex-col gap-2">
+                      {contactInfo.mobiles.map((mobile, index) => (
+                        <div className="flex items-center" key={index}>
+                          <PhoneIcon className="h-6 w-6 mr-2 text-[#ffffff]" />
+                          <span className="text-lg text-[#ffffff]">{mobile}</span>
+                        </div>
+                      ))}
+                      {contactInfo.emails.map((email, index) => (
+                        <div className="flex items-center" key={index}>
+                          <MailIcon className="h-6 text-[#ffffff] w-6 mr-2" />
+                          <Link to={`mailto:${email}`} className="text-lg text-[#ffffff] hover:underline">
+                            {email}
+                          </Link>
+                        </div>
+                      ))}
                     </div>
                   </div>
                 </div>
-              </div>
+              )}
             </div>
           </div>
         </div>
       </div>
     </div>
-   
     </>
   );
 }

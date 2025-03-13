@@ -39,20 +39,11 @@ const BannerTable = () => {
       width: '20%',
     },
     {
-      title: 'Alt Name',
-      dataIndex: 'altName',
-      key: 'altName',
+      title: 'Page Slug',
+      dataIndex: 'pageSlug',
+      key: 'pageSlug',
       width: '20%',
     },
-    // {
-    //   title: 'Details',
-    //   dataIndex: 'details',
-    //   key: 'details',
-    //   width: '30%',
-    //   render: (details) => (
-    //     <div dangerouslySetInnerHTML={{ __html: details }} />
-    //   ),
-    // },
     {
       title: 'Actions',
       key: 'actions',
@@ -105,7 +96,7 @@ const BannerTable = () => {
         dataSource={bannerData} 
         loading={isLoading}
         rowKey="_id"
-        pagination={false}
+        pagination={{ pageSize: 5 }}
       />
     </div>
   );

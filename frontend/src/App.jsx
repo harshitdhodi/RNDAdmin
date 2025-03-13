@@ -1,97 +1,128 @@
-import React from 'react';
+import React, { lazy, Suspense } from 'react';
 import { createBrowserRouter, RouterProvider, Navigate, Outlet, useLocation } from 'react-router-dom';
 import Cookies from 'js-cookie';
 import Layout from './layout/Layout';
 import './App.css';
 
-// Website Components
-import Navbar from './website/Navbar';
-import HomePage from './website/pages/HomePage';
-import ProductCategoryPage from './website/pages/ProductCategoryPage';
-import SubCategories from './website/componets/SubCategoryPage/SubCategories';
-import AlphabetsBaseCategory from './website/componets/alphabetbaseCategory/AlphabetsBaseCategory';
-import ProductDetailPage from './website/componets/productDetailPage/ProductDetailPage';
-import ContactPage from './website/pages/ContactPage';
-import BlogPage from './website/pages/BlogPage';
-import BlogDetailPage from './website/pages/BlogDetailPage';
-import ChemicalSubcategoryPage from './website/pages/category_subcategoryPage';
+// Loading component for Suspense
+const LoadingFallback = () => (
+  <div className="flex items-center justify-center h-screen">
+    <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-blue-500 border-solid"></div>
+  </div>
+);
 
-// Dashboard Components
-import DashboardPage from './dashboard/DashboardPage';
-import AdminLogin from './login/LoginPage';
 
-// Chemical Management
-import ChemicalTable from './chemical/ChemicalTablePage';
-import ChemicalFormPage from './chemical/chemicalForm/ChemcialFormPage';
-import ChemicalTypes from './chemical/ChemicalTypesTable';
-import SearchSuppliers from './chemical/SearchSuppliers';
-import UnitsPage from './chemical/UnitTable';
-import CategoriesPage from './chemical/ChemicalCategoryPage';
-import CategoryForm from './chemical/chemicalCategory/CategoryForm';
-import UpdateCategoryForm from './chemical/chemicalCategory/EditCategoryForm';
+// Website Components - Lazy loaded
+const Navbar = lazy(() => import('./website/Navbar'));
+const HomePage = lazy(() => import('./website/pages/HomePage'));
+const ProductCategoryPage = lazy(() => import('./website/pages/ProductCategoryPage'));
+const SubCategories = lazy(() => import('./website/componets/SubCategoryPage/SubCategories'));
+const AlphabetsBaseCategory = lazy(() => import('./website/componets/alphabetbaseCategory/AlphabetsBaseCategory'));
+const ProductDetailPage = lazy(() => import('./website/componets/productDetailPage/ProductDetailPage'));
+const ContactPage = lazy(() => import('./website/pages/ContactPage'));
+const BlogPage = lazy(() => import('./website/pages/BlogPage'));
+const BlogDetailPage = lazy(() => import('./website/pages/BlogDetailPage'));
+const ChemicalSubcategoryPage = lazy(() => import('./website/pages/category_subcategoryPage'));
+
+// Dashboard Components - Lazy loaded
+const DashboardPage = lazy(() => import('./dashboard/DashboardPage'));
+const AdminLogin = lazy(() => import('./login/LoginPage'));
+
+// Chemical Management - Lazy loaded
+const ChemicalTable = lazy(() => import('./chemical/ChemicalTablePage'));
+const ChemicalFormPage = lazy(() => import('./chemical/chemicalForm/ChemcialFormPage'));
+const ChemicalTypes = lazy(() => import('./chemical/ChemicalTypesTable'));
+const SearchSuppliers = lazy(() => import('./chemical/SearchSuppliers'));
+const UnitsPage = lazy(() => import('./chemical/UnitTable'));
+const CategoriesPage = lazy(() => import('./chemical/ChemicalCategoryPage'));
+const CategoryForm = lazy(() => import('./chemical/chemicalCategory/CategoryForm'));
+const UpdateCategoryForm = lazy(() => import('./chemical/chemicalCategory/EditCategoryForm'));
 import { ChemicalProvider } from './chemical/ChemicalContext';
 
-// Supplier Management
-import SuppliersTable from './supplier/SupplierTablePage';
-import SupplierForm from './supplier/SupplierForm';
-import ChemicalMapping from './supplier/ChemicalMapping';
-import ChemicalSearch from './supplier/SearchChamicals';
+// Supplier Management - Lazy loaded
+const SuppliersTable = lazy(() => import('./supplier/SupplierTablePage'));
+const SupplierForm = lazy(() => import('./supplier/SupplierForm'));
+const ChemicalMapping = lazy(() => import('./supplier/ChemicalMapping'));
+const ChemicalSearch = lazy(() => import('./supplier/SearchChamicals'));
 
-// Customer Management
-import CustomerTable from './customer/CustomerTable';
-import CustomerForm from './customer/CustomerForm';
-import CustomerChemicalMapping from './customer/ChemicalMapping';
+// Customer Management - Lazy loaded
+const CustomerTable = lazy(() => import('./customer/CustomerTable'));
+const CustomerForm = lazy(() => import('./customer/CustomerForm'));
+const CustomerChemicalMapping = lazy(() => import('./customer/ChemicalMapping'));
 
-// Email Management
-import SMTPTable from './email/smtp_setting/smtpTable';
-import EditSMTP from './email/smtp_setting/editForm';
-import CreateSMTP from './email/smtp_setting/CreateSMTP';
-import TemplateTable from './email/template/TemplateTable';
-import AddTemplateForm from './email/template/AddTemplate';
-import EditTemplateForm from './email/template/EditTemplate';
+// Email Management - Lazy loaded
+const SMTPTable = lazy(() => import('./email/smtp_setting/smtpTable'));
+const EditSMTP = lazy(() => import('./email/smtp_setting/editForm'));
+const CreateSMTP = lazy(() => import('./email/smtp_setting/CreateSMTP'));
+const TemplateTable = lazy(() => import('./email/template/TemplateTable'));
+const AddTemplateForm = lazy(() => import('./email/template/AddTemplate'));
+const EditTemplateForm = lazy(() => import('./email/template/EditTemplate'));
 
-// Inquiry Management
-import InquiryList from './inquiry/InquiryTable';
-import AddInquiryForm from './inquiry/AddInquiry';
-import EditInquiryForm from './inquiry/EditInquiry';
-import { SourceTable } from './inquiry/source/SourceTable';
-import { StatusTable } from './inquiry/status/StatusTable';
+// Inquiry Management - Lazy loaded
+const InquiryList = lazy(() => import('./inquiry/InquiryTable'));
+const AddInquiryForm = lazy(() => import('./inquiry/AddInquiry'));
+const EditInquiryForm = lazy(() => import('./inquiry/EditInquiry'));
+const SourceTable = lazy(() => import('./inquiry/source/SourceTable'));
+const StatusTable = lazy(() => import('./inquiry/status/StatusTable'));
 
-// Blog Management
-import BlogCategory from './BlogCategory/BlogCategoryTable';
-import Blogcategoryform from './BlogCategory/BlogCategoryForm';
-import BlogTable from './blog/BlogPage';
-import BlogForm from './blog/BlogForm';
-import NavbarComp from './website/componets/navbar/Navbar';
-import AlphabetBasedProduct from './website/pages/AlphabetBasedProduct';
-import Hello from './Hello';
-import Saperator from './website/Saparator';
-import BlogSaparator from './website/pages/BlogSaparator';
-import EmailForm from './email/emailForm/EmailForm';
-import EditCustomerForm from './customer/EditCustomerForm';
-import EditSupplierForm from './supplier/EditSupplierForm';
-import ProductSearchBar from './website/componets/productSearch/ProductSearchBar';
-import { ProductInquiryTable } from './websiteBackend/productInquiry/ProductInquiry';
-import AboutUsTable from './websiteBackend/aboutus/AboutUsTable';
-import AboutUsForm from './websiteBackend/aboutus/AboutUsForm';
-import BannerTable from './websiteBackend/banner/BannerTable';
-import AddBannerForm from './websiteBackend/banner/AddBannerForm';
-import EditBannerForm from './websiteBackend/banner/EditBannerForm';
-import AboutDescription from './website/componets/home/AboutUs';
-import Introduction from './website/pages/Introduction';
-import MainContent from './website/componets/Introduction/MainContent';
-import WorldWide from './website/pages/WorldWide';
-import CareerForm from './website/pages/Career';
-import WorldWideBackend from './websiteBackend/worldwideTables/WorlWide';
-import WorldwideForm from './websiteBackend/worldwideTables/WorldwideForm';
-import CareerTable from './websiteBackend/career/CareerTable';
-import CareerAdminForm from './websiteBackend/career/CareerForm';
-import EmailCategoryParent from './email/emailCategory/EmailCategoryParent';
-import AdvanceSearch from './website/pages/AdvanceSearchPage';
-import Logo from './websiteBackend/companyLogo/CompanyLogoTable';
-import LogoForm from './websiteBackend/companyLogo/LogoForm';
-import ContactInfoForm from './websiteBackend/contactInfo/ContactInfoData';
-import ContactForm from './websiteBackend/contactInfo/contactInfoForm';
+// Blog Management - Lazy loaded
+const BlogCategory = lazy(() => import('./BlogCategory/BlogCategoryTable'));
+const Blogcategoryform = lazy(() => import('./BlogCategory/BlogCategoryForm'));
+const BlogTable = lazy(() => import('./blog/BlogPage'));
+const BlogForm = lazy(() => import('./blog/BlogForm'));
+const NavbarComp = lazy(() => import('./website/componets/navbar/Navbar'));
+const AlphabetBasedProduct = lazy(() => import('./website/pages/AlphabetBasedProduct'));
+const Hello = lazy(() => import('./Hello'));
+const Saperator = lazy(() => import('./website/Saparator'));
+const BlogSaparator = lazy(() => import('./website/pages/BlogSaparator'));
+const EmailForm = lazy(() => import('./email/emailForm/EmailForm'));
+const EditCustomerForm = lazy(() => import('./customer/EditCustomerForm'));
+const EditSupplierForm = lazy(() => import('./supplier/EditSupplierForm'));
+const ProductSearchBar = lazy(() => import('./website/componets/productSearch/ProductSearchBar'));
+const ProductInquiryTable = lazy(() => import('./websiteBackend/productInquiry/ProductInquiry'));
+const AboutUsTable = lazy(() => import('./websiteBackend/aboutus/AboutUsTable'));
+const AboutUsForm = lazy(() => import('./websiteBackend/aboutus/AboutUsForm'));
+const BannerTable = lazy(() => import('./websiteBackend/banner/BannerTable'));
+const AddBannerForm = lazy(() => import('./websiteBackend/banner/AddBannerForm'));
+const EditBannerForm = lazy(() => import('./websiteBackend/banner/EditBannerForm'));
+const AboutDescription = lazy(() => import('./website/componets/home/AboutUs'));
+const Introduction = lazy(() => import('./website/pages/Introduction'));
+const MainContent = lazy(() => import('./website/componets/Introduction/MainContent'));
+const WorldWide = lazy(() => import('./website/pages/WorldWide'));
+const CareerForm = lazy(() => import('./website/pages/Career'));
+const WorldWideBackend = lazy(() => import('./websiteBackend/worldwideTables/WorlWide'));
+const WorldwideForm = lazy(() => import('./websiteBackend/worldwideTables/WorldWideForm.jsx'));
+const CareerTable = lazy(() => import('./websiteBackend/career/CareerTable'));
+const CareerAdminForm = lazy(() => import('./websiteBackend/career/CareerForm'));
+const EmailCategoryParent = lazy(() => import('./email/emailCategory/EmailCategoryParent'));
+const AdvanceSearch = lazy(() => import('./website/pages/AdvanceSearchPage'));
+const Logo = lazy(() => import('./websiteBackend/companyLogo/CompanyLogoTable'));
+const LogoForm = lazy(() => import('./websiteBackend/companyLogo/LogoForm'));
+const ContactInfoForm = lazy(() => import('./websiteBackend/contactInfo/ContactInfoData'));
+const ContactForm = lazy(() => import('./websiteBackend/contactInfo/contactInfoForm'));
+const MenuListingForm = lazy(() => import('./websiteBackend/MenuListing/MenuListingForm'));
+const MenuListingTable = lazy(() => import('./websiteBackend/MenuListing/MenuListingTable'));
+const StaticMetaForm = lazy(() => import('./websiteBackend/staticMetaKeyword/StaticMetaForm'));
+const MetaList = lazy(() => import('./websiteBackend/staticMetaKeyword/StaticTable'));
+const ImageUploadForm = lazy(() => import('./website/componets/slideshow/SlideShowForm'));
+const SlideShowTable = lazy(() => import('./website/componets/slideshow/SlideShowTable'));
+const PrivacyPolicy = lazy(() => import('./website/pages/PrivacyPolicy'));
+const TermsAndConditions = lazy(() => import('./website/pages/TermsandCondition'));
+const WhatsUpInfoTable = lazy(() => import('./websiteBackend/whatsUpInfo/WhatsUpTable'));
+const WhatsUpInfoForm = lazy(() => import('./websiteBackend/whatsUpInfo/WhatUpForm'));
+const EventForm = lazy(() => import('./websiteBackend/event/Events'));
+const BlogCardForm = lazy(() => import('./websiteBackend/blogCard/BlogCard'));
+const NavigationLinkTable = lazy(() => import('./websiteBackend/navigationLinks/NavigationLinkTable'));
+const NavigationLinkForm = lazy(() => import('./websiteBackend/navigationLinks/NavigationLinkForm'));
+const CatalogueTable = lazy(() => import('./websiteBackend/catalogue/CatalogueTable'));
+const CatalogueForm = lazy(() => import('./websiteBackend/catalogue/CatalogueForm'));
+const PrivacyForm = lazy(() => import('./websiteBackend/privacy/PrivacyAndTerms'));
+const TermsConditionForm = lazy(() => import('./websiteBackend/privacy/TermsCondtion'));
+const CareerInfoForm = lazy(() => import('./websiteBackend/career/CareerInfoForm'));
+
+// Non-lazy imports
+import useDocumentTitle from './websiteBackend/staticMetaKeyword/DynamicMeta';
+
 // Auth Components
 const PrivateRoute = ({ children }) => {
   const token = Cookies.get('jwt');
@@ -103,44 +134,15 @@ const LoginRoute = () => {
   return token ? <Navigate to="/dashboard" /> : <AdminLogin />;
 };
 
-// Custom Hook for Document Title
-const useDocumentTitle = (defaultTitle) => {
-  const location = useLocation();
-
-  React.useEffect(() => {
-    const path = location.pathname;
-    let title = defaultTitle;
-
-    if (path.includes('product')) {
-      title = 'Product Details';
-    } else if (path.includes('blog')) {
-      const slug = path.split('/').pop(); // Extract the slug from the path
-      console.log('Slug:', slug); // Debugging: Log the slug
-      title = slug
-        .split('-') // Split the slug by hyphens
-        .map(word => {
-          // Check if the word is a number
-          if (!isNaN(word)) {
-            return word; // Return the number as is
-          }
-          // Capitalize each word
-          return word.charAt(0).toUpperCase() + word.slice(1);
-        })
-        .join(' '); // Join the words with spaces
-    } else if (path.includes('contact')) {
-      title = 'Contact Us';
-    }
-    // Add more conditions as needed
-
-    document.title = title;
-  }, [location, defaultTitle]);
-};
-
-// Wrapper Component to use the hook
+// Dynamic meta function
 const AppContent = () => {
-  useDocumentTitle('CDH Chemicals'); // Use the hook here
+  useDocumentTitle(); // Use the hook here
 
-  return <Outlet />; // Render the rest of the app
+  return (
+    <Suspense fallback={<LoadingFallback />}>
+      <Outlet /> {/* Render the rest of the app */}
+    </Suspense>
+  );
 };
 
 // Main App Component
@@ -153,128 +155,183 @@ function App() {
         // Public Routes (Website)
         {
           path: '/',
-          element: <Navbar />,
+          element: (
+            <Suspense fallback={<LoadingFallback />}>
+              <Navbar />
+            </Suspense>
+          ),
           children: [
-            { index: true, element: <HomePage /> },
-            { path: 'categories', element: <ProductCategoryPage /> },
-            { path: 'products/code?number', element: <Hello /> },
-            { path: 'alphabetsbaseCategory', element: <AlphabetsBaseCategory /> },
-            { path: ':chemicals', element: <Saperator />, },
-            { path: ':slug', element: <Saperator /> },
-            { path: 'contact-us', element: <ContactPage /> },
-            { path: 'blogs', element: <BlogPage /> },
-            { path: 'blog/:slug', element: <BlogSaparator /> },
-            { path: 'blog/:slug', element: <BlogSaparator /> },
-
-            { path: ':chemicals/:slug', element: <Hello /> },
-            { path: ':chemicals/:slug/:subsubCategorySlug', element: <ChemicalSubcategoryPage /> },
-
-            { path: '/search', element: <ProductSearchBar /> },
-            { path: '/about', element: <AboutDescription /> },
-            { path: '/introduction', element: <Introduction /> },
-            { path: '/vision-mission', element: <MainContent /> },
-            { path: '/worldwide', element: <WorldWide /> },
-            { path: '/careers', element: <CareerForm /> },
-            {path:'/advance-search' , element:<AdvanceSearch />}
+            { index: true, element: <Suspense fallback={<LoadingFallback />}><HomePage /></Suspense> },
+            { path: 'categories', element: <Suspense fallback={<LoadingFallback />}><ProductCategoryPage /></Suspense> },
+            { path: 'products/code?number', element: <Suspense fallback={<LoadingFallback />}><Hello /></Suspense> },
+            { path: 'alphabetsbaseCategory', element: <Suspense fallback={<LoadingFallback />}><AlphabetsBaseCategory /></Suspense> },
+            { path: ':chemicals', element: <Suspense fallback={<LoadingFallback />}><Saperator /></Suspense> },
+            { path: ':slug', element: <Suspense fallback={<LoadingFallback />}><Saperator /></Suspense> },
+            { path: 'contact-us', element: <Suspense fallback={<LoadingFallback />}><ContactPage /></Suspense> },
+            { path: 'blogs', element: <Suspense fallback={<LoadingFallback />}><BlogPage /></Suspense> },
+            { path: 'blog/:slug', element: <Suspense fallback={<LoadingFallback />}><BlogSaparator /></Suspense> },
+            { path: ':chemicals/:slug', element: <Suspense fallback={<LoadingFallback />}><Hello /></Suspense> },
+            { path: ':chemicals/:slug/:subsubCategorySlug', element: <Suspense fallback={<LoadingFallback />}><ChemicalSubcategoryPage /></Suspense> },
+            { path: '/search', element: <Suspense fallback={<LoadingFallback />}><ProductSearchBar /></Suspense> },
+            { path: '/about', element: <Suspense fallback={<LoadingFallback />}><AboutDescription /></Suspense> },
+            { path: '/introduction', element: <Suspense fallback={<LoadingFallback />}><Introduction /></Suspense> },
+            { path: '/vision-mission', element: <Suspense fallback={<LoadingFallback />}><MainContent /></Suspense> },
+            { path: '/worldwide', element: <Suspense fallback={<LoadingFallback />}><WorldWide /></Suspense> },
+            { path: '/careers', element: <Suspense fallback={<LoadingFallback />}><CareerForm /></Suspense> },
+            { path: '/advance-search', element: <Suspense fallback={<LoadingFallback />}><AdvanceSearch /></Suspense> },
+            { path: '/privacy-policy', element: <Suspense fallback={<LoadingFallback />}><PrivacyPolicy /></Suspense> },
+            { path: '/terms-and-conditions', element: <Suspense fallback={<LoadingFallback />}><TermsAndConditions /></Suspense> }
           ]
         },
         // Authentication Route
-        { path: 'login', element: <LoginRoute /> },
+        { 
+          path: 'login', 
+          element: <Suspense fallback={<LoadingFallback />}><LoginRoute /></Suspense> 
+        },
         // Protected Routes (Dashboard)
         {
           path: '',
-          element: <PrivateRoute><Layout /></PrivateRoute>,
+          element: (
+            <PrivateRoute>
+              <Suspense fallback={<LoadingFallback />}>
+                <Layout />
+              </Suspense>
+            </PrivateRoute>
+          ),
           children: [
-            { path: 'dashboard', element: <DashboardPage /> },
+            { path: 'dashboard', element: <Suspense fallback={<LoadingFallback />}><DashboardPage /></Suspense> },
             // Chemical Management Routes
             {
               path: 'chemical-table',
-              element: <ChemicalProvider><ChemicalTable /></ChemicalProvider>
+              element: (
+                <ChemicalProvider>
+                  <Suspense fallback={<LoadingFallback />}><ChemicalTable /></Suspense>
+                </ChemicalProvider>
+              )
             },
-            { path: 'chemical-form', element: <ChemicalFormPage /> },
-            { path: 'edit-chemical-form/:id', element: <ChemicalFormPage /> },
-            
-            { path: 'chemical-types', element: <ChemicalTypes /> },
-            { path: 'chemical-category', element: <CategoriesPage /> },
-            { path: 'chemical-category-form', element: <CategoryForm /> },
+            { path: 'chemical-form', element: <Suspense fallback={<LoadingFallback />}><ChemicalFormPage /></Suspense> },
+            { path: 'edit-chemical-form/:id', element: <Suspense fallback={<LoadingFallback />}><ChemicalFormPage /></Suspense> },
+            { path: 'chemical-types', element: <Suspense fallback={<LoadingFallback />}><ChemicalTypes /></Suspense> },
+            { path: 'chemical-category', element: <Suspense fallback={<LoadingFallback />}><CategoriesPage /></Suspense> },
+            { path: 'chemical-category-form', element: <Suspense fallback={<LoadingFallback />}><CategoryForm /></Suspense> },
             {
               path: 'edit-chemical-category/:categoryId/:subCategoryId?/:subSubCategoryId?',
-              element: <UpdateCategoryForm />
+              element: <Suspense fallback={<LoadingFallback />}><UpdateCategoryForm /></Suspense>
             },
-            { path: 'unit', element: <UnitsPage /> },
-            { path: 'search-suppliers', element: <SearchSuppliers /> },
+            { path: 'unit', element: <Suspense fallback={<LoadingFallback />}><UnitsPage /></Suspense> },
+            { path: 'search-suppliers', element: <Suspense fallback={<LoadingFallback />}><SearchSuppliers /></Suspense> },
 
             // Supplier Management Routes
-            { path: 'supplier-table', element: <SuppliersTable /> },
-            { path: 'supplier-form', element: <SupplierForm /> },
-            { path: 'chemical-mapping', element: <ChemicalMapping /> },
-            { path: 'chemical-search', element: <ChemicalSearch /> },
-            { path: 'edit-supplier-form/:id', element: <EditSupplierForm /> },
+            { path: 'supplier-table', element: <Suspense fallback={<LoadingFallback />}><SuppliersTable /></Suspense> },
+            { path: 'supplier-form', element: <Suspense fallback={<LoadingFallback />}><SupplierForm /></Suspense> },
+            { path: 'chemical-mapping', element: <Suspense fallback={<LoadingFallback />}><ChemicalMapping /></Suspense> },
+            { path: 'chemical-search', element: <Suspense fallback={<LoadingFallback />}><ChemicalSearch /></Suspense> },
+            { path: 'edit-supplier-form/:id', element: <Suspense fallback={<LoadingFallback />}><EditSupplierForm /></Suspense> },
 
             // Customer Management Routes
-            { path: 'customer-table', element: <CustomerTable /> },
-            { path: 'customer-form', element: <CustomerForm /> },
-            { path: 'customer-chemical-mapping', element: <CustomerChemicalMapping /> },
-            { path: 'edit-customer-form/:id', element: <EditCustomerForm /> },
+            { path: 'customer-table', element: <Suspense fallback={<LoadingFallback />}><CustomerTable /></Suspense> },
+            { path: 'customer-form', element: <Suspense fallback={<LoadingFallback />}><CustomerForm /></Suspense> },
+            { path: 'customer-chemical-mapping', element: <Suspense fallback={<LoadingFallback />}><CustomerChemicalMapping /></Suspense> },
+            { path: 'edit-customer-form/:id', element: <Suspense fallback={<LoadingFallback />}><EditCustomerForm /></Suspense> },
 
             // Email Management Routes
-            { path: 'smtp-table', element: <SMTPTable /> },
-            { path: 'add-smtp', element: <CreateSMTP /> },
-            { path: 'edit-smtp-form/:id', element: <EditSMTP /> },
-            { path: 'email-template-table', element: <TemplateTable /> },
-            { path: 'add-template', element: <AddTemplateForm /> },
-            { path: 'edit-template/:id', element: <EditTemplateForm /> },
-            { path: 'email-form', element: <EmailForm /> },
-            { path: 'email-category', element: <EmailCategoryParent /> },
-            { path: 'email-category-form', element: <EmailCategoryParent /> },
-            { path: 'edit-email-category/:id', element: <EmailCategoryParent /> },
+            { path: 'smtp-table', element: <Suspense fallback={<LoadingFallback />}><SMTPTable /></Suspense> },
+            { path: 'add-smtp', element: <Suspense fallback={<LoadingFallback />}><CreateSMTP /></Suspense> },
+            { path: 'edit-smtp-form/:id', element: <Suspense fallback={<LoadingFallback />}><EditSMTP /></Suspense> },
+            { path: 'email-template-table', element: <Suspense fallback={<LoadingFallback />}><TemplateTable /></Suspense> },
+            { path: 'add-template', element: <Suspense fallback={<LoadingFallback />}><AddTemplateForm /></Suspense> },
+            { path: 'edit-template/:id', element: <Suspense fallback={<LoadingFallback />}><EditTemplateForm /></Suspense> },
+            { path: 'email-form', element: <Suspense fallback={<LoadingFallback />}><EmailForm /></Suspense> },
+            { path: 'email-category', element: <Suspense fallback={<LoadingFallback />}><EmailCategoryParent /></Suspense> },
+            { path: 'email-category-form', element: <Suspense fallback={<LoadingFallback />}><EmailCategoryParent /></Suspense> },
+            { path: 'edit-email-category/:id', element: <Suspense fallback={<LoadingFallback />}><EmailCategoryParent /></Suspense> },
+            
             // Inquiry Management Routes
-            { path: 'inquiry-list', element: <InquiryList /> },
-            { path: 'add-inquiry', element: <AddInquiryForm /> },
-            { path: 'edit-inquiry/:id', element: <EditInquiryForm /> },
-            { path: 'source-table', element: <SourceTable /> },
-            { path: 'status-table', element: <StatusTable /> },
+            { path: 'inquiry-list', element: <Suspense fallback={<LoadingFallback />}><InquiryList /></Suspense> },
+            { path: 'add-inquiry', element: <Suspense fallback={<LoadingFallback />}><AddInquiryForm /></Suspense> },
+            { path: 'edit-inquiry/:id', element: <Suspense fallback={<LoadingFallback />}><EditInquiryForm /></Suspense> },
+            { path: 'source-table', element: <Suspense fallback={<LoadingFallback />}><SourceTable /></Suspense> },
+            { path: 'status-table', element: <Suspense fallback={<LoadingFallback />}><StatusTable /></Suspense> },
 
             // Blog Management Routes
-            { path: 'blog-category-table', element: <BlogCategory /> },
-            { path: 'blog-category-form', element: <Blogcategoryform /> },
-            { path: 'edit-blog-category-form/:id', element: <Blogcategoryform /> },
-            { path: 'blog-table', element: <BlogTable /> },
-            { path: 'blog-form', element: <BlogForm /> },
-            { path: 'edit-blog-form/:id', element: <BlogForm /> },
+            { path: 'blog-category-table', element: <Suspense fallback={<LoadingFallback />}><BlogCategory /></Suspense> },
+            { path: 'blog-category-form', element: <Suspense fallback={<LoadingFallback />}><Blogcategoryform /></Suspense> },
+            { path: 'edit-blog-category-form/:id', element: <Suspense fallback={<LoadingFallback />}><Blogcategoryform /></Suspense> },
+            { path: 'blog-table', element: <Suspense fallback={<LoadingFallback />}><BlogTable /></Suspense> },
+            { path: 'blog-form', element: <Suspense fallback={<LoadingFallback />}><BlogForm /></Suspense> },
+            { path: 'edit-blog-form/:id', element: <Suspense fallback={<LoadingFallback />}><BlogForm /></Suspense> },
 
             // Product Inquiry Routes
-            { path: 'product-inquiry-table', element: <ProductInquiryTable /> },
+            { path: 'product-inquiry-table', element: <Suspense fallback={<LoadingFallback />}><ProductInquiryTable /></Suspense> },
 
             // About Us Routes
-            { path: 'about-us-table', element: <AboutUsTable /> },
-            { path: 'about-us-form', element: <AboutUsForm /> },
-            { path: 'edit-about-us-form/:id', element: <AboutUsForm /> },
+            { path: 'about-us-table', element: <Suspense fallback={<LoadingFallback />}><AboutUsTable /></Suspense> },
+            { path: 'about-us-form', element: <Suspense fallback={<LoadingFallback />}><AboutUsForm /></Suspense> },
+            { path: 'edit-about-us-form/:id', element: <Suspense fallback={<LoadingFallback />}><AboutUsForm /></Suspense> },
 
             // Banner Routes
-            { path: 'banner-table', element: <BannerTable /> },
-            { path: 'add-banner', element: <AddBannerForm /> },
-            { path: 'edit-banner-form/:id', element: <EditBannerForm /> },
+            { path: 'banner-table', element: <Suspense fallback={<LoadingFallback />}><BannerTable /></Suspense> },
+            { path: 'add-banner', element: <Suspense fallback={<LoadingFallback />}><AddBannerForm /></Suspense> },
+            { path: 'edit-banner-form/:id', element: <Suspense fallback={<LoadingFallback />}><EditBannerForm /></Suspense> },
           
-            { path: 'worldwide-table', element: <WorldWideBackend /> },
-            { path: 'worldwide/add', element: <WorldwideForm /> },
-            { path: 'worldwide/edit/:id', element: <WorldwideForm /> },
+            { path: 'worldwide-table', element: <Suspense fallback={<LoadingFallback />}><WorldWideBackend /></Suspense> },
+            { path: 'worldwide/add', element: <Suspense fallback={<LoadingFallback />}><WorldwideForm /></Suspense> },
+            { path: 'worldwide/edit/:id', element: <Suspense fallback={<LoadingFallback />}><WorldwideForm /></Suspense> },
           
-          // Career Management Routes
-          { path: 'career-table', element: <CareerTable /> },
-          { path: 'career/add', element: <CareerAdminForm /> },
-          { path: 'career/edit/:id', element: <CareerAdminForm /> },
-        
-          // Logo Management Routes
-          { path: 'logo-table', element: <Logo /> },
-          { path: 'add-logo', element: <LogoForm /> },
-          { path: 'edit-logo/:id', element: <LogoForm /> },
+            // Career Management Routes
+            { path: 'career-table', element: <Suspense fallback={<LoadingFallback />}><CareerTable /></Suspense> },
+            { path: 'career/add', element: <Suspense fallback={<LoadingFallback />}><CareerAdminForm /></Suspense> },
+            { path: 'career/edit/:id', element: <Suspense fallback={<LoadingFallback />}><CareerAdminForm /></Suspense> },
+            { path: 'career-info-form', element: <Suspense fallback={<LoadingFallback />}><CareerInfoForm /></Suspense> },
 
-          // Contact Info Management Routes
-          { path: 'contact-info-table', element: <ContactInfoForm /> },
-          // { path: 'contact-info/add', element: <ContactForm /> },
-          // { path: 'contact-info/edit/:id', element: <ContactForm /> },
-        ]
+            // Logo Management Routes
+            { path: 'logo-table', element: <Suspense fallback={<LoadingFallback />}><Logo /></Suspense> },
+            { path: 'add-logo', element: <Suspense fallback={<LoadingFallback />}><LogoForm /></Suspense> },
+            { path: 'edit-logo/:id', element: <Suspense fallback={<LoadingFallback />}><LogoForm /></Suspense> },
+
+            // Contact Info Management Routes
+            { path: 'contact-info-table', element: <Suspense fallback={<LoadingFallback />}><ContactInfoForm /></Suspense> },
+            // { path: 'contact-info/add', element: <Suspense fallback={<LoadingFallback />}><ContactForm /></Suspense> },
+            // { path: 'contact-info/edit/:id', element: <Suspense fallback={<LoadingFallback />}><ContactForm /></Suspense> },
+       
+            // Menu Listing Routes
+            { path: 'menu-listing-table', element: <Suspense fallback={<LoadingFallback />}><MenuListingTable /></Suspense> },
+            { path: 'menu-listing-form', element: <Suspense fallback={<LoadingFallback />}><MenuListingForm /></Suspense> },
+            { path: 'menu-listing-form/:id', element: <Suspense fallback={<LoadingFallback />}><MenuListingForm /></Suspense> },
+
+            // Meta Routes
+            { path: 'meta-table', element: <Suspense fallback={<LoadingFallback />}><MetaList /></Suspense> },
+            { path: 'meta-form', element: <Suspense fallback={<LoadingFallback />}><StaticMetaForm /></Suspense> },
+            { path: 'edit-meta-form/:id', element: <Suspense fallback={<LoadingFallback />}><StaticMetaForm /></Suspense> },
+
+            // Slide show
+            { path: 'slideShow-form', element: <Suspense fallback={<LoadingFallback />}><ImageUploadForm /></Suspense> },
+            { path: 'slideShow-table', element: <Suspense fallback={<LoadingFallback />}><SlideShowTable /></Suspense> },
+
+            // WhatsUp info
+            { path: 'whatsUpInfo-table', element: <Suspense fallback={<LoadingFallback />}><WhatsUpInfoTable /></Suspense> },
+            { path: 'whatsUpInfo-form', element: <Suspense fallback={<LoadingFallback />}><WhatsUpInfoForm /></Suspense> },
+
+            // Events
+            { path: 'events', element: <Suspense fallback={<LoadingFallback />}><EventForm /></Suspense> }, 
+
+            // Blog card
+            { path: 'blogCard', element: <Suspense fallback={<LoadingFallback />}><BlogCardForm /></Suspense> },
+      
+            // Navigation Link
+            { path: 'navigationLink', element: <Suspense fallback={<LoadingFallback />}><NavigationLinkTable /></Suspense> },
+            { path: 'navigationLink-form', element: <Suspense fallback={<LoadingFallback />}><NavigationLinkForm /></Suspense> },  
+            { path: 'edit-navigation-link/:id', element: <Suspense fallback={<LoadingFallback />}><NavigationLinkForm /></Suspense> },
+        
+            // Catalogue Management Routes
+            { path: 'catalogue-table', element: <Suspense fallback={<LoadingFallback />}><CatalogueTable /></Suspense> },
+            { path: 'catalogue-form', element: <Suspense fallback={<LoadingFallback />}><CatalogueForm /></Suspense> },
+            { path: 'edit-catalogue/:id', element: <Suspense fallback={<LoadingFallback />}><CatalogueForm /></Suspense> },
+        
+            // Privacy Policy Routes
+            { path: 'privacypolicy-terms', element: <Suspense fallback={<LoadingFallback />}><PrivacyForm /></Suspense> },
+            { path: 'terms-and-conditions-form', element: <Suspense fallback={<LoadingFallback />}><TermsConditionForm /></Suspense> },
+          ]
         }
       ]
     }

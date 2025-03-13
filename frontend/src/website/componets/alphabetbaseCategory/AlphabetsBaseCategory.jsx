@@ -15,6 +15,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Link } from "react-router-dom";
 
 export default function AlphabetsBaseCategory() {
   const [selectedGrades, setSelectedGrades] = useState([]);
@@ -159,16 +160,16 @@ export default function AlphabetsBaseCategory() {
         <TableCell className="border-r border-blue-200">{product.cas}</TableCell>
         <TableCell className="border-r border-blue-200">
           {product.hasTds && (
-            <a href="#" className="text-blue-600 hover:underline">
+            <Link to="#" className="text-blue-600 hover:underline">
               Specs
-            </a>
+            </Link>
           )}
         </TableCell>
         <TableCell>
           {product.hasMsds && (
-            <a href="#" className="text-blue-600 hover:underline">
+            <Link to="#" className="text-blue-600 hover:underline">
               MSDS
-            </a>
+            </Link>
           )}
         </TableCell>
       </TableRow>

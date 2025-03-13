@@ -169,7 +169,7 @@ export default function InquiryList() {
 
             <Table className="border">
                 <TableHeader>
-                    <TableRow className="border-b">
+                    <TableRow className="border-b bg-gray-100">
                         <TableHead className="w-12"></TableHead>
                         <TableHead className="lg:w-[100px] w-[50px] sticky left-0 bg-background z-50">Date</TableHead>
                         <TableHead className="text-left">Info</TableHead>
@@ -222,7 +222,7 @@ export default function InquiryList() {
                 <TableBody>
                     {filteredData.map((item, index) => (
                         <TableRow key={index} className="border-b">
-                            <TableCell>
+                            <TableCell className="p-5">
                                 <Checkbox
                                     checked={selectedInquiries.includes(item._id)}
                                     onCheckedChange={() => handleInquirySelect(item._id)}
@@ -253,9 +253,9 @@ export default function InquiryList() {
                             <TableCell className="text-center">
                                 <DropdownMenu>
                                     <DropdownMenuTrigger asChild>
-                                        <Button variant="ghost" size="icon" className="h-8 w-8 p-0">
+                                        <button variant="ghost" size="icon" className="h-8 w-8 p-0">
                                             <EllipsisVertical className="h-4 w-4" />
-                                        </Button>
+                                        </button>
                                     </DropdownMenuTrigger>
                                     <DropdownMenuContent align="end" className="w-[160px]">
                                         <Link to={`/edit-inquiry/${item._id}`}>

@@ -1,86 +1,104 @@
-import React from 'react'
-import img from "../../../assets/contact.png"
-import logo from "../../../assets/logo-contact.png"
-import call from "../../../assets/call-icon.png";
-import email from "../../../assets/email-us.png";
-import fax from "../../../assets/fax-icon.png";
+import React, { useEffect, useState } from 'react';
+import axios from 'axios';
+import callIcon from "../../../assets/call-icon.png";
+import emailIcon from "../../../assets/email-us.png";
+import contactImg from "../../../assets/contact.png";
+import { Link } from 'react-router-dom';
 
 export default function LeftSection() {
+  const [contactInfo, setContactInfo] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchContactInfo = async () => {
+      try {
+        const response = await axios.get('/api/contactInfo/get');
+        setContactInfo(response.data[0] || {}); // Default to an empty object if no data
+      } catch (error) {
+        console.error("Error fetching contact info:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchContactInfo();
+  }, []);
+
+  if (loading) {
+    return <div>Loading...</div>;
+  }
+
+  if (!contactInfo) {
+    return <div>Error loading contact information.</div>;
+  }
+
+  // Assuming 'photo' is an array and using the first image filename
+  const imageUrl = contactInfo.photo?.[0] ? `/api/image/download/${contactInfo.photo[0]}` : contactImg;
+
   return (
     <div className="px-6 space-y-6">
       <h1 className="text-3xl font-bold text-gray-700">Contact Us</h1>
       
-      <div className="space-y-2">
-       {/* <img src={logo} alt="" /> */}
-      </div>
-
       <div className="space-y-4">
         <div>
           <h3 className="font-semibold text-gray-700">Corporate Office</h3>
-          <p className="text-gray-600">
-          V2 Signature, 135-136, Chala, Vapi, Gujarat 396191 (INDIA).
-          </p>
+          <p className="text-gray-600">{contactInfo.address || "Address not available"}</p>
         </div>
 
-       <div className='flex  justify-between '>
-       <div className="space-y-2">
-          <div className=" items-center gap-2">
-           <div className='flex gap-3'>
-           <img src={call} alt="" />
-            <span className="font-semibold">Call Us</span>
-          
-           </div>
-             <p className="text-gray-600 text-[15px]">+91-730 494 5823</p>
-          </div>
-
-          <div className=" items-center gap-2">
-           <div className='flex gap-3 '>
-           <img src={fax} alt="" />
-           <span className="font-semibold">Fax</span>
-           </div>
-            <p className="text-gray-600 text-[15px]">+91-987 047 2873</p>
-          </div>
-        </div>
-
-        <div className="space-y-2">
-           
-          <div>
-            <div className='flex gap-3'>
-            <img src={email} alt="" />           
-            <h2 className='text-lg font-semibold '>Email Us</h2>
+        <div className="flex justify-between">
+          <div className="space-y-4">
+            {/* Display mobile numbers */}
+            <div className="space-y-2">
+              <div className="flex gap-3 items-center">
+                <img src={callIcon} alt="Call Icon"/>
+                <span className="font-semibold">Call Us</span>
+              </div>
+              {contactInfo.mobiles?.length > 0 ? (
+                contactInfo.mobiles.map((mobile, index) => (
+                  <p key={index} className="text-gray-600 text-[15px]">{mobile}</p>
+                ))
+              ) : (
+                <p className="text-gray-600 text-[15px]">No phone numbers available</p>
+              )}
             </div>
-            <h4 className="font-bold text-blue-800">Domestic</h4>
-             <a href="mailto:sales@cdhfinechemical.com" className="text-gray-800 block hover:underline">
-              hello@rndtechnosoft.com
-            </a>
-            <a href="mailto:mumbai@cdhfinechemical.com" className="text-gray-800 block hover:underline">
-              ravishah@rndtechnosoft.com
-            </a>
           </div>
 
-          {/* <div>
-            <h4 className="font-bold text-blue-800">International</h4>
-            <a href="mailto:export@cdhfinechemical.com" className="text-gray-800 block hover:underline">
-              export@cdhfinechemical.com
-            </a>
-            <a href="mailto:overseas@cdhfinechemical.com" className="text-gray-800 block hover:underline">
-              overseas@cdhfinechemical.com
-            </a>
-          </div> */}
+          <div className="space-y-4">
+            {/* Display emails */}
+            <div>
+              <div className="flex gap-3 items-center">
+                <img src={emailIcon} alt="Email Icon" />
+                <h2 className="text-lg font-semibold">Email Us</h2>
+              </div>
+              {contactInfo.emails?.length > 0 ? (
+                contactInfo.emails.map((email, index) => (
+                  <Link 
+                    key={index} 
+                    to={`mailto:${email}`} 
+                    className="text-gray-800 block hover:underline"
+                  >
+                    {email}
+                  </Link>
+                ))
+              ) : (
+                <p className="text-gray-600">No email addresses available</p>
+              )}
+            </div>
+          </div>
         </div>
-       </div>
       </div>
 
       <div className="relative mt-10">
+        {/* Display the image from the API */}
         <img 
-          src={img}
-          alt="Corporate Office Building"
+          src={imageUrl} 
+          alt={contactInfo.altName?.[0] || "Corporate Office Building"} 
           className="rounded-lg lg:mt-16 mt-10"
         />
         <div className="absolute bottom-0 left-0 bg-blue-800 text-white py-2 px-4 rounded-br-lg">
-          <span className="text-cyan-400">SINCE</span> 1731
+          <span className="text-cyan-400">SINCE</span> {new Date(contactInfo.createdAt).getFullYear() || "N/A"}
         </div>
       </div>
     </div>
-  )
+  );
 }

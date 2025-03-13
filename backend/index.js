@@ -1,203 +1,213 @@
-// app.js
 const express = require('express');
 const fs = require('fs');
 const path = require('path');
+const admin = require("./route/admin");
 const NodeCache = require('node-cache');
-
+const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
-const supplier = require('./route/supplier');
-const chemicalCategory = require('./route/chemicalCategory')
-const chemical = require('./route/chemical')
-const customer = require('./route/customer')
-const chemicalType = require('./route/chemicalType')
-const unit = require('./route/unit')
-const smtp = require('./route/smtp_setting')
-const inquiry = require('./route/inquiry')
-const followup = require('./route/followUp')
-const status = require('./route/statusMaster')
-const source = require('./route/sourceMaster')
-const admin = require("./route/admin")
-const logo = require("./route/logo")
-const count = require("./route/dashboard")
-const blogCategory = require("./route/blogCategory")
-const blog = require("./route/blog")
-const image = require("./route/image")
-const email = require("./route/email")
-const template = require("./route/emailTemplate")
-const {generateAllSitemaps} = require("./route/sitemap")
-const productInquiry = require("./route/productInquiry")
-const sitemapRoute = require("./route/sitemapRoute")   
-const banner = require("./route/banner")
-const aboutUsRoute = require('./route/aboutUs');
-const contactForm = require('./route/contactForm');
-const chemicalMail = require('./route/chemicalMail')
-const career = require('./route/carrer')
-const worldwide = require('./route/worldwide')
-const emailCategory = require('./route/emailCategory')
-const companyLogo = require('./route/companyLogo')
-const contactinfo = require('./route/contactinfo')
+const sharp = require('sharp');
+const compression = require('compression');
 const app = express();
- 
-require('dotenv').config(); 
+require('dotenv').config();
 const cookieParser = require('cookie-parser');
+const { generateAllSitemaps } = require('./route/sitemap');
 
-app.use(cookieParser());  
+app.use(cookieParser());
+app.use(express.json());
+app.use(bodyParser.json({ limit: '10mb' }));
+app.use(bodyParser.urlencoded({ limit: '10mb', extended: true }));
+app.use(compression({ threshold: 1024 }));
 
-app.use(express.json()); // For parsing JSON requests
-
-// Enhanced cache configuration with better options
-const cache = new NodeCache({ 
-  stdTTL: 300, // 5 minutes default TTL
+// Cache setup with 5-hour default TTL
+const cache = new NodeCache({
+  stdTTL: 18000, // 5 hours in seconds
   checkperiod: 600,
   useClones: false,
   deleteOnExpire: true,
-  maxKeys: 1000 // Limit maximum cache entries
+  maxKeys: 1000,
 });
 
-// Improved cache middleware with better error handling and selective caching
-const cacheMiddleware = (duration) => {
-  return (req, res, next) => {
-    // Skip caching for specific conditions
-    if (req.method !== 'GET' || 
-        req.headers['cache-control'] === 'no-cache' ||
-        req.headers['authorization']) {
-      return next();
+// Cache middleware - Fixed to avoid overriding res.send incorrectly
+const cacheMiddleware = (duration = 18000) => (req, res, next) => {
+  if (req.method !== 'GET') return next(); // Only cache GET requests
+
+  const key = `__express__${req.originalUrl}`;
+  const cached = cache.get(key);
+
+  if (cached) {
+    res.setHeader('X-Cache', 'HIT');
+    res.setHeader('Cache-Control', 'public, max-age=18000');
+    return res.send(cached);
+  }
+
+  res.setHeader('X-Cache', 'MISS');
+  const originalJson = res.json;
+  res.json = function (data) {
+    if (res.statusCode < 300) { // Cache only successful responses
+      cache.set(key, data, duration);
     }
-
-    // Create unique cache key including query parameters
-    const key = `__express__${req.originalUrl || req.url}`;
-    
-    try {
-      const cachedResponse = cache.get(key);
-      if (cachedResponse) {
-        // Add cache hit headers
-        res.setHeader('X-Cache', 'HIT');
-        return res.send(cachedResponse);
-      }
-
-      res.setHeader('X-Cache', 'MISS');
-      
-      // Enhanced response interceptor
-      const originalSend = res.send;
-      res.send = function(body) {
-        // Only cache successful responses
-        if (res.statusCode >= 200 && res.statusCode < 300) {
-          cache.set(key, body, duration);
-        }
-        originalSend.call(this, body);
-      };
-
-      next();
-    } catch (error) {
-      console.error('Cache middleware error:', error);
-      next(); // Continue without caching on error
-    }
+    return originalJson.call(this, data);
   };
+  next();
 };
 
-// Add cache monitoring and management endpoints
-app.post('/api/cache/clear/:route', async (req, res) => {
-  try {
-    const route = req.params.route;
-    const keys = cache.keys();
-    let cleared = 0;
-    
-    keys.forEach(key => {
-      if (key.includes(route)) {
-        cache.del(key);
-        cleared++;
-      }
-    });
-    
-    res.json({ 
-      message: `Cache cleared for ${route}`,
-      entriesCleared: cleared 
-    });
-  } catch (error) {
-    res.status(500).json({ error: 'Failed to clear cache' });
-  }
-});
+// Custom image optimization route
+app.get('/images/:filename', async (req, res) => {
+  const { filename } = req.params;
+  const { w = 1200, q = 80, device = 'desktop' } = req.query;
+  const imagePath = path.join(__dirname, 'public', 'download', filename);
 
-app.get('/api/cache/stats', async (req, res) => {
   try {
-    const stats = cache.getStats();
-    res.json({
-      keys: cache.keys().length,
-      hits: stats.hits,
-      misses: stats.misses,
-      ksize: stats.ksize,
-      vsize: stats.vsize
-    });
-  } catch (error) {
-    res.status(500).json({ error: 'Failed to get cache stats' });
-  }
-});
+    if (!fs.existsSync(imagePath)) return res.status(404).send('Image not found');
 
-// 1. First, define all your API routes
-app.use('/api/admin', admin);
-app.use('/api/supplier', supplier);
-app.use('/api/chemicalCategory', chemicalCategory);
-app.use('/api/chemical', chemical);
-app.use('/api/customer', customer);
-app.use('/api/chemicalType', chemicalType);
-app.use('/api/unit', unit);
-app.use('/api/smtp', smtp);
-app.use('/api/inquiry', inquiry)
-app.use('/api/followUp' , followup)
-app.use('/api/status', status)
-app.use('/api/source', source)
-app.use('/api/logo',logo)
-app.use('/api/count', count)
-app.use('/api/image', image)
-app.use('/api/blogCategory', blogCategory)
-app.use("/api/blog",blog);
-app.use('/api/email',email)
-app.use('/api/template', template)
-app.use('/api/productInquiry', productInquiry)
-app.use('/api/sitemap', sitemapRoute)
-app.use('/api/banner', banner)
-app.use('/api/aboutus', aboutUsRoute);
-app.use('/api/contactForm', contactForm);
-app.use('/api/chemicalMail',chemicalMail)
-app.use('/api/career', career); 
-app.use('/api/worldwide', worldwide);
-app.use('/api/contactinfo', contactinfo);
-app.use('/api/emailCategory', emailCategory);
-app.use('/api/companyLogo', companyLogo);
-// 2. Then serve static files
-// Using 'dist' since you're using Vite instead of Create React App
-app.use(express.static(path.join(__dirname, 'dist')));
-app.use(express.static(path.join(__dirname, "public"), {
-    setHeaders: (res, path) => {
-        if (path.endsWith('.xml')) {
-            res.setHeader('Content-Type', 'application/xml');
-        }
+    const cacheKey = `image_${filename}_${w}_${q}`;
+    const cachedImage = cache.get(cacheKey);
+    if (cachedImage) {
+      res.setHeader('X-Cache', 'HIT');
+      return res.type('image/webp').send(cachedImage);
     }
+
+    const ua = req.headers['user-agent'] || '';
+    let targetWidth = parseInt(w, 10);
+    if (ua.includes('Mobile') || device === 'mobile') {
+      targetWidth = Math.min(targetWidth, 600);
+    }
+
+    const optimizedImage = await sharp(imagePath)
+      .resize({ width: targetWidth, withoutEnlargement: true })
+      .webp({ quality: parseInt(q, 10) })
+      .toBuffer();
+
+    cache.set(cacheKey, optimizedImage, 18000);
+    res.setHeader('Cache-Control', 'public, max-age=31536000');
+    res.type('image/webp').send(optimizedImage);
+  } catch (err) {
+    console.error('Image processing error:', err);
+    res.status(500).send('Image processing failed');
+  }
+});
+
+// Static file serving
+app.use(express.static(path.join(__dirname, 'public'), {
+  maxAge: '30d',
+  setHeaders: (res, filepath) => {
+    if (filepath.match(/\.(jpg|jpeg|png|webp)$/)) {
+      res.setHeader('Cache-Control', 'public, max-age=31536000');
+    } else if (filepath.endsWith('.xml')) {
+      res.setHeader('Content-Type', 'application/xml');
+    }
+  },
 }));
 
-// 3. Finally, add the catch-all route LAST
-app.get('*', (req, res) => {
-    res.sendFile(path.join(__dirname, 'dist', 'index.html'));
+app.use(express.static(path.join(__dirname, 'dist'), { maxAge: '30d' }));
+
+// API Routes with caching
+const apiRoutes = [
+  ['/api/admin', admin],
+  ['/api/supplier', require('./route/supplier')],
+  ['/api/chemicalCategory', require('./route/chemicalCategory')],
+  ['/api/chemical', require('./route/chemical')],
+  ['/api/customer', require('./route/customer')],
+  ['/api/chemicalType', require('./route/chemicalType')],
+  ['/api/unit', require('./route/unit')],
+  ['/api/smtp', require('./route/smtp_setting')], 
+  ['/api/inquiry', require('./route/inquiry')],
+  ['/api/followUp', require('./route/followUp')],
+  ['/api/status', require('./route/statusMaster')],
+  ['/api/source', require('./route/sourceMaster')],
+  ['/api/logo', require('./route/logo')],
+  ['/api/count', require('./route/dashboard')],
+  ['/api/image', require('./route/image')],
+  ['/api/blogCategory', require('./route/blogCategory')],
+  ['/api/blog', require('./route/blog')],
+  ['/api/email', require('./route/email')],
+  ['/api/template', require('./route/emailTemplate')],
+  ['/api/productInquiry', require('./route/productInquiry')],
+  ['/api/sitemap', require('./route/sitemapRoute')],
+  ['/api/banner', require('./route/banner')],
+  ['/api/aboutus', require('./route/aboutUs')],
+  ['/api/contactForm', require('./route/contactForm')],
+  ['/api/chemicalMail', require('./route/chemicalMail')],
+  ['/api/career', require('./route/carrer')],
+  ['/api/worldwide', require('./route/worldwide')],
+  ['/api/contactinfo', require('./route/contactinfo')],
+  ['/api/emailCategory', require('./route/emailCategory')],
+  ['/api/companyLogo', require('./route/companyLogo')],
+  ['/api/meta', require('./route/staticMeta')],
+  ['/api/menulist', require('./route/menuListing')],
+  ['/api/slideshow', require('./route/slideShow')],
+  ['/api/whatsup', require('./route/whatsUpInfo')],
+  ['/api/events', require('./route/events')],
+  ['/api/blogCard', require('./route/blogCard')],
+  ['/api/navigationLink', require('./route/NavigationLink')],
+  ['/api/catalogue', require('./route/catalogue')],
+  ['/api/privacy', require('./route/privacy')],
+  ['/api/terms', require('./route/termscondition')],
+  ['/api/careerInfo', require('./route/careerInfo')],
+];
+
+// Apply cache middleware to all API routes
+apiRoutes.forEach(([route, handler]) => {
+  app.use(route, cacheMiddleware(18000), handler);
+});
+
+// Catch-all route for SPA
+app.get('*', cacheMiddleware(18000), (req, res) => {
+  res.sendFile(path.join(__dirname, 'dist', 'index.html'));
 });
 
 // MongoDB Connection
-mongoose.connect(process.env.DATABASE_URI).then(() => {
-    console.log('Connected to MongoDB');
+mongoose.connect(process.env.DATABASE_URI, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+}).then(() => {
+  console.log('Connected to MongoDB');
 }).catch(err => {
-    console.error('Failed to connect to MongoDB', err);
+  console.error('Failed to connect to MongoDB', err);
 });
 
+<<<<<<< HEAD
 const PORT = 3030;
+=======
+// Server startup
+const PORT = process.env.PORT || 3028;
+>>>>>>> de8991ef49deda21f3af7675870cee616579f95f
 app.listen(PORT, () => {
-    console.log(`Server running on port ${PORT}`);
-    // generateAllSitemaps(); // Generate the sitemap when the server starts
+  console.log(`Environment Variables:`, {
+    EMAIL_USER: process.env.EMAIL_USER ? 'Set' : 'Not Set',
+    EMAIL_PASS: process.env.EMAIL_PASS ? 'Set' : 'Not Set',
+  });
+  console.log(`Server running on port ${PORT}`);
+  generateAllSitemaps(); // Generate sitemaps on startup
 });
 
-// Add cache cleanup on server shutdown
+// Cache cleanup on shutdown
 process.on('SIGTERM', () => {
   cache.flushAll();
-  // ... rest of shutdown logic ...
+  console.log('Cache flushed on shutdown');
+  process.exit(0);
 });
+<<<<<<< HEAD
  
   
         
+=======
+
+// SMTP Connection Test (assuming you have nodemailer setup)
+const nodemailer = require('nodemailer');
+const transporter = nodemailer.createTransport({
+  service: 'gmail', // or your email service
+  auth: {
+    user: process.env.EMAIL_USER,
+    pass: process.env.EMAIL_PASS,
+  },
+});
+
+transporter.verify((error, success) => {
+  if (error) {
+    console.error('SMTP connection failed:', error);
+  } else {
+    console.log('SMTP connection successful');
+  }
+});
+>>>>>>> de8991ef49deda21f3af7675870cee616579f95f

@@ -8,13 +8,21 @@ import { Checkbox } from '@/components/ui/checkbox'
 import { toast } from 'react-toastify'
 import { useAddInquiryMutation } from '@/slice/inquiry/inquiry'
 import Swal from 'sweetalert2'
+import ReCAPTCHA from 'react-google-recaptcha'
 
 export default function RightSection() {
   const [loading, setLoading] = useState(false)
+  const [captchaValue, setCaptchaValue] = useState(null)
   const [addInquiry] = useAddInquiryMutation()
 
   const handleSubmit = async (e) => {
     e.preventDefault()
+
+    if (!captchaValue) {
+      toast.error('Please complete the reCAPTCHA')
+      return
+    }
+
     setLoading(true)
 
     try {
@@ -33,6 +41,7 @@ export default function RightSection() {
       })
       
       e.target.reset()
+      setCaptchaValue(null) // Reset reCAPTCHA value
     } catch (error) {
       toast.error(error.data?.message || error.message || 'Something went wrong')
     } finally {
@@ -111,13 +120,18 @@ export default function RightSection() {
           <Input required name="email" type="email" />
         </div>
 
-        <div>
+        <div className='mb-3'>
           <label className="block text-sm font-medium mb-1">
             Your Message<span className="text-red-500">*</span>
           </label>
           <Textarea required name="message" rows={4} />
         </div>
-
+        <div className="w-full mb-3">
+          <ReCAPTCHA
+            sitekey={import.meta.env.VITE_SITE_KEY}
+            onChange={(value) => setCaptchaValue(value)}
+          />
+        </div>
         <div className="flex gap-4">
           <Button 
             type="submit" 
@@ -131,4 +145,3 @@ export default function RightSection() {
     </div>
   )
 }
-

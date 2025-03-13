@@ -1,58 +1,65 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useUpdateLogoMutation, useGetLogoQuery } from '@/slice/logo/LogoSlice';
 
 const LogoForm = () => {
     const [updateLogo, { isLoading }] = useUpdateLogoMutation();
-    const { data: existingLogo } = useGetLogoQuery();
+    const { data: existingLogo, isFetching } = useGetLogoQuery();
     
+    const [formData, setFormData] = useState({
+        headerLogo: null,
+        headerLogoName: '',
+        headerLogoAltName: '',
+        favIcon: null,
+        favIconName: '',
+        favIconAltName: ''
+    });
+
     const [preview, setPreview] = useState({
         headerLogo: null,
         favIcon: null
     });
 
-    // Function to get image URL
-    const getImageUrl = (filename) => {
-        if (!filename) return null;
-        return `/api/logo/download/${filename}`;
-    };
+    useEffect(() => {
+        if (existingLogo) {
+            setFormData(prev => ({
+                ...prev,
+                headerLogoName: existingLogo.headerLogoName || '',
+                headerLogoAltName: existingLogo.headerLogoAltName || '',
+                favIconName: existingLogo.favIconName || '',
+                favIconAltName: existingLogo.favIconAltName || ''
+            }));
+            setPreview({
+                headerLogo: existingLogo.headerLogo ? `/api/logo/download/${existingLogo.headerLogo}` : null,
+                favIcon: existingLogo.favIcon ? `/api/logo/download/${existingLogo.favIcon}` : null
+            });
+        }
+    }, [existingLogo]);
 
-    // Handle file selection
     const handleFileChange = (e, type) => {
         const file = e.target.files[0];
         if (file) {
-            // Create preview URL
-            const previewUrl = URL.createObjectURL(file);
-            setPreview(prev => ({
-                ...prev,
-                [type]: previewUrl
-            }));
+            setFormData(prev => ({ ...prev, [type]: file }));
+            setPreview(prev => ({ ...prev, [type]: URL.createObjectURL(file) }));
         }
     };
 
-    // Handle form submission
+    const handleInputChange = (e) => {
+        const { name, value } = e.target;
+        setFormData(prev => ({ ...prev, [name]: value }));
+    };
+
     const handleSubmit = async (e) => {
         e.preventDefault();
-        
         try {
-            const formData = new FormData();
-            const headerLogoInput = document.querySelector('input[name="headerLogo"]');
-            const favIconInput = document.querySelector('input[name="favIcon"]');
+            const formDataToSend = new FormData();
 
-            if (headerLogoInput.files[0]) {
-                formData.append('headerLogo', headerLogoInput.files[0]);
-            }
-            if (favIconInput.files[0]) {
-                formData.append('favIcon', favIconInput.files[0]);
-            }
+            Object.keys(formData).forEach(key => {
+                if (formData[key]) {
+                    formDataToSend.append(key, formData[key]);
+                }
+            });
 
-            await updateLogo(formData).unwrap();
-            
-            // Clear previews after successful upload
-            setPreview({ headerLogo: null, favIcon: null });
-            
-            // Reset form
-            e.target.reset();
-            
+            await updateLogo(formDataToSend).unwrap();
             alert('Logo updated successfully!');
         } catch (err) {
             console.error('Failed to update logo:', err);
@@ -60,108 +67,60 @@ const LogoForm = () => {
         }
     };
 
-    // Cleanup preview URLs when component unmounts
-    React.useEffect(() => {
-        return () => {
-            if (preview.headerLogo) URL.revokeObjectURL(preview.headerLogo);
-            if (preview.favIcon) URL.revokeObjectURL(preview.favIcon);
-        };
-    }, [preview]);
-
     return (
-        <div className="max-w-7xl mx-auto p-6 bg-white ">
+        <div className="max-w-4xl mx-auto p-6 bg-white shadow-md rounded-lg">
             <h2 className="text-2xl font-bold mb-6 text-gray-800 border-b pb-3">Update Company Logo</h2>
             
-            <form onSubmit={handleSubmit} className="space-y-8">
-                {/* Header Logo Upload */}
-                <div className="bg-gray-50 p-6 rounded-lg border border-gray-200">
-                    <label className="block text-sm font-semibold text-gray-700 mb-2">
-                        Header Logo
-                        <span className="text-red-500 ml-1">*</span>
-                    </label>
-                    <div className="mt-2">
-                        <input
-                            type="file"
-                            name="headerLogo"
-                            accept="image/*"
-                            onChange={(e) => handleFileChange(e, 'headerLogo')}
-                            className="block w-full text-sm text-gray-500
-                                file:mr-4 file:py-2.5 file:px-4
-                                file:rounded-lg file:border-0
-                                file:text-sm file:font-semibold
-                                file:bg-blue-50 file:text-blue-700
-                                hover:file:bg-blue-100
-                                transition-all duration-200
-                                border border-gray-300 rounded-lg
-                                focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                            required
-                        />
-                    </div>
-                    {/* Show preview or existing header logo */}
-                    {(preview.headerLogo || existingLogo?.headerLogo) && (
-                        <div className="mt-4 p-4 bg-white border border-gray-200 rounded-lg">
-                            <p className="text-sm text-gray-600 mb-2">Preview:</p>
-                            <img
-                                src={preview.headerLogo || getImageUrl(existingLogo?.headerLogo)}
-                                alt="Header Logo Preview"
-                                className="h-20 object-contain bg-white"
+            {isFetching ? (
+                <p className="text-gray-500">Loading logo data...</p>
+            ) : (
+                <form onSubmit={handleSubmit} className="space-y-6">
+                    {[
+                        { label: 'Header Logo', name: 'headerLogo', previewKey: 'headerLogo' },
+                        { label: 'Favicon', name: 'favIcon', previewKey: 'favIcon' }
+                    ].map(({ label, name, previewKey }) => (
+                        <div key={name} className="bg-gray-50 p-6 rounded-lg border border-gray-200">
+                            <label className="block text-sm font-semibold text-gray-700 mb-2">{label}</label>
+                            <input 
+                                type="file" 
+                                name={name} 
+                                accept="image/*" 
+                                onChange={(e) => handleFileChange(e, name)} 
+                                className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:border file:border-gray-300 file:text-gray-700 file:bg-white hover:file:bg-gray-100"
+                            />
+                            {preview[previewKey] && (
+                                <div className="mt-4 p-4 bg-white border border-gray-200 rounded-lg">
+                                    <p className="text-sm text-gray-600 mb-2">Preview:</p>
+                                    <img src={preview[previewKey]} alt={label || "img"} className="h-20 object-contain" />
+                                </div>
+                            )}
+                            <input 
+                                type="text" 
+                                name={`${name}Name`} 
+                                value={formData[`${name}Name`]} 
+                                onChange={handleInputChange} 
+                                placeholder={`${label} Name`} 
+                                className="w-full px-4 py-2 mt-2 border border-gray-300 rounded-md focus:ring focus:ring-indigo-200"
+                            />
+                            <input 
+                                type="text" 
+                                name={`${name}AltName`} 
+                                value={formData[`${name}AltName`]} 
+                                onChange={handleInputChange} 
+                                placeholder={`${label} Alt Name`} 
+                                className="w-full px-4 py-2 mt-2 border border-gray-300 rounded-md focus:ring focus:ring-indigo-200"
                             />
                         </div>
-                    )}
-                </div>
-
-                {/* Favicon Upload */}
-                <div className="bg-gray-50 p-6 rounded-lg border border-gray-200">
-                    <label className="block text-sm font-semibold text-gray-700 mb-2">
-                        Favicon
-                        <span className="text-red-500 ml-1">*</span>
-                    </label>
-                    <div className="mt-2">
-                        <input
-                            type="file"
-                            name="favIcon"
-                            accept="image/*"
-                            onChange={(e) => handleFileChange(e, 'favIcon')}
-                            className="block w-full text-sm text-gray-500
-                                file:mr-4 file:py-2.5 file:px-4
-                                file:rounded-lg file:border-0
-                                file:text-sm file:font-semibold
-                                file:bg-blue-50 file:text-blue-700
-                                hover:file:bg-blue-100
-                                transition-all duration-200
-                                border border-gray-300 rounded-lg
-                                focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                            required
-                        />
-                    </div>
-                    {/* Show preview or existing favicon */}
-                    {(preview.favIcon || existingLogo?.favIcon) && (
-                        <div className="mt-4 p-4 bg-white border border-gray-200 rounded-lg">
-                            <p className="text-sm text-gray-600 mb-2">Preview:</p>
-                            <img
-                                src={preview.favIcon || getImageUrl(existingLogo?.favIcon)}
-                                alt="Favicon Preview"
-                                className="h-20 w-20 object-contain bg-white"
-                            />
-                        </div>
-                    )}
-                </div>
-
-                {/* Submit Button */}
-                <div className="pt-4">
-                    <button
-                        type="submit"
-                        disabled={isLoading}
-                        className={`w-full sm:w-1/4 py-2.5 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white 
-                            ${isLoading 
-                                ? 'bg-gray-400 cursor-not-allowed' 
-                                : 'bg-blue-600 hover:bg-blue-700 transform transition-all duration-200 hover:shadow-md'
-                            } focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500`}
-                    >
+                    ))}
+                    
+                    <button 
+                        type="submit" 
+                        disabled={isLoading} 
+                        className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2 px-4 rounded-md transition duration-300">
                         {isLoading ? 'Updating...' : 'Update Logo'}
                     </button>
-                </div>
-            </form>
+                </form>
+            )}
         </div>
     );
 };

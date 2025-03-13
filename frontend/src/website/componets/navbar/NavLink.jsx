@@ -1,5 +1,4 @@
 import { useNavigate } from "react-router-dom";
-import { motion } from "framer-motion";
 import { useState } from "react";
 
 export function NavLink({
@@ -13,9 +12,8 @@ export function NavLink({
   const [isHovered, setIsHovered] = useState(false);
   const [activeCategory, setActiveCategory] = useState(null);
 
-  // Add debug logging
   const handleCategoryClick = (category) => {
-    console.log("Category clicked:", category); // Debug log
+    console.log("Category clicked:", category);
     navigate(`/${category.slug}`, {
       state: { 
         chemicalName: category.name,
@@ -26,8 +24,8 @@ export function NavLink({
   };
 
   const handleSubCategoryClick = (category, subcategory) => {
-    console.log("Subcategory clicked:", subcategory); // Debug log
-    console.log("Parent category:", category.slug); // Debug log
+    console.log("Subcategory clicked:", subcategory);
+    console.log("Parent category:", category.slug);
     navigate(`/${category.slug}/${subcategory.slug}`, {
       state: { 
         chemicalName: subcategory.category,
@@ -65,11 +63,14 @@ export function NavLink({
       </div>
 
       {isHovered && categories?.length > 0 && (
-        <motion.div
-          initial={{ opacity: 0, y: -10 }}
-          animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0, y: -10 }}
-          className="absolute left-0 w-64  bg-blue-800 text-white shadow-lg z-50"
+        <div
+          className={`
+            absolute left-0 w-64 bg-blue-800 text-white shadow-lg z-50
+            transition-all duration-200 ease-in-out
+            ${isHovered 
+              ? 'opacity-100 translate-y-0' 
+              : 'opacity-0 -translate-y-2 pointer-events-none'}
+          `}
         >
           {categories.map((category) => (
             <div
@@ -86,11 +87,14 @@ export function NavLink({
               </div>
 
               {activeCategory === category && category.subCategories?.length > 0 && (
-                <motion.div
-                  initial={{ opacity: 0, x: -10 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  exit={{ opacity: 0, x: -10 }}
-                  className="absolute left-full top-0 w-[40vh] bg-blue-800 text-white shadow-lg "
+                <div
+                  className={`
+                    absolute left-full top-0 w-[40vh] bg-blue-800 text-white shadow-lg
+                    transition-all duration-200 ease-in-out
+                    ${activeCategory === category 
+                      ? 'opacity-100 translate-x-0' 
+                      : 'opacity-0 -translate-x-2 pointer-events-none'}
+                  `}
                 >
                   <div className="grid grid-cols-2 gap-2 p-2">
                     {category.subCategories.map((subcategory) => (
@@ -103,11 +107,11 @@ export function NavLink({
                       </div>
                     ))}
                   </div>
-                </motion.div>
+                </div>
               )}
             </div>
           ))}
-        </motion.div>
+        </div>
       )}
     </div>
   );

@@ -7,25 +7,30 @@ export default function CountriesTable({ data, isIndiaTable = false }) {
         return chunkedArr;
     };
 
+    const getColumnSize = () => (window.innerWidth < 640 ? 2 : 5); // 2 columns for small screens, 5 for larger screens
+
     if (!isIndiaTable) {
-        // International table logic remains the same
-        const rows = chunkArray(data, 5);
-        
+        const rows = chunkArray(data, getColumnSize());
+
         return (
             <div className="overflow-x-auto w-full">
-                <table className="table-fixed w-full divide-y divide-gray-200">
+                <table className="table-auto w-full divide-y divide-gray-200">
                     <tbody className="bg-white divide-y divide-gray-800">
                         {rows.map((row, rowIndex) => (
                             <tr key={rowIndex}>
                                 {row.map((item, colIndex) => (
-                                    <td key={colIndex} className="px-4 py-2 border border-gray-300 whitespace-normal">
-                                        <div className="text-sm text-gray-900">
-                                            {item.name}
-                                        </div>
+                                    <td
+                                        key={colIndex}
+                                        className="px-4 py-2 border border-gray-300 text-sm whitespace-normal"
+                                    >
+                                        <div className="text-gray-900">{item.name}</div>
                                     </td>
                                 ))}
-                                {[...Array(5 - row.length)].map((_, i) => (
-                                    <td key={`empty-${i}`} className="px-4 py-2 border">
+                                {[...Array(getColumnSize() - row.length)].map((_, i) => (
+                                    <td
+                                        key={`empty-${i}`}
+                                        className="px-4 py-2 border"
+                                    >
                                         <div className="text-sm text-gray-900"></div>
                                     </td>
                                 ))}
@@ -37,37 +42,36 @@ export default function CountriesTable({ data, isIndiaTable = false }) {
         );
     }
 
-    // For India table, create a flat array of cells
     const flatCells = data.reduce((acc, item) => {
-        // Add state as a cell
         if (item.state) {
             acc.push({
                 content: item.state,
-                isState: true
+                isState: true,
             });
         }
-        // Add cities as cells
-        item.cities.forEach(city => {
+        item.cities.forEach((city) => {
             acc.push({
                 content: city,
-                isState: false
+                isState: false,
             });
         });
         return acc;
     }, []);
 
-    // Create rows with 5 columns
-    const rows = chunkArray(flatCells, 5);
+    const rows = chunkArray(flatCells, getColumnSize());
 
     return (
         <div className="overflow-x-auto w-full">
-            <table className="table-fixed w-full divide-y divide-gray-200">
+            <table className="table-auto w-full divide-y divide-gray-200">
                 <tbody className="bg-white divide-y divide-gray-200">
                     {rows.map((row, rowIndex) => (
                         <tr key={rowIndex}>
                             {row.map((cell, colIndex) => (
-                                <td key={colIndex} className="px-4 py-2 border whitespace-normal">
-                                    <div className="text-sm text-gray-900">
+                                <td
+                                    key={colIndex}
+                                    className="px-4 py-2 border text-sm whitespace-normal"
+                                >
+                                    <div className="text-gray-900">
                                         {cell.isState ? (
                                             <div className="font-bold">{cell.content}</div>
                                         ) : (
@@ -76,8 +80,11 @@ export default function CountriesTable({ data, isIndiaTable = false }) {
                                     </div>
                                 </td>
                             ))}
-                            {[...Array(5 - row.length)].map((_, i) => (
-                                <td key={`empty-${i}`} className="px-4 py-2 border">
+                            {[...Array(getColumnSize() - row.length)].map((_, i) => (
+                                <td
+                                    key={`empty-${i}`}
+                                    className="px-4 py-2 border"
+                                >
                                     <div className="text-sm text-gray-900"></div>
                                 </td>
                             ))}

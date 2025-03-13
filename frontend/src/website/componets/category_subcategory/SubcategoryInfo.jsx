@@ -25,7 +25,7 @@ const SubCategoryInfo = ({ categorySlug, subsubCategorySlug }) => {
       {!subsubCategorySlug && (
         <div className="flex flex-col md:flex-row items-center justify-between gap-6">
           <div className="w-full md:w-1/4">
-            <img src={`/api/logo/download/${photo}`} alt={category} className="w-full object-contain" />
+            <img src={`/api/logo/download/${photo}`} alt={category || "hey"} className="w-full object-contain" />
           </div>
           <div className="w-full md:w-3/4">
             <p className="text-gray-700 text-justify">{details}</p>

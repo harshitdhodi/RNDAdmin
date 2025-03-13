@@ -195,7 +195,7 @@ const EditCategory = () => {
           <div className="mt-2 w-56 relative group">
             <img
               src={photo ? URL.createObjectURL(photo) : `/api/logo/download/${currentPhoto}`}
-              alt={altText}
+              alt={altText || "Category Image"}
               className="h-32 w-56 object-cover"
             />
             <button

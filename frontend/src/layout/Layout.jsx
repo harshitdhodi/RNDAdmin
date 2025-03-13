@@ -1,10 +1,8 @@
 import React from 'react';
-import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
+import { SidebarProvider } from "@/components/ui/sidebar";
 import AppSidebar from "@/layout/components/app-sidebar"; // Ensure correct path to AppSidebar
 import { Outlet } from "react-router-dom";
-import FollowUpModal from '@/inquiry/FollowUpModel';
 import Navbar from './components/Navbar';
-import Footer from '@/website/componets/home/Footer';
 
 function Layout() {
   return (

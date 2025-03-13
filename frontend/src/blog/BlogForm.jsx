@@ -211,32 +211,30 @@ export default function BlogForm() {
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-4">
-        <div>
-          <label className="block text-sm font-medium">Blog Category</label>
-          <select
-            name="category"
-            value={formData.category}
-            onChange={(e) => {
-              setFormData(prev => ({
-                ...prev,
-                category: e.target.value
-              }));
-            }}
-            className={`w-full rounded-md border ${
-              formErrors.category ? 'border-red-500' : 'border-gray-300'
-            } p-2`}
-            required
-          >
-            <option value="">Select a category</option>
-            {categories?.map((cat) => (
-              <option key={cat._id} value={cat._id}>
-                {cat.category}
-              </option>
-            ))}
-          </select>
-          {formErrors.category && (
-            <p className="text-red-500 text-sm mt-1">{formErrors.category}</p>
-          )}
+      <div>
+            <label className="block text-sm font-medium">Blog Category</label>
+            <select
+                name="category"
+                value={formData.category}
+                onChange={(e) => setFormData(prev => ({
+                    ...prev,
+                    category: e.target.value
+                }))}
+                className={`w-full rounded-md border ${
+                    formErrors.category ? "border-red-500" : "border-gray-300"
+                } p-2`}
+                required
+            >
+                <option value="">Select a category</option>
+                {categories?.map(cat => (
+                    <option key={cat._id} value={cat._id}>
+                        {cat.category}
+                    </option>
+                ))}
+            </select>
+            {formErrors.category && (
+                <p className="text-red-500 text-sm mt-1">{formErrors.category}</p>
+            )}
         </div>
         <div>
           <label className="block text-sm font-medium">Title</label>

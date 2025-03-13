@@ -6,7 +6,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
 import { ChevronDown, LayoutDashboard, PlusSquare, List, TruckIcon, Settings, ArrowLeftRightIcon, UsersRoundIcon, Truck, Flower, MailQuestion, FileQuestion, ChartNoAxesGanttIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { Link , useLocation } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 
 // Updated JSON structure with parent-child relationships
 const menuData = [
@@ -14,7 +14,7 @@ const menuData = [
     title: "Dashboard",
     icon: LayoutDashboard,
     url: "/dashboard",
-    
+
   },
   {
     title: "Chemical",
@@ -46,7 +46,7 @@ const menuData = [
       { title: "List", icon: List, url: "/customer-table" },
       { title: "Add New", icon: PlusSquare, url: "/customer-form" },
       { title: "Chemical Mapping ", icon: ArrowLeftRightIcon, url: "/customer-chemical-mapping" },
-    
+
     ]
   },
   {
@@ -57,7 +57,7 @@ const menuData = [
       { title: "Email Template", icon: PlusSquare, url: "/email-template-table" },
       { title: "Send Email ", icon: ArrowLeftRightIcon, url: "/email-form" },
       { title: "Email Category", icon: ArrowLeftRightIcon, url: "/email-category" },
-     ]
+    ]
   },
   {
     title: "Inquiry",
@@ -67,18 +67,27 @@ const menuData = [
       { title: "Add New", icon: PlusSquare, url: "/add-inquiry" },
       { title: "Inquiry Sources ", icon: List, url: "source-table" },
       { title: "Inquiry Status ", icon: List, url: "status-table" },
-    
+
     ]
   },
   {
     title: "Website",
     icon: LayoutDashboard,
     children: [
-      { title: "Logo", icon: List,
+      {
+        title: "Logo", icon: List,
         children: [
-        
+
           { title: "Logo Form", icon: PlusSquare, url: "/add-logo" },
-        ] 
+        ]
+      },
+      {
+        title: "Menu",
+        icon: List,
+        children: [
+          { title: "Menu List", icon: List, url: "/menu-listing-table" },
+          { title: "Add New", icon: PlusSquare, url: "/menu-listing-form" },
+        ]
       },
       {
         title: "Blog",
@@ -86,6 +95,7 @@ const menuData = [
         children: [
           { title: "Blog Categories", icon: List, url: "/blog-category-table" },
           { title: "Blog", icon: PlusSquare, url: "/blog-table" },
+          { title: "Blog Card", icon: PlusSquare, url: "/blogCard" },
         ]
       },
       // {
@@ -107,12 +117,14 @@ const menuData = [
         title: "Banner",
         icon: FileQuestion,
         children: [
-          { title: "List", icon: List, url: 
-            "/banner-table" },
+          {
+            title: "List", icon: List, url:
+              "/banner-table"
+          },
           { title: "Add New", icon: PlusSquare, url: "/add-banner" },
 
         ]
-      } , 
+      },
       {
         title: "Worldwide",
         icon: FileQuestion,
@@ -125,6 +137,7 @@ const menuData = [
         icon: FileQuestion,
         children: [
           { title: "List", icon: List, url: "/career-table" },
+          { title: "Career Info", icon: PlusSquare, url: "/career-info-form" },
         ]
       },
       {
@@ -134,9 +147,64 @@ const menuData = [
           { title: "List", icon: List, url: "/contact-info-table" },
           // { title: "Add New", icon: PlusSquare, url: "/contact-info/add" },
         ]
+      },
+      {
+        title: "Slide Show",
+        icon: FileQuestion,
+        children: [
+          { title: "slideshow Table", icon: PlusSquare, url: "/slideShow-table" },
+          { title: "slide show", icon: List, url: "/slideShow-form" },
+        ]
+      },
+      {
+        title: "WhatsUp Info",
+        icon: FileQuestion,
+        children: [
+          // {title:"List",icon:List,url:"/whatsUpInfo-table"},
+          { title: "Add New", icon: PlusSquare, url: "/whatsUpInfo-form" }
+        ]
+      },
+      {
+        title: "Events",
+        icon: FileQuestion,
+        children: [
+          { title: "List", icon: List, url: "/events" },
+        ]
+      },
+      {
+        title: "Meta Info",
+        icon: FileQuestion,
+        children: [
+          { title: "Meta List", icon: List, url: "/meta-table" },
+          { title: "Meta Form", icon: List, url: "/meta-form" },
+          // { title: "Add New", icon: PlusSquare, url: "/contact-info/add" },
+        ]
+      },
+      {
+        title: "Navigation Link",
+        icon: FileQuestion,
+        children: [
+          { title: "List", icon: List, url: "/navigationLink" },
+          { title: "Add New", icon: PlusSquare, url: "/navigationLink-form" },
+        ]
+      }, 
+      {
+        title:"catalogue Management",
+        icon: FileQuestion,
+        children:[
+          {title:"Catalogue List",icon:List,url:"/catalogue-table"},
+          // {title:"Add New",icon:PlusSquare,url:"/catalogue-form"}
+        ]
+      } ,
+      {
+        title: "PrivacyPolicy and Terms",
+        icon: FileQuestion,
+        children: [
+          { title: "Privacy Policy", icon: List, url: "/privacypolicy-terms" },
+          { title: "Terms and Condition", icon: PlusSquare, url: "/terms-and-conditions-form" },
+        ]
       }
-
-    ] 
+    ]
   }
 ];
 
@@ -197,9 +265,9 @@ export default function AppSidebar() {
         </SidebarGroup>
       </SidebarContent>
       {/* <Separator className="my-4" /> */}
+      {/* <ScrollArea className="p-4">
       <ScrollArea className="p-4">
-      <ScrollArea className="p-4">
-        {/* <Button variant="ghost" className="w-full justify-start gap-2 font-normal" onClick={toggleUserMenu}>
+        <Button variant="ghost" className="w-full justify-start gap-2 font-normal" onClick={toggleUserMenu}>
           <div className="flex items-center gap-2">
             <div className="w-8 h-8 rounded-full bg-primary flex items-center justify-center">
               <span className="text-xs font-medium text-primary-foreground">SC</span>
@@ -210,10 +278,10 @@ export default function AppSidebar() {
             </div>
             <ChevronDown className={cn("w-4 h-4 ml-auto transition-transform", { "-rotate-180": userMenuOpen })} />
           </div>
-        </Button> */}
+        </Button>
 
       
-        {/* {userMenuOpen && (
+        {userMenuOpen && (
           <div className="mt-2 pl-8">
             <Button variant="ghost" className="w-full justify-start gap-2 font-normal text-sm">
               Profile
@@ -225,9 +293,9 @@ export default function AppSidebar() {
               Logout
             </Button>
           </div>
-        )} */}
+        )}
       </ScrollArea> 
-      </ScrollArea>
+      </ScrollArea> */}
     </Sidebar>
   );
 }

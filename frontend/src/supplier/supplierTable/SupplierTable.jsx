@@ -143,9 +143,9 @@ const SuppliersTable = () => {
                                     <TableCell className="p-2">
                                         <DropdownMenu>
                                             <DropdownMenuTrigger asChild>
-                                                <Button variant="ghost" size="icon">
+                                                <button className='p-3'>
                                                     <EllipsisVertical className="w-4 h-4" />
-                                                </Button>
+                                                </button>
                                             </DropdownMenuTrigger>
                                             <DropdownMenuContent align="end">
                                                 <DropdownMenuItem onClick={() => handleAddChemical(supplier)}>
@@ -185,14 +185,14 @@ const SuppliersTable = () => {
                                     </TableCell>
                                     <TableCell>{supplier.country}</TableCell>
                                     <TableCell>
-                                        <a
-                                            href={supplier.website}
+                                        <Link
+                                            to={supplier.website}
                                             target="_blank"
                                             rel="noopener noreferrer"
                                             className="text-blue-600 hover:underline"
                                         >
                                             {supplier.website}
-                                        </a>
+                                        </Link>
                                     </TableCell>
                                 </TableRow>
                             </React.Fragment>

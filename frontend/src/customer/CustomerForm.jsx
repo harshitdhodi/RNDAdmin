@@ -6,11 +6,9 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useAddCustomerMutation } from '@/slice/customerSlice/customerApiSlice';
 import { useNavigate } from 'react-router-dom';
 import { BreadcrumbWithCustomSeparator } from '@/breadCrumb/BreadCrumb';
-import { Country, State, City } from 'country-state-city';
 import { toast } from 'react-toastify';
 
 const breadcrumbItems = [
@@ -30,85 +28,18 @@ export default function CustomerForm() {
     address: '',
     country: '',
     state: '',
-    county: '',
     city: '',
     description: '',
     image: null,
   });
 
-  const [countries, setCountries] = useState([]);
-  const [states, setStates] = useState([]);
-  const [counties, setCounties] = useState([]);
-  const [cities, setCities] = useState([]);
-
   const navigate = useNavigate();
-
-  useEffect(() => {
-    const countryList = Country.getAllCountries();
-    setCountries(countryList);
-  }, []);
-
-  useEffect(() => {
-    if (formData.country) {
-      const stateList = State.getStatesOfCountry(formData.country);
-      setStates(stateList);
-      setFormData(prev => ({
-        ...prev,
-        state: '',
-        county: '',
-        city: ''
-      }));
-    } else {
-      setStates([]);
-    }
-  }, [formData.country]);
-
-  useEffect(() => {
-    if (formData.country && formData.state) {
-      const cityList = City.getCitiesOfState(formData.country, formData.state);
-      setCities(cityList);
-      setFormData(prev => ({
-        ...prev,
-        city: ''
-      }));
-    } else {
-      setCities([]);
-    }
-  }, [formData.country, formData.state]);
-
-  useEffect(() => {
-    if (formData.state) {
-      const mockCounties = getMockCounties(formData.state);
-      setCounties(mockCounties);
-      setFormData(prev => ({
-        ...prev,
-        county: ''
-      }));
-    } else {
-      setCounties([]);
-    }
-  }, [formData.state]);
-
-  const getMockCounties = (stateCode) => {
-    return [
-      { code: 'county1', name: 'County 1' },
-      { code: 'county2', name: 'County 2' },
-      { code: 'county3', name: 'County 3' },
-    ];
-  };
 
   const handleInputChange = (e) => {
     const { id, value } = e.target;
     setFormData((prev) => ({
       ...prev,
       [id]: value,
-    }));
-  };
-
-  const handleSelectChange = (value, field) => {
-    setFormData((prev) => ({
-      ...prev,
-      [field]: value,
     }));
   };
 
@@ -196,7 +127,6 @@ export default function CustomerForm() {
           address: '',
           country: '',
           state: '',
-          county: '',
           city: '',
           description: '',
           image: null,
@@ -293,65 +223,34 @@ export default function CustomerForm() {
               {/* Country */}
               <div className="space-y-2">
                 <Label htmlFor="country">Country</Label>
-                <Select
+                <Input
+                  id="country"
                   value={formData.country}
-                  onValueChange={(value) => handleSelectChange(value, 'country')}
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select Country" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {countries.map((country) => (
-                      <SelectItem key={country.isoCode} value={country.isoCode}>
-                        {country.name}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                  onChange={handleInputChange}
+                />
               </div>
 
               {/* State */}
               <div className="space-y-2">
                 <Label htmlFor="state">State/Province</Label>
-                <Select
+                <Input
+                  id="state"
                   value={formData.state}
-                  onValueChange={(value) => handleSelectChange(value, 'state')}
-                  disabled={!formData.country}
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select State" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {states.map((state) => (
-                      <SelectItem key={state.isoCode} value={state.isoCode}>
-                        {state.name}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                  onChange={handleInputChange}
+                />
               </div>
 
               {/* City */}
               <div className="space-y-2">
                 <Label htmlFor="city">City</Label>
-                <Select
+                <Input
+                  id="city"
                   value={formData.city}
-                  onValueChange={(value) => handleSelectChange(value, 'city')}
-                  disabled={!formData.state}
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select City" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {cities.map((city) => (
-                      <SelectItem key={city.name} value={city.name}>
-                        {city.name}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                  onChange={handleInputChange}
+                />
               </div>
             </div>
+
             {/* Address */}
             <div className="space-y-2">
               <Label htmlFor="address">Address</Label>
@@ -362,6 +261,7 @@ export default function CustomerForm() {
                 onChange={handleInputChange}
               />
             </div>
+
             {/* Upload image */}
             <div className="space-y-2">
               <Label>Upload image</Label>
@@ -425,7 +325,6 @@ export default function CustomerForm() {
                     address: '',
                     country: '',
                     state: '',
-                    county: '',
                     city: '',
                     description: '',
                     image: null,

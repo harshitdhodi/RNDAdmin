@@ -5,6 +5,7 @@ import CategoryCards from '../componets/home/CategoryCards';
 import FeaturedProducts from '../componets/home/FeatureProducts';
 import CorporateProfile from '../componets/home/CorporateProfile';
 import Footer from '../componets/home/Footer';
+// import FeaturedProducts from '../componets/home/feature/FeatureProducts';
 
 const HomePage = () => {
   return (

@@ -1,32 +1,38 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>http://localhost:3000/12-phenylene-diacetic</loc>
-    <lastmod>2024-12-20T08:51:50.427Z</lastmod>
+    <loc>http://localhost:3028/5-sulphosalicylic-acid</loc>
+    <lastmod>2025-03-06T09:53:37.386Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>http://localhost:3000/chloro-sulphonic-acid-ar</loc>
-    <lastmod>2024-12-20T08:54:29.074Z</lastmod>
+    <loc>http://localhost:3028/chloro-sulphonic-acid-ar</loc>
+    <lastmod>2025-01-15T04:06:45.996Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>http://localhost:3000/chloro-sulphonic-acid-pract</loc>
-    <lastmod>2024-12-21T09:03:37.102Z</lastmod>
+    <loc>http://localhost:3028/14-diazabicyclo-222-octane-dabco-tedtriethylenediamine-store-at-2-8-deg-c</loc>
+    <lastmod>2024-12-30T03:33:59.831Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>http://localhost:3000/acetic-acid-el-grade</loc>
-    <lastmod>2024-12-23T06:04:41.175Z</lastmod>
+    <loc>http://localhost:3028/chloro-sulphonic-acid-pract</loc>
+    <lastmod>2025-03-06T10:37:59.436Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>http://localhost:3000/</loc>
-    <lastmod>2024-12-28T04:08:53.525Z</lastmod>
+    <loc>http://localhost:3028/fluo-boric-acid-abt-40percent</loc>
+    <lastmod>2025-03-07T04:04:57.097Z</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>http://localhost:3028/test</loc>
+    <lastmod>2025-03-07T03:43:29.858Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>

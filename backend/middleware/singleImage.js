@@ -113,4 +113,4 @@ const singleImage = async (req, res, next) => {
   }
 };
 
-module.exports = { singleImage };
+module.exports = { singleImage ,uploadDir };
