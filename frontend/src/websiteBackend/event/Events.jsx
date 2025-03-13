@@ -6,8 +6,9 @@ import JoditEditor from 'jodit-react';
 const EventForm = () => {
   const [form] = Form.useForm();
   const [events, setEvents] = useState('');
-  const [eventId, setEventId] = useState(null); // Added to store the event ID
-
+  const [eventId, setEventId] = useState(null);
+  const [loading, setLoading] = useState(false);
+  
   const editorRef = useRef(null);
    
   const config = {
@@ -32,39 +33,47 @@ const EventForm = () => {
     ],
   };
 
+  const fetchEvent = async () => {
+    try {
+      setLoading(true);
+      // Add timestamp to prevent caching
+      const response = await axios.get(`/api/events/getEvent?t=${new Date().getTime()}`);
+      const eventData = response.data[0];
+      setEventId(eventData._id);
+      setEvents(eventData.events);
+      form.setFieldsValue({ events: eventData.events });
+    } catch (error) {
+      console.error('Failed to fetch event:', error);
+      message.error('Failed to fetch event.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
-    const fetchEvent = async () => {
-      try {
-        const response = await axios.get('/api/events/getEvent');
-        const eventData = response.data[0];
-        setEventId(eventData._id); // Store the ID in state
-        setEvents(eventData.events);
-        form.setFieldsValue({ events: eventData.events });
-      } catch (error) {
-        console.error('Failed to fetch event:', error);
-        message.error('Failed to fetch event.');
-      }
-    };
-
     fetchEvent();
-  }, [form]);
+  }, [form]); // Keep form in dependencies
 
-  const onFinish = async (values) => { // Changed to accept form values
+  const onFinish = async () => {
     try {
       if (!eventId) {
         message.error('No event ID available');
         return;
       }
 
+      setLoading(true);
       await axios.put(`/api/events/editEvent/${eventId}`, {
         events: events,
       });
       message.success('Event updated successfully!');
-      form.resetFields();
-      setEvents('');
+      
+      // Refetch data after successful update
+      await fetchEvent();
     } catch (error) {
       console.error('Failed to update event:', error);
       message.error('Failed to update event.');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -73,10 +82,10 @@ const EventForm = () => {
       form={form} 
       layout="vertical" 
       onFinish={onFinish}
-      name="event_form" // Added form name
+      name="event_form"
     >
       <Form.Item
-        name="events" // Added name prop to link with form
+        name="events"
         label="Event Description"
         rules={[{ required: true, message: 'Please input the event details!' }]}
       >
@@ -84,13 +93,23 @@ const EventForm = () => {
           ref={editorRef} 
           value={events} 
           config={config} 
-          onChange={(newContent) => setEvents(newContent)} // Fixed onChange handler
+          onChange={(newContent) => {
+            setEvents(newContent);
+            form.setFieldsValue({ events: newContent });
+          }}
         />
       </Form.Item>
 
       <Form.Item>
-        <Button type="primary" htmlType="submit">
+        <Button type="primary" htmlType="submit" loading={loading}>
           Update Event
+        </Button>
+        <Button 
+          onClick={fetchEvent} 
+          style={{ marginLeft: 8 }} 
+          loading={loading}
+        >
+          Refresh Data
         </Button>
       </Form.Item>
     </Form>

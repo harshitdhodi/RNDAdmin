@@ -110,7 +110,7 @@ const apiRoutes = [
   ['/api/customer', require('./route/customer')],
   ['/api/chemicalType', require('./route/chemicalType')],
   ['/api/unit', require('./route/unit')],
-  ['/api/smtp', require('./route/smtp_setting')],
+  ['/api/smtp', require('./route/smtp_setting')], 
   ['/api/inquiry', require('./route/inquiry')],
   ['/api/followUp', require('./route/followUp')],
   ['/api/status', require('./route/statusMaster')],

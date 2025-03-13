@@ -64,14 +64,21 @@ export default function FeaturedProducts() {
 
     const fetchEvent = async () => {
       try {
-        const response = await fetch('/api/events/getEvent');
+        setIsLoading(true); // Assuming you have a loading state defined
+        
+        // Add timestamp parameter to prevent caching
+        const response = await fetch(`/api/events/getEvent?t=${new Date().getTime()}`);
+        
         if (!response.ok) {
           throw new Error('Failed to fetch event');
         }
+        
         const data = await response.json();
         setEvent(data[0]); // Assuming the API returns an array of events
       } catch (err) {
         setError(err.message);
+      } finally {
+        setIsLoading(false); // Reset loading state when done
       }
     };
 
@@ -108,15 +115,22 @@ export default function FeaturedProducts() {
                     <div className="h-full flex flex-col items-center justify-between">
                       <div className="relative w-full h-[50%]  md:h-[60%]  flex items-center justify-center">
                         {product.image ? (
-                          <img
-                            alt={product.title}
-                            className="object-contain mt-16 w-full h-full"
-                            src={product.image} 
-                            loading="lazy"
-                            title={product.title}
-                            style={{ zIndex: 1 }}
-                            onError={(e) => { e.target.onerror = null; e.target.src = defaultImage; }}
-                          />
+                        <img
+                        alt={product.title}
+                        className="object-contain mt-16 w-auto max-w-full max-h-full"
+                        src={product.image}
+                        srcSet={`
+                          ${product.image}?w=400 400w,
+                          ${product.image}?w=800 800w,
+                          ${product.image}?w=1200 1200w
+                        `}
+                        sizes="(max-width: 600px) 400px, (max-width: 1200px) 800px, 1200px"
+                        loading="lazy"
+                        title={product.title}
+                        style={{ zIndex: 1 }}
+                        onError={(e) => { e.target.onerror = null; e.target.src = defaultImage; }}
+                      />
+                      
                         ) : (
                           <img
                             alt={product.title}

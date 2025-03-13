@@ -41,7 +41,7 @@ export default function Footer() {
           // When footer is about to enter viewport
           if (entry.isIntersecting) {
             // Dynamically import the actual image
-            import('../../images/footerbg.jpg').then(imgModule => {
+            import('../../images/footerbg.png').then(imgModule => {
               setBgImage(imgModule.default);
             }).catch(error => {
               console.error('Failed to load footer background image:', error);
