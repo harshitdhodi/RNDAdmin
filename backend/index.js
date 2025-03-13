@@ -1,213 +1,317 @@
 const express = require('express');
-const fs = require('fs');
-const path = require('path');
-const admin = require("./route/admin");
-const NodeCache = require('node-cache');
-const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
-const sharp = require('sharp');
+const cors = require('cors');
+const serveStatic = require('serve-static');
+const path = require('path');
+const cron = require('node-cron');
 const compression = require('compression');
-const app = express();
+const { exportAndBackupAllCollectionsmonthly } = require("./controller/Backup");
 require('dotenv').config();
 const cookieParser = require('cookie-parser');
-const { generateAllSitemaps } = require('./route/sitemap');
-
+const mcache = require('memory-cache');
+//test
+const app = express();
+// Enable compression
+app.use(compression());
+app.use(express.json()); 
 app.use(cookieParser());
-app.use(express.json());
-app.use(bodyParser.json({ limit: '10mb' }));
-app.use(bodyParser.urlencoded({ limit: '10mb', extended: true }));
-app.use(compression({ threshold: 1024 }));
-
-// Cache setup with 5-hour default TTL
-const cache = new NodeCache({
-  stdTTL: 18000, // 5 hours in seconds
-  checkperiod: 600,
-  useClones: false,
-  deleteOnExpire: true,
-  maxKeys: 1000,
-});
-
-// Cache middleware - Fixed to avoid overriding res.send incorrectly
-const cacheMiddleware = (duration = 18000) => (req, res, next) => {
-  if (req.method !== 'GET') return next(); // Only cache GET requests
-
-  const key = `__express__${req.originalUrl}`;
-  const cached = cache.get(key);
-
-  if (cached) {
-    res.setHeader('X-Cache', 'HIT');
-    res.setHeader('Cache-Control', 'public, max-age=18000');
-    return res.send(cached);
-  }
-
-  res.setHeader('X-Cache', 'MISS');
-  const originalJson = res.json;
-  res.json = function (data) {
-    if (res.statusCode < 300) { // Cache only successful responses
-      cache.set(key, data, duration);
+app.use(express.static(path.join(__dirname, "dist"), {
+  setHeaders: (res, path) => {
+    if (path.endsWith('.xml')) {
+      res.setHeader('Content-Type', 'application/xml');
     }
-    return originalJson.call(this, data);
+  }
+}));
+
+// Cache middleware
+const cache = (duration) => {
+  return (req, res, next) => {
+    const key = '__express__' + req.originalUrl || req.url;
+    const cachedBody = mcache.get(key);
+
+    if (cachedBody) {
+      res.send(JSON.parse(cachedBody));
+      return;
+    } else {
+      res.sendResponse = res.send;
+      res.send = (body) => {
+        mcache.put(key, JSON.stringify(body), duration * 1000);
+        res.sendResponse(body);
+      };
+      next();
+    }
   };
-  next();
 };
 
-// Custom image optimization route
-app.get('/images/:filename', async (req, res) => {
-  const { filename } = req.params;
-  const { w = 1200, q = 80, device = 'desktop' } = req.query;
-  const imagePath = path.join(__dirname, 'public', 'download', filename);
-
-  try {
-    if (!fs.existsSync(imagePath)) return res.status(404).send('Image not found');
-
-    const cacheKey = `image_${filename}_${w}_${q}`;
-    const cachedImage = cache.get(cacheKey);
-    if (cachedImage) {
-      res.setHeader('X-Cache', 'HIT');
-      return res.type('image/webp').send(cachedImage);
+// Cache invalidation middleware
+const invalidateCache = (route) => {
+  return (req, res, next) => {
+    // For wildcard invalidation of all cache entries that start with the route
+    const cacheKeys = mcache.keys();
+    for (const key of cacheKeys) {
+      if (key.includes(route)) {
+        mcache.del(key);
+      }
     }
+    next(); 
+  };
+};
 
-    const ua = req.headers['user-agent'] || '';
-    let targetWidth = parseInt(w, 10);
-    if (ua.includes('Mobile') || device === 'mobile') {
-      targetWidth = Math.min(targetWidth, 600);
-    }
-
-    const optimizedImage = await sharp(imagePath)
-      .resize({ width: targetWidth, withoutEnlargement: true })
-      .webp({ quality: parseInt(q, 10) })
-      .toBuffer();
-
-    cache.set(cacheKey, optimizedImage, 18000);
-    res.setHeader('Cache-Control', 'public, max-age=31536000');
-    res.type('image/webp').send(optimizedImage);
-  } catch (err) {
-    console.error('Image processing error:', err);
-    res.status(500).send('Image processing failed');
-  }
+cron.schedule('59 23 31 * *', () => {
+  exportAndBackupAllCollectionsmonthly();
+}, {
+  scheduled: true,
+  timezone: "Asia/Kolkata"
 });
 
 // Static file serving
-app.use(express.static(path.join(__dirname, 'public'), {
-  maxAge: '30d',
-  setHeaders: (res, filepath) => {
-    if (filepath.match(/\.(jpg|jpeg|png|webp)$/)) {
-      res.setHeader('Cache-Control', 'public, max-age=31536000');
-    } else if (filepath.endsWith('.xml')) {
-      res.setHeader('Content-Type', 'application/xml');
-    }
-  },
-}));
+app.use('/uploads', serveStatic(path.join(__dirname, 'uploads')));
 
-app.use(express.static(path.join(__dirname, 'dist'), { maxAge: '30d' }));
-
-// API Routes with caching
-const apiRoutes = [
-  ['/api/admin', admin],
-  ['/api/supplier', require('./route/supplier')],
-  ['/api/chemicalCategory', require('./route/chemicalCategory')],
-  ['/api/chemical', require('./route/chemical')],
-  ['/api/customer', require('./route/customer')],
-  ['/api/chemicalType', require('./route/chemicalType')],
-  ['/api/unit', require('./route/unit')],
-  ['/api/smtp', require('./route/smtp_setting')], 
-  ['/api/inquiry', require('./route/inquiry')],
-  ['/api/followUp', require('./route/followUp')],
-  ['/api/status', require('./route/statusMaster')],
-  ['/api/source', require('./route/sourceMaster')],
-  ['/api/logo', require('./route/logo')],
-  ['/api/count', require('./route/dashboard')],
-  ['/api/image', require('./route/image')],
-  ['/api/blogCategory', require('./route/blogCategory')],
-  ['/api/blog', require('./route/blog')],
-  ['/api/email', require('./route/email')],
-  ['/api/template', require('./route/emailTemplate')],
-  ['/api/productInquiry', require('./route/productInquiry')],
-  ['/api/sitemap', require('./route/sitemapRoute')],
-  ['/api/banner', require('./route/banner')],
-  ['/api/aboutus', require('./route/aboutUs')],
-  ['/api/contactForm', require('./route/contactForm')],
-  ['/api/chemicalMail', require('./route/chemicalMail')],
-  ['/api/career', require('./route/carrer')],
-  ['/api/worldwide', require('./route/worldwide')],
-  ['/api/contactinfo', require('./route/contactinfo')],
-  ['/api/emailCategory', require('./route/emailCategory')],
-  ['/api/companyLogo', require('./route/companyLogo')],
-  ['/api/meta', require('./route/staticMeta')],
-  ['/api/menulist', require('./route/menuListing')],
-  ['/api/slideshow', require('./route/slideShow')],
-  ['/api/whatsup', require('./route/whatsUpInfo')],
-  ['/api/events', require('./route/events')],
-  ['/api/blogCard', require('./route/blogCard')],
-  ['/api/navigationLink', require('./route/NavigationLink')],
-  ['/api/catalogue', require('./route/catalogue')],
-  ['/api/privacy', require('./route/privacy')],
-  ['/api/terms', require('./route/termscondition')],
-  ['/api/careerInfo', require('./route/careerInfo')],
-];
-
-// Apply cache middleware to all API routes
-apiRoutes.forEach(([route, handler]) => {
-  app.use(route, cacheMiddleware(18000), handler);
-});
-
-// Catch-all route for SPA
-app.get('*', cacheMiddleware(18000), (req, res) => {
-  res.sendFile(path.join(__dirname, 'dist', 'index.html'));
-});
-
-// MongoDB Connection
-mongoose.connect(process.env.DATABASE_URI, {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-}).then(() => {
+// Database connection
+mongoose.connect(process.env.DATABASE_URI).then(() => {
   console.log('Connected to MongoDB');
 }).catch(err => {
   console.error('Failed to connect to MongoDB', err);
 });
 
-<<<<<<< HEAD
-const PORT = 3030;
-=======
-// Server startup
-const PORT = process.env.PORT || 3028;
->>>>>>> de8991ef49deda21f3af7675870cee616579f95f
-app.listen(PORT, () => {
-  console.log(`Environment Variables:`, {
-    EMAIL_USER: process.env.EMAIL_USER ? 'Set' : 'Not Set',
-    EMAIL_PASS: process.env.EMAIL_PASS ? 'Set' : 'Not Set',
-  });
-  console.log(`Server running on port ${PORT}`);
-  generateAllSitemaps(); // Generate sitemaps on startup
-});
+// Use routes with caching
+// Default cache duration in seconds (5 minutes)
+const defaultCacheDuration = 300;
 
-// Cache cleanup on shutdown
-process.on('SIGTERM', () => {
-  cache.flushAll();
-  console.log('Cache flushed on shutdown');
-  process.exit(0);
-});
-<<<<<<< HEAD
- 
-  
-        
-=======
-
-// SMTP Connection Test (assuming you have nodemailer setup)
-const nodemailer = require('nodemailer');
-const transporter = nodemailer.createTransport({
-  service: 'gmail', // or your email service
-  auth: {
-    user: process.env.EMAIL_USER,
-    pass: process.env.EMAIL_PASS,
-  },
-});
-
-transporter.verify((error, success) => {
-  if (error) {
-    console.error('SMTP connection failed:', error);
+// GET requests are cached, POST/PUT/DELETE requests invalidate the cache
+app.use('/api/product', (req, res, next) => {
+  if (req.method === 'GET') {
+    cache(defaultCacheDuration)(req, res, next);
   } else {
-    console.log('SMTP connection successful');
+    invalidateCache('/api/product')(req, res, next);
   }
+}, require('./routes/product'));
+
+app.use('/api/news', (req, res, next) => {
+  if (req.method === 'GET') {
+    cache(defaultCacheDuration)(req, res, next);
+  } else {
+    invalidateCache('/api/news')(req, res, next);
+  }
+}, require('./routes/news'));
+
+app.use('/api/pageHeading', (req, res, next) => {
+  if (req.method === 'GET') {
+    cache(defaultCacheDuration)(req, res, next);
+  } else {
+    invalidateCache('/api/pageHeading')(req, res, next);
+  }
+}, require('./routes/pageHeading'));
+
+app.use('/api/image', (req, res, next) => {
+  if (req.method === 'GET') {
+    cache(defaultCacheDuration)(req, res, next);
+  } else {
+    invalidateCache('/api/image')(req, res, next);
+  }
+}, require('./routes/image'));
+
+app.use('/api/staff', (req, res, next) => {
+  if (req.method === 'GET') {
+    cache(defaultCacheDuration)(req, res, next);
+  } else {
+    invalidateCache('/api/staff')(req, res, next);
+  }
+}, require('./routes/ourStaff'));
+
+app.use('/api/banner', (req, res, next) => {
+  if (req.method === 'GET') {
+    cache(defaultCacheDuration)(req, res, next);
+  } else {
+    invalidateCache('/api/banner')(req, res, next);
+  }
+}, require('./routes/Banner'));
+
+app.use('/api/aboutus', (req, res, next) => {
+  if (req.method === 'GET') {
+    cache(defaultCacheDuration)(req, res, next);
+  } else {
+    invalidateCache('/api/aboutus')(req, res, next);
+  }
+}, require('./routes/abotus'));
+
+// Admin routes - shorter cache or no cache for sensitive data
+app.use('/api/admin', require('./routes/admin'));
+app.use('/api/password', require('./routes/forgotpassword'));
+
+app.use('/api/email', (req, res, next) => {
+  if (req.method === 'GET') {
+    cache(defaultCacheDuration)(req, res, next);
+  } else {
+    invalidateCache('/api/email')(req, res, next);
+  }
+}, require('./routes/email'));
+
+app.use('/api/logo', (req, res, next) => {
+  if (req.method === 'GET') {
+    cache(defaultCacheDuration)(req, res, next);
+  } else {
+    invalidateCache('/api/logo')(req, res, next);
+  }
+}, require('./routes/logo'));
+
+app.use('/api/backup', require('./routes/backup'));
+app.use('/api/inquiries', require('./routes/inquiry'));
+
+app.use('/api/mission', (req, res, next) => {
+  if (req.method === 'GET') {
+    cache(defaultCacheDuration)(req, res, next);
+  } else {
+    invalidateCache('/api/mission')(req, res, next);
+  }
+}, require('./routes/mission'));
+
+app.use('/api/vision', (req, res, next) => {
+  if (req.method === 'GET') {
+    cache(defaultCacheDuration)(req, res, next);
+  } else {
+    invalidateCache('/api/vision')(req, res, next);
+  }
+}, require('./routes/vision'));
+
+app.use('/api/footer', (req, res, next) => {
+  if (req.method === 'GET') {
+    cache(defaultCacheDuration)(req, res, next);
+  } else {
+    invalidateCache('/api/footer')(req, res, next);
+  }
+}, require('./routes/footer'));
+
+app.use('/api/header', (req, res, next) => {
+  if (req.method === 'GET') {
+    cache(defaultCacheDuration)(req, res, next);
+  } else {
+    invalidateCache('/api/header')(req, res, next);
+  }
+}, require('./routes/header'));
+
+app.use('/api/googlesettings', (req, res, next) => {
+  if (req.method === 'GET') {
+    cache(defaultCacheDuration)(req, res, next);
+  } else {
+    invalidateCache('/api/googlesettings')(req, res, next);
+  }
+}, require('./routes/googlesettings'));
+ 
+app.use('/api/menulisting', (req, res, next) => {
+  if (req.method === 'GET') {
+    cache(defaultCacheDuration)(req, res, next);
+  } else {
+    invalidateCache('/api/menulisting')(req, res, next);
+  }
+}, require('./routes/menulisting'));
+
+app.use('/api/sitemap', (req, res, next) => {
+  if (req.method === 'GET') {
+    cache(defaultCacheDuration)(req, res, next);
+  } else {
+    invalidateCache('/api/sitemap')(req, res, next);
+  }
+}, require('./routes/sitemap'));
+
+app.use('/api/productDetail', (req, res, next) => {
+  if (req.method === 'GET') {
+    cache(defaultCacheDuration)(req, res, next);
+  } else {
+    invalidateCache('/api/productDetail')(req, res, next);
+  }
+}, require('./routes/productdetail'));
+
+app.use('/api/productInquiry', require('./routes/productinquiry'));
+
+app.use('/api/colors', (req, res, next) => {
+  if (req.method === 'GET') {
+    cache(defaultCacheDuration)(req, res, next);
+  } else {
+    invalidateCache('/api/colors')(req, res, next);
+  }
+}, require('./routes/managecolor'));
+app.use('/api/partners', (req, res, next) => {
+  if (req.method === 'GET') {
+    cache(defaultCacheDuration)(req, res, next);
+  } else {
+    invalidateCache('/api/partners')(req, res, next);
+  }
+}, require('./routes/partners'));
+
+app.use('/api/WhyChooseUs', (req, res, next) => {
+  if (req.method === 'GET') {
+    cache(defaultCacheDuration)(req, res, next);
+  } else {
+    invalidateCache('/api/WhyChooseUs')(req, res, next);
+  }
+}, require('./routes/whyChooseUs'));
+
+app.use('/api/ourpeople', (req, res, next) => {
+  if (req.method === 'GET') {
+    cache(defaultCacheDuration)(req, res, next);
+  } else {
+    invalidateCache('/api/ourpeople')(req, res, next);
+  }
+}, require('./routes/ourpeople'));
+
+app.use('/api/packagingdetail', (req, res, next) => {
+  if (req.method === 'GET') {
+    cache(defaultCacheDuration)(req, res, next);
+  } else {
+    invalidateCache('/api/packagingdetail')(req, res, next);
+  }
+}, require('./routes/packagingdetail'));
+
+app.use('/api/packagingtype', (req, res, next) => {
+  if (req.method === 'GET') {
+    cache(defaultCacheDuration)(req, res, next);
+  } else {
+    invalidateCache('/api/packagingtype')(req, res, next);
+  }
+}, require('./routes/packagingtype'));
+
+app.use('/api/dynamicSlug', (req, res, next) => {
+  if (req.method === 'GET') {
+    cache(defaultCacheDuration)(req, res, next);
+  } else {
+    invalidateCache('/api/dynamicSlug')(req, res, next);
+  }
+}, require('./routes/dynamicSlug'));
+
+app.use('/api/industry', (req, res, next) => {
+  if (req.method === 'GET') {
+    cache(defaultCacheDuration)(req, res, next);
+  } else {
+    invalidateCache('/api/industry')(req, res, next);
+  }
+}, require('./routes/industry'));
+
+app.use("/api/staticMeta", (req, res, next) => {
+  if (req.method === 'GET') {
+    cache(defaultCacheDuration)(req, res, next);
+  } else {
+    invalidateCache('/api/staticMeta')(req, res, next);
+  }
+}, require("./routes/staticMeta"));
+
+// Add cache cleanup on interval (optional)
+setInterval(() => {
+  console.log('Cleaning expired cache entries');
+  mcache.keys().forEach(key => {
+    if (!mcache.get(key)) {
+      mcache.del(key);
+    }
+  });
+}, 3600000); // Run every hour
+
+app.use(express.static(path.join(__dirname, 'dist')));
+
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, 'dist', 'index.html'));
 });
->>>>>>> de8991ef49deda21f3af7675870cee616579f95f
+
+const port = process.env.PORT || 3006;
+app.listen(port, () => {
+  console.log(`Server is running on port ${port}`);
+});
