@@ -36,7 +36,7 @@ function AdminLogin() {
                 <div className="bg-gray-200 py-8 px-6 rounded-lg shadow-lg">
                     <div className="text-center">
                         <div className="flex justify-center items-center flex-col">
-                            <img className="w-[2cm] h-[2cm]" src={Adminlogo} alt="" />
+                            <img className="w-[2cm] h-[2cm]" src={Adminlogo} alt="img" />
                             <h2 className="text-2xl font-[700] font-sens text-blue-950 mt-4">ADMIN PANEL</h2>
                         </div>
                     </div>

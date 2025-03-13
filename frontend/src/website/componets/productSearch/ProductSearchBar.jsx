@@ -79,29 +79,29 @@ export default function ProductSearchBar() {
             <TableRow className="bg-blue-50">
               <TableCell>{chemical.product_code || chemical.auto_p_code || 'N/A'}</TableCell>
               <TableCell>
-                <a 
-                  href={`/${chemical.slug}`} 
+                <Link 
+                  to={`/${chemical.slug}`} 
                   className="text-blue-600 hover:underline cursor-pointer"
                 >
                   {chemical.name}
-                </a>
+                </Link>
               </TableCell>
               <TableCell>{chemical.grade || 'N/A'}</TableCell>
               <TableCell>{chemical.cas_number || 'N/A'}</TableCell>
               <TableCell>
                 {chemical.tds_url ? (
-                  <a href={chemical.tds_url} className="text-blue-600 hover:underline" target="_blank" rel="noopener noreferrer">
+                  <Link to={chemical.tds_url} className="text-blue-600 hover:underline" target="_blank" rel="noopener noreferrer">
                     Specs
-                  </a>
+                  </Link>
                 ) : (
                   "Specs"
                 )}
               </TableCell>
               <TableCell>
                 {chemical.msds_url ? (
-                  <a href={chemical.msds_url} className="text-blue-600 hover:underline" target="_blank" rel="noopener noreferrer">
+                  <Link to={chemical.msds_url} className="text-blue-600 hover:underline" target="_blank" rel="noopener noreferrer">
                     MSDS
-                  </a>
+                  </Link>
                 ) : (
                   "MSDS"
                 )}

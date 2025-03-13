@@ -1,5 +1,3 @@
-"use client";
-
 import { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -13,7 +11,6 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { useGetCustomerByIdQuery, useUpdateCustomerMutation } from '@/slice/customerSlice/customerApiSlice';
 import { useNavigate, useParams } from 'react-router-dom';
 import { BreadcrumbWithCustomSeparator } from '@/breadCrumb/BreadCrumb';
-import { Country, State, City } from 'country-state-city';
 import { toast } from 'react-toastify';
 
 const customerSchema = z.object({
@@ -42,8 +39,38 @@ export default function EditCustomerForm() {
   const [updateCustomer, { isLoading }] = useUpdateCustomerMutation();
   const navigate = useNavigate();
 
-  // Location states
-  const [countries, setCountries] = useState([]);
+  // Manual location data (replace with your own data or API)
+  const [countries] = useState([
+    { isoCode: 'US', name: 'United States' },
+    { isoCode: 'CA', name: 'Canada' },
+    { isoCode: 'UK', name: 'United Kingdom' },
+    { isoCode: 'IN', name: 'India' },
+    { isoCode: 'AU', name: 'Australia' }
+    // Add more countries as needed
+  ]);
+  
+  // You can replace these with your own data or fetch from your API
+  const countryStates = {
+    'US': [
+      { isoCode: 'NY', name: 'New York' },
+      { isoCode: 'CA', name: 'California' },
+      { isoCode: 'TX', name: 'Texas' }
+    ],
+    'IN': [
+      { isoCode: 'MH', name: 'Maharashtra' },
+      { isoCode: 'DL', name: 'Delhi' },
+      { isoCode: 'KA', name: 'Karnataka' }
+    ],
+    // Add more states for other countries
+  };
+  
+  const stateCities = {
+    'NY': [{ name: 'New York City' }, { name: 'Buffalo' }],
+    'CA': [{ name: 'Los Angeles' }, { name: 'San Francisco' }],
+    'MH': [{ name: 'Mumbai' }, { name: 'Pune' }],
+    // Add more cities for other states
+  };
+  
   const [states, setStates] = useState([]);
   const [cities, setCities] = useState([]);
 
@@ -75,16 +102,10 @@ export default function EditCustomerForm() {
   const watchState = watch('state');
   const watchImage = watch('image');
 
-  // Initialize countries
-  useEffect(() => {
-    const countryList = Country.getAllCountries();
-    setCountries(countryList);
-  }, []);
-
   // Update states when country changes
   useEffect(() => {
     if (watchCountry) {
-      const stateList = State.getStatesOfCountry(watchCountry);
+      const stateList = countryStates[watchCountry] || [];
       setStates(stateList);
       if (!customerData) {
         setValue('state', '');
@@ -98,8 +119,8 @@ export default function EditCustomerForm() {
 
   // Update cities when state changes
   useEffect(() => {
-    if (watchCountry && watchState) {
-      const cityList = City.getCitiesOfState(watchCountry, watchState);
+    if (watchState) {
+      const cityList = stateCities[watchState] || [];
       setCities(cityList);
       if (!customerData) {
         setValue('city', '');
@@ -107,7 +128,7 @@ export default function EditCustomerForm() {
     } else {
       setCities([]);
     }
-  }, [watchCountry, watchState, setValue, customerData]);
+  }, [watchState, setValue, customerData]);
 
   // Populate form with customer data
   useEffect(() => {
@@ -118,12 +139,13 @@ export default function EditCustomerForm() {
       ];
       
       fields.forEach(field => {
-        if (customerData.data[field] !== undefined) {  // Add this check
+        if (customerData.data[field] !== undefined) {
           setValue(field, customerData.data[field] || '');
         }
       });
     }
   }, [customerData, setValue]);
+
   // Handle image upload
   const handleImageUpload = (e) => {
     const file = e.target.files[0];
@@ -167,19 +189,11 @@ export default function EditCustomerForm() {
         data: formData 
       }).unwrap();
 
-      toast({
-        title: "Success",
-        description: "Customer updated successfully",
-      });
-
+      toast.success("Customer updated successfully");
       navigate('/customer-table');
     } catch (err) {
       console.error('Error structure:', err);
-      toast({
-        title: "Error",
-        description: err.message || "Failed to update customer",
-        variant: "destructive",
-      });
+      toast.error(err.message || "Failed to update customer");
     }
   };
 
@@ -295,7 +309,7 @@ export default function EditCustomerForm() {
                 <Select
                   value={watchState}
                   onValueChange={(value) => setValue('state', value)}
-                  disabled={!watchCountry}
+                  disabled={!watchCountry || states.length === 0}
                 >
                   <SelectTrigger>
                     <SelectValue placeholder="Select State" />
@@ -316,7 +330,7 @@ export default function EditCustomerForm() {
                 <Select
                   value={watch('city')}
                   onValueChange={(value) => setValue('city', value)}
-                  disabled={!watchState}
+                  disabled={!watchState || cities.length === 0}
                 >
                   <SelectTrigger>
                     <SelectValue placeholder="Select City" />
@@ -398,7 +412,7 @@ export default function EditCustomerForm() {
               <Button
                 type="button"
                 variant="destructive"
-                onClick={() => reset()}
+                onClick={() => navigate('/customer-table')}
               >
                 Cancel
               </Button>

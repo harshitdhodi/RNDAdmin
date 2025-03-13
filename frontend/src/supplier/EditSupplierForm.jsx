@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect, useCallback, useMemo, Suspense } from "react"
+import { useState, useEffect, useMemo, Suspense } from "react"
 import { useForm } from "react-hook-form"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
@@ -14,12 +14,9 @@ import {
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
-import { X } from 'lucide-react'
 import { useNavigate, useParams } from "react-router-dom"
 import { useGetSupplierByIdQuery, useUpdateSupplierMutation } from "@/slice/supplierSlice/SupplierSlice"
 import { BreadcrumbWithCustomSeparator } from "@/breadCrumb/BreadCrumb"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Country, City } from 'country-state-city';
 
 const LoadingSpinner = () => (
   <div className="flex items-center justify-center p-4">
@@ -30,8 +27,9 @@ const LoadingSpinner = () => (
 const breadcrumbItems = [
   { label: "Dashboard", href: "/dashboard" },
   { label: "Supplier Table", href: "/supplier-table" },
-  { label: "Edit Supplier Form", href: null }, // No `href` indicates the current page
+  { label: "Edit Supplier Form", href: null },
 ]
+
 export default function EditSupplierForm() {
   const navigate = useNavigate()
   const { id } = useParams()
@@ -40,9 +38,6 @@ export default function EditSupplierForm() {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [submitError, setSubmitError] = useState(null)
   const [previewImage, setPreviewImage] = useState(null)
-  const [countries, setCountries] = useState([])
-  const [cities, setCities] = useState([])
-  const [isLoadingLocation, setIsLoadingLocation] = useState(true)
 
   const form = useForm({
     defaultValues: {
@@ -58,24 +53,6 @@ export default function EditSupplierForm() {
       image: null,
     },
   })
-
-  useEffect(() => {
-    const initializeCountries = async () => {
-      setIsLoadingLocation(true)
-      const allCountries = Country.getAllCountries()
-      setCountries(allCountries)
-      setIsLoadingLocation(false)
-    }
-    initializeCountries()
-  }, [])
-
-  const handleCountryChange = useCallback((countryCode) => {
-    setIsLoadingLocation(true)
-    const citiesInCountry = City.getCitiesOfCountry(countryCode) || []
-    setCities(citiesInCountry)
-    form.setValue('city', '')
-    setIsLoadingLocation(false)
-  }, [form])
 
   useEffect(() => {
     if (supplier) {
@@ -94,16 +71,8 @@ export default function EditSupplierForm() {
       if (supplier.image) {
         setPreviewImage(`/api/image/download/${supplier.image}`)
       }
-
-      // Fetch cities for the supplier's country if it exists
-      if (supplier.country) {
-        const countryData = countries.find(c => c.name === supplier.country);
-        if (countryData) {
-          handleCountryChange(countryData.isoCode);
-        }
-      }
     }
-  }, [supplier, form, countries]);
+  }, [supplier, form])
 
   async function onSubmit(values) {
     if (!id) {
@@ -118,21 +87,15 @@ export default function EditSupplierForm() {
       let updateData = { ...values }
       delete updateData.image // Remove the image field initially
 
-      // Handle image upload if there's a new image
       if (values.image && values.image[0]) {
         const formData = new FormData()
-
         Object.keys(updateData).forEach(key => {
           formData.append(key, updateData[key])
         })
         formData.append('image', values.image[0])
-
         await updateSupplier({ updatedSupplier: formData, id }).unwrap()
       } else {
-        await updateSupplier({
-          updatedSupplier: updateData,
-          id
-        }).unwrap()
+        await updateSupplier({ updatedSupplier: updateData, id }).unwrap()
       }
 
       navigate("/supplier-table")
@@ -147,14 +110,12 @@ export default function EditSupplierForm() {
   const handleImageChange = (e) => {
     const file = e.target.files[0]
     if (file) {
-      setPreviewImage(URL.createObjectURL(file)) // Generate preview URL for new image
+      setPreviewImage(URL.createObjectURL(file))
     }
     form.setValue("image", e.target.files)
   }
 
-  const memoizedCountries = useMemo(() => Country.getAllCountries(), [])
-
-  if (isLoading || isLoadingLocation) {
+  if (isLoading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900"></div>
@@ -164,10 +125,9 @@ export default function EditSupplierForm() {
 
   return (
     <>
-    <div className="ml-1">
-      <BreadcrumbWithCustomSeparator items={breadcrumbItems} />
-
-    </div>
+      <div className="ml-1">
+        <BreadcrumbWithCustomSeparator items={breadcrumbItems} />
+      </div>
       <Card className="max-w-8xl mt-3 mx-auto">
         <CardHeader>
           <CardTitle className="text-xl font-semibold">Update Supplier</CardTitle>
@@ -194,7 +154,8 @@ export default function EditSupplierForm() {
                       </FormControl>
                       <FormMessage />
                     </FormItem>
-                  )} />
+                  )}
+                />
                 <FormField
                   control={form.control}
                   name="contact_person"
@@ -206,7 +167,8 @@ export default function EditSupplierForm() {
                       </FormControl>
                       <FormMessage />
                     </FormItem>
-                  )} />
+                  )}
+                />
                 <FormField
                   control={form.control}
                   name="email"
@@ -220,7 +182,8 @@ export default function EditSupplierForm() {
                       </FormControl>
                       <FormMessage />
                     </FormItem>
-                  )} />
+                  )}
+                />
                 <FormField
                   control={form.control}
                   name="website"
@@ -232,7 +195,8 @@ export default function EditSupplierForm() {
                       </FormControl>
                       <FormMessage />
                     </FormItem>
-                  )} />
+                  )}
+                />
                 <FormField
                   control={form.control}
                   name="mobile"
@@ -246,7 +210,8 @@ export default function EditSupplierForm() {
                       </FormControl>
                       <FormMessage />
                     </FormItem>
-                  )} />
+                  )}
+                />
               </div>
 
               <FormField
@@ -260,7 +225,8 @@ export default function EditSupplierForm() {
                     </FormControl>
                     <FormMessage />
                   </FormItem>
-                )} />
+                )}
+              />
 
               <div className="grid gap-4 md:grid-cols-2">
                 <FormField
@@ -269,58 +235,22 @@ export default function EditSupplierForm() {
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>Country</FormLabel>
-                      <Select 
-                        onValueChange={(value) => {
-                          const country = countries.find(c => c.isoCode === value);
-                          field.onChange(country.name);
-                          handleCountryChange(value);
-                        }}
-                        value={countries.find(c => c.name === field.value)?.isoCode || ''}
-                      >
-                        <FormControl>
-                          <SelectTrigger>
-                            <SelectValue placeholder="Select country" />
-                          </SelectTrigger>
-                        </FormControl>
-                        <Suspense fallback={<LoadingSpinner />}>
-                          <SelectContent>
-                            {countries.map((country) => (
-                              <SelectItem key={country.isoCode} value={country.isoCode}>
-                                {country.name}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Suspense>
-                      </Select>
+                      <FormControl>
+                        <Input placeholder="Enter country" {...field} />
+                      </FormControl>
                       <FormMessage />
                     </FormItem>
                   )}
                 />
-
                 <FormField
                   control={form.control}
                   name="city"
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>City</FormLabel>
-                      <Select
-                        onValueChange={field.onChange}
-                        value={field.value || ''}
-                        disabled={!form.watch('country')}
-                      >
-                        <FormControl>
-                          <SelectTrigger>
-                            <SelectValue placeholder="Select city" />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                          {cities.map((city) => (
-                            <SelectItem key={city.name} value={city.name}>
-                              {city.name}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
+                      <FormControl>
+                        <Input placeholder="Enter city" {...field} />
+                      </FormControl>
                       <FormMessage />
                     </FormItem>
                   )}
@@ -338,7 +268,8 @@ export default function EditSupplierForm() {
                     </FormControl>
                     <FormMessage />
                   </FormItem>
-                )} />
+                )}
+              />
 
               <FormField
                 control={form.control}
@@ -350,7 +281,8 @@ export default function EditSupplierForm() {
                       <Input
                         type="file"
                         onChange={handleImageChange}
-                        accept="image/*" />
+                        accept="image/*"
+                      />
                     </FormControl>
                     <FormMessage />
                     {previewImage && (
@@ -358,11 +290,13 @@ export default function EditSupplierForm() {
                         <img
                           src={previewImage}
                           alt="Preview"
-                          className="h-32 w-32 object-cover border" />
+                          className="h-32 w-32 object-cover border"
+                        />
                       </div>
                     )}
                   </FormItem>
-                )} />
+                )}
+              />
 
               <div className="flex gap-4">
                 <Button
@@ -372,11 +306,11 @@ export default function EditSupplierForm() {
                 >
                   {isSubmitting ? 'Saving...' : 'Save Changes'}
                 </Button>
-              
               </div>
             </form>
           </Form>
         </CardContent>
-      </Card></>
+      </Card>
+    </>
   )
 }

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Form, Input, Button, Upload, message, Breadcrumb } from 'antd';
 import { UploadOutlined } from '@ant-design/icons';
 import { useCreateCatalogueMutation, 
-     useGetCatalogueByIdQuery, useUpdateCatalogueMutation } from '@/slice/catalogue/catalogueSlice';
+     useGetCatalogueByIdQuery, useUpdateCatalogueMutation } from "@/slice/catalogue/catalogueslice";
 import { useNavigate, useParams, Link } from 'react-router-dom';
 
 const CatalogueForm = () => {

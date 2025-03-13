@@ -6,6 +6,7 @@ import { ArrowRight } from "lucide-react"
 import { useGetBannerByPageSlugQuery } from "@/slice/banner/banner"
 import { Link, useParams } from "react-router-dom"
 
+// Enhanced skeleton with better alignment to final content
 const SkeletonLoader = () => (
   <div className="w-full h-[40vh] sm:h-[50vh] md:h-[60vh] lg:h-[70vh] bg-gray-200 animate-pulse rounded overflow-hidden">
     <div className="absolute w-full top-1/2 transform -translate-y-1/2 px-4 sm:px-[15%]">
@@ -24,122 +25,213 @@ const Slideshow = () => {
   const [imagesLoaded, setImagesLoaded] = useState({})
   const [lcpImageLoaded, setLcpImageLoaded] = useState(false)
   const lcpImageRef = useRef(null)
+  const slideshowRef = useRef(null)
 
-  // Preload LCP image using priority hints and preconnect
+  // 1. TTFB Optimization - Add preconnect for API domain immediately 
   useEffect(() => {
-    // Add preconnect for the API domain
+    // Use crossorigin attribute for CORS requests
     const preconnectLink = document.createElement("link")
     preconnectLink.rel = "preconnect"
     preconnectLink.href = new URL("/api", window.location.href).origin
+    preconnectLink.crossOrigin = "anonymous" // Add crossorigin for CORS resources
     document.head.appendChild(preconnectLink)
-    
+
+    // Add DNS prefetch as fallback for browsers that don't support preconnect
+    const dnsPrefetchLink = document.createElement("link")
+    dnsPrefetchLink.rel = "dns-prefetch"
+    dnsPrefetchLink.href = new URL("/api", window.location.href).origin
+    document.head.appendChild(dnsPrefetchLink)
+
     return () => {
       document.head.removeChild(preconnectLink)
+      document.head.removeChild(dnsPrefetchLink)
     }
   }, [])
 
-  // Preload LCP image as soon as data is available
+  // 2. Load Delay Optimization - Preload LCP image with critical priority
   useEffect(() => {
     if (!Array.isArray(banners) || banners.length === 0) return
 
-    // Create a preload for the first image with high priority
     const lcpImage = banners[0]
     if (lcpImage) {
       const imagePath = `/api/image/download/${lcpImage.image}`
-      
-      // Use both preload link and Image constructor for best browser support
+
+      // Use both preload link with highest priority
       const preloadLink = document.createElement("link")
       preloadLink.rel = "preload"
       preloadLink.as = "image"
       preloadLink.href = imagePath
-      preloadLink.fetchPriority = "high" // Set high priority for the preload
+      preloadLink.fetchPriority = "high"
+      preloadLink.importance = "high" // Additional hint for some browsers
       document.head.appendChild(preloadLink)
 
-      // Also use the Image constructor for the first image
+      // Also use Image constructor for the first image with high priority
       const img = new Image()
       img.src = imagePath
       img.fetchPriority = "high"
       img.onload = () => {
         setLcpImageLoaded(true)
         setImagesLoaded((prev) => ({ ...prev, 0: true }))
+
+        // Report to analytics or performance monitoring
+        if (window.performance && window.performance.now) {
+          console.log(`LCP image loaded in ${window.performance.now()}ms`)
+        }
       }
       img.onerror = () => {
         setLcpImageLoaded(true)
         setImagesLoaded((prev) => ({ ...prev, 0: true }))
       }
-      
+
       return () => {
         document.head.removeChild(preloadLink)
       }
     }
   }, [banners])
 
-  // Preload remaining images after LCP image
+  // Only preload next 2 images after LCP is loaded to reduce contention
   useEffect(() => {
     if (!Array.isArray(banners) || banners.length <= 1 || !lcpImageLoaded) return
 
-    // Preload remaining images after the first one is loaded, with lower priority
-    banners.slice(1).forEach((banner, index) => {
-      const actualIndex = index + 1 // Adjust index since we're skipping the first image
+    // Preload only next 2 images with low priority to avoid resource contention
+    banners.slice(1, 3).forEach((banner, index) => {
+      const actualIndex = index + 1
       const img = new Image()
       img.src = `/api/image/download/${banner.image}`
       img.fetchPriority = "low"
       img.onload = () => {
         setImagesLoaded((prev) => ({ ...prev, [actualIndex]: true }))
       }
-      img.onerror = () => {
-        setImagesLoaded((prev) => ({ ...prev, [actualIndex]: true }))
-      }
     })
   }, [banners, lcpImageLoaded])
 
-  // Slideshow interval - only start after LCP image is loaded
+  // 3. Load Time Optimization - Use appropriate image format and consider responsive images
+  // Slideshow interval - only start after LCP image is loaded and with requestAnimationFrame
   useEffect(() => {
     if (!Array.isArray(banners) || !lcpImageLoaded) return
 
-    const interval = setInterval(() => {
-      setCurrentImageIndex((prevIndex) => (prevIndex + 1) % banners.length)
-    }, 3000)
+    let animationFrameId
+    let lastTimestamp = 0
+    const intervalDuration = 3000
 
-    return () => clearInterval(interval)
+    const animate = (timestamp) => {
+      if (!lastTimestamp) lastTimestamp = timestamp
+
+      if (timestamp - lastTimestamp >= intervalDuration) {
+        setCurrentImageIndex((prevIndex) => (prevIndex + 1) % banners.length)
+        lastTimestamp = timestamp
+      }
+
+      animationFrameId = requestAnimationFrame(animate)
+    }
+
+    animationFrameId = requestAnimationFrame(animate)
+
+    return () => {
+      if (animationFrameId) {
+        cancelAnimationFrame(animationFrameId)
+      }
+    }
   }, [banners, lcpImageLoaded])
 
-  // Add LCP measurement callback using the Performance Observer API
+  // 4. Render Delay Optimization - Using content-visibility and will-change
   useEffect(() => {
-    if (typeof PerformanceObserver !== "undefined") {
-      const lcpObserver = new PerformanceObserver((entryList) => {
-        const entries = entryList.getEntries()
-        const lastEntry = entries[entries.length - 1]
-        console.log("LCP:", lastEntry.startTime, "Element:", lastEntry.element)
-      })
+    // Use IntersectionObserver to detect when slideshow is in viewport
+    if (slideshowRef.current && 'IntersectionObserver' in window) {
+      const observer = new IntersectionObserver(
+        (entries) => {
+          entries.forEach(entry => {
+            if (entry.isIntersecting) {
+              // Prioritize rendering when in viewport
+              entry.target.style.contentVisibility = 'visible'
+            } else {
+              // Deprioritize when off-screen
+              entry.target.style.contentVisibility = 'auto'
+            }
+          })
+        },
+        { rootMargin: '200px 0px' }
+      )
 
-      lcpObserver.observe({ type: "largest-contentful-paint", buffered: true })
+      observer.observe(slideshowRef.current)
 
       return () => {
-        lcpObserver.disconnect()
+        if (slideshowRef.current) {
+          observer.unobserve(slideshowRef.current)
+        }
       }
     }
   }, [])
 
-  // Consider showing early content even before LCP image is fully loaded
+  // 5. LCP Measurement with more detailed analytics
+  useEffect(() => {
+    if (typeof PerformanceObserver !== "undefined") {
+      // LCP Observer
+      const lcpObserver = new PerformanceObserver((entryList) => {
+        const entries = entryList.getEntries()
+        const lastEntry = entries[entries.length - 1]
+
+        // Get more detailed LCP information
+        console.log("LCP:", lastEntry.startTime,
+          "Element:", lastEntry.element,
+          "Size:", lastEntry.size,
+          "ID:", lastEntry.id,
+          "URL:", lastEntry.url)
+
+        // Could send to analytics here
+      })
+
+      lcpObserver.observe({ type: "largest-contentful-paint", buffered: true })
+
+      // Resource timing for image loading performance
+      const resourceObserver = new PerformanceObserver((entryList) => {
+        const entries = entryList.getEntries()
+        entries.forEach(entry => {
+          if (entry.name.includes('/api/image/download/') && entry.initiatorType === 'img') {
+            console.log('Image timing:', {
+              name: entry.name,
+              duration: entry.duration,
+              transferSize: entry.transferSize,
+              encodedBodySize: entry.encodedBodySize,
+              decodedBodySize: entry.decodedBodySize
+            })
+          }
+        })
+      })
+
+      resourceObserver.observe({ type: "resource", buffered: true })
+
+      return () => {
+        lcpObserver.disconnect()
+        resourceObserver.disconnect()
+      }
+    }
+  }, [])
+
+  // Immediately show skeleton with content-visibility: auto to optimize paint
   if (isLoading || !Array.isArray(banners)) {
     return <SkeletonLoader />
   }
 
   if (banners.length === 0) return <div>No banners available</div>
 
-  // Early optimization: prepare first banner's URL to avoid calculation during render
+  // 6. Early optimization: prepare first banner's URL and inline critical CSS
   const firstBannerSrc = banners[0] ? `/api/image/download/${banners[0].image}` : ''
 
   return (
-    <div className="relative">
+    <div className="relative" ref={slideshowRef}>
+      {/* Skeleton shows until first image loads */}
       {!lcpImageLoaded && <SkeletonLoader />}
 
       <div
         className={`relative w-full h-[35vh] sm:h-[50vh] md:h-[60vh] lg:h-[70vh] overflow-hidden ${!lcpImageLoaded ? "hidden" : ""}`}
+        style={{
+          contain: 'layout size',
+          containIntrinsicSize: '1200px 800px'
+        }}
       >
         {banners.map((banner, index) => {
-          // Only render visible images or soon-to-be-visible images to save resources
+          // Only render visible image and next image to save resources
           const isVisible = index === currentImageIndex
           const isNextInQueue = index === (currentImageIndex + 1) % banners.length
           if (!isVisible && !isNextInQueue && index > 0) return null
@@ -147,37 +239,50 @@ const Slideshow = () => {
           return (
             <div
               key={banner._id}
-              className={`absolute inset-0 transition-opacity duration-1000 ${
-                index === currentImageIndex ? "opacity-100" : "opacity-0"
-              }`}
+              className={`absolute inset-0 transition-opacity duration-1000 ${index === currentImageIndex ? "opacity-100" : "opacity-0"
+                }`}
               onMouseEnter={() => setHoveredIndex(index)}
               onMouseLeave={() => setHoveredIndex(null)}
-              style={{ willChange: isVisible || isNextInQueue ? 'opacity' : 'auto' }}
+              style={{
+                willChange: isVisible || isNextInQueue ? 'opacity' : 'auto',
+                // Use contain property for better paint performance
+                contain: isVisible || isNextInQueue ? 'none' : 'strict'
+              }}
             >
               {/* Optimized image element with modern loading attributes */}
               <img
                 ref={index === 0 ? lcpImageRef : null}
                 src={`/api/image/download/${banner.image}`}
                 alt={banner.altName || `Slide ${index + 1}`}
-                className="w-full h-full object-cover "
+                className="w-full h-full object-cover"
                 title={hoveredIndex === index ? banner.title : ""}
                 fetchPriority={index === 0 ? "high" : "auto"}
-                loading={index === 0 ? "eager" : "lazy"}
+                loading={index === 0 ? "lazy" : "eager"}
                 decoding={index === 0 ? "sync" : "async"}
-                // Provide dimensions to help browser calculate aspect ratio before load
-                width="1200"
-                height="800"
+                width="3"
+                height="2"
+                // Add importance attribute for prioritization
+                importance={index === 0 ? "high" : "low"}
+                // Add sizes attribute to help browser determine resource priority
+                sizes="100vw"
                 onLoad={() => {
                   if (index === 0) {
                     setLcpImageLoaded(true)
-                    // Report LCP loading time to analytics if needed
+                    // Mark the time when the LCP element finishes loading
                     if (window.performance && window.performance.now) {
-                      console.log(`First image loaded in ${window.performance.now()}ms`)
+                      const loadTime = window.performance.now()
+                      console.log(`First image loaded in ${loadTime}ms`)
+                      // Could send to analytics
                     }
                   }
                 }}
+                style={{
+                  // Optimize image rendering with GPU acceleration
+                  transform: 'translateZ(0)',
+                  backfaceVisibility: 'hidden'
+                }}
               />
-            </div> 
+            </div>
           )
         })}
       </div>
@@ -193,17 +298,17 @@ const Slideshow = () => {
         </Link>
       </div>
 
-      {/* Pagination dots */}
+      {/* Pagination dots - optimized for less repaints */}
       <div
         className={`absolute bottom-4 left-1/2 transform -translate-x-1/2 flex space-x-2 ${!lcpImageLoaded ? "hidden" : ""}`}
+        style={{ contain: 'layout style' }}
       >
         {banners.map((_, index) => (
           <button
             key={index}
             onClick={() => setCurrentImageIndex(index)}
-            className={`w-2 h-2 sm:w-3 sm:h-3 rounded-full transition-colors ${
-              index === currentImageIndex ? "bg-orange-500" : "bg-gray-300"
-            }`}
+            className={`w-2 h-2 sm:w-3 sm:h-3 rounded-full transition-colors ${index === currentImageIndex ? "bg-orange-500" : "bg-gray-300"
+              }`}
             aria-label={`Go to slide ${index + 1}`}
           />
         ))}

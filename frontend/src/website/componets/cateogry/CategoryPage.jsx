@@ -1,6 +1,6 @@
 import { Plus, Minus } from 'lucide-react';
 import { useEffect, useState } from "react";
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useGetAllChemicalCategoriesQuery } from "@/slice/chemicalSlice/chemicalCategory";
 import PromoSidebar from '../SubCategoryPage/PromoSidebar';
 
@@ -82,15 +82,15 @@ const ProductCategory = () => {
       <nav className="pt-5 sm:text-xs md:text-sm lg:text-base text-[11px] border-b pb-3 w-[98%] ml-8 mb-5 py-2">
         <ul className="flex gap-2 flex-wrap">
           <li>
-            <a href="/" className="text-gray-600 hover:text-blue-600">
+            <Link to="/" className="text-gray-600 hover:text-blue-600">
               Home
-            </a>
+            </Link>
           </li>
           <li className="text-gray-400">&gt;</li>
           <li>
-            <a href="/products" className="text-gray-600 hover:text-blue-600">
+            <Link to="/products" className="text-gray-600 hover:text-blue-600">
               Products
-            </a>
+            </Link>
           </li>
         </ul>
       </nav>
@@ -106,7 +106,7 @@ const ProductCategory = () => {
                     {/* Dynamically rendering category image */}
                     <img
                       src={category.image || "https://img.freepik.com/free-vector/abstract-chemical-logo_23-2148610094.jpg?w=200"} // Fallback image
-                      alt={category.name}
+                      alt={category.name || " experimental"}
                       className="h-8 "
                     />
                     {/* Dynamically rendering category name */}

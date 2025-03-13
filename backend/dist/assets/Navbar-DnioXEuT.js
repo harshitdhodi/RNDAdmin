@@ -1,0 +1,1 @@
+import{u as t,j as e}from"./main-Dqjs8KFu.js";import{c as a}from"./vendor-DNXw0_ws.js";import o from"./Navbar-Cv7P__nC.js";import"./Footer-Df6XLr3f.js";import"./mail-CI7trYGv.js";import"./phone-Zl6tml7p.js";const u=()=>{a.useState(!1);const{data:r}=t();return console.log(r),e.jsx("header",{className:"w-full",children:e.jsx(o,{categories:r})})};export{u as default};
