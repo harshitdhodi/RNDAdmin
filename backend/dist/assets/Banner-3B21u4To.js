@@ -1,1 +1,0 @@
-import{j as r}from"./main-B_OYodTY.js";import"./vendor-CxfDVdnA.js";function a({imageUrl:e}){return r.jsx("div",{className:"relative w-full h-[30vh] lg:h-[250px]",children:r.jsx("img",{src:e,alt:"Banner",className:"w-full h-full object-cover"})})}export{a as B};
