@@ -3,11 +3,18 @@ const Event = require('../model/events');
 // Get all events
 exports.getAllEvents = async (req, res) => {
     try {
-        const events = await Event.find();
+        // Use fresh: true option to bypass query cache
+        const events = await Event.find().setOptions({ fresh: true });
+        
+        // Add cache control headers to prevent browser caching
+        res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
+        res.setHeader('Pragma', 'no-cache');
+        res.setHeader('Expires', '0');
+        
         res.status(200).json(events);
     } catch (error) {
         res.status(500).json({ message: error.message });
-    }
+    } 
 };
 
 // Get a single event by ID

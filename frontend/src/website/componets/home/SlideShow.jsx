@@ -5,6 +5,8 @@ import { Button } from "@/components/ui/button"
 import { ArrowRight } from "lucide-react"
 import { useGetBannerByPageSlugQuery } from "@/slice/banner/banner"
 import { Link, useParams } from "react-router-dom"
+import m2 from "../../images/m11.png"
+import m1 from "../../images/m3.webp"
 
 // Enhanced skeleton with better alignment to final content
 const SkeletonLoader = () => (
@@ -24,11 +26,31 @@ const Slideshow = () => {
   const [hoveredIndex, setHoveredIndex] = useState(null)
   const [imagesLoaded, setImagesLoaded] = useState({})
   const [lcpImageLoaded, setLcpImageLoaded] = useState(false)
+  const [isSmallDevice, setIsSmallDevice] = useState(false)
   const lcpImageRef = useRef(null)
   const slideshowRef = useRef(null)
 
+  // Check if device is small (based on screen width)
+  useEffect(() => {
+    const checkDeviceSize = () => {
+      setIsSmallDevice(window.innerWidth < 640) // Using SM breakpoint (640px) from your existing code
+    }
+    
+    // Check on initial load
+    checkDeviceSize()
+    
+    // Add event listener for resize
+    window.addEventListener('resize', checkDeviceSize)
+    
+    // Cleanup
+    return () => window.removeEventListener('resize', checkDeviceSize)
+  }, [])
+
   // 1. TTFB Optimization - Add preconnect for API domain immediately 
   useEffect(() => {
+    // Skip preconnect for API if we're on a small device using static images
+    if (isSmallDevice) return
+    
     // Use crossorigin attribute for CORS requests
     const preconnectLink = document.createElement("link")
     preconnectLink.rel = "preconnect"
@@ -46,10 +68,36 @@ const Slideshow = () => {
       document.head.removeChild(preconnectLink)
       document.head.removeChild(dnsPrefetchLink)
     }
-  }, [])
+  }, [isSmallDevice])
 
   // 2. Load Delay Optimization - Preload LCP image with critical priority
   useEffect(() => {
+    // For small devices, preload static images instead
+    if (isSmallDevice) {
+      // Preload m1 as the first image with high priority
+      const preloadM1 = document.createElement("link")
+      preloadM1.rel = "preload"
+      preloadM1.as = "image"
+      preloadM1.href = m1
+      preloadM1.fetchPriority = "high"
+      preloadM1.importance = "high"
+      document.head.appendChild(preloadM1)
+      
+      // Create image object for m1
+      const img = new Image()
+      img.src = m1
+      img.fetchPriority = "high"
+      img.onload = () => {
+        setLcpImageLoaded(true)
+        setImagesLoaded((prev) => ({ ...prev, 0: true }))
+      }
+      
+      return () => {
+        document.head.removeChild(preloadM1)
+      }
+    }
+    
+    // Original code for larger devices
     if (!Array.isArray(banners) || banners.length === 0) return
 
     const lcpImage = banners[0]
@@ -87,11 +135,25 @@ const Slideshow = () => {
         document.head.removeChild(preloadLink)
       }
     }
-  }, [banners])
+  }, [banners, isSmallDevice])
 
-  // Only preload next 2 images after LCP is loaded to reduce contention
+  // Only preload next image for small devices or next 2 images for larger devices
   useEffect(() => {
-    if (!Array.isArray(banners) || banners.length <= 1 || !lcpImageLoaded) return
+    if (!lcpImageLoaded) return
+    
+    if (isSmallDevice) {
+      // Preload m2 with low priority
+      const img = new Image()
+      img.src = m2
+      img.fetchPriority = "low"
+      img.onload = () => {
+        setImagesLoaded((prev) => ({ ...prev, 1: true }))
+      }
+      return
+    }
+    
+    // Original code for larger devices
+    if (!Array.isArray(banners) || banners.length <= 1) return
 
     // Preload only next 2 images with low priority to avoid resource contention
     banners.slice(1, 3).forEach((banner, index) => {
@@ -103,12 +165,40 @@ const Slideshow = () => {
         setImagesLoaded((prev) => ({ ...prev, [actualIndex]: true }))
       }
     })
-  }, [banners, lcpImageLoaded])
+  }, [banners, lcpImageLoaded, isSmallDevice])
 
-  // 3. Load Time Optimization - Use appropriate image format and consider responsive images
-  // Slideshow interval - only start after LCP image is loaded and with requestAnimationFrame
+  // Slideshow interval
   useEffect(() => {
-    if (!Array.isArray(banners) || !lcpImageLoaded) return
+    if (!lcpImageLoaded) return
+    
+    // For small devices, we need to handle the interval manually with just 2 static images
+    if (isSmallDevice) {
+      let animationFrameId
+      let lastTimestamp = 0
+      const intervalDuration = 3000
+      
+      const animate = (timestamp) => {
+        if (!lastTimestamp) lastTimestamp = timestamp
+        
+        if (timestamp - lastTimestamp >= intervalDuration) {
+          setCurrentImageIndex((prevIndex) => (prevIndex + 1) % 2) // Toggle between 0 and 1
+          lastTimestamp = timestamp
+        }
+        
+        animationFrameId = requestAnimationFrame(animate)
+      }
+      
+      animationFrameId = requestAnimationFrame(animate)
+      
+      return () => {
+        if (animationFrameId) {
+          cancelAnimationFrame(animationFrameId)
+        }
+      }
+    }
+    
+    // Original code for larger devices
+    if (!Array.isArray(banners)) return
 
     let animationFrameId
     let lastTimestamp = 0
@@ -132,7 +222,7 @@ const Slideshow = () => {
         cancelAnimationFrame(animationFrameId)
       }
     }
-  }, [banners, lcpImageLoaded])
+  }, [banners, lcpImageLoaded, isSmallDevice])
 
   // 4. Render Delay Optimization - Using content-visibility and will-change
   useEffect(() => {
@@ -187,7 +277,10 @@ const Slideshow = () => {
       const resourceObserver = new PerformanceObserver((entryList) => {
         const entries = entryList.getEntries()
         entries.forEach(entry => {
-          if (entry.name.includes('/api/image/download/') && entry.initiatorType === 'img') {
+          if ((entry.name.includes('/api/image/download/') || 
+               entry.name.includes('m1.jpg') || 
+               entry.name.includes('m2.jpg')) && 
+              entry.initiatorType === 'img') {
             console.log('Image timing:', {
               name: entry.name,
               duration: entry.duration,
@@ -209,14 +302,20 @@ const Slideshow = () => {
   }, [])
 
   // Immediately show skeleton with content-visibility: auto to optimize paint
-  if (isLoading || !Array.isArray(banners)) {
+  if ((isLoading || !Array.isArray(banners)) && !isSmallDevice) {
     return <SkeletonLoader />
   }
 
-  if (banners.length === 0) return <div>No banners available</div>
+  if (!isSmallDevice && banners?.length === 0) return <div>No banners available</div>
 
-  // 6. Early optimization: prepare first banner's URL and inline critical CSS
-  const firstBannerSrc = banners[0] ? `/api/image/download/${banners[0].image}` : ''
+  // Define static images array for small devices
+  const staticImages = [
+    { _id: 'static-1', image: m1, title: 'Image 1', altName: 'Static Image 1' },
+    { _id: 'static-2', image: m2, title: 'Image 2', altName: 'Static Image 2' }
+  ]
+
+  // Choose the appropriate images source based on device size
+  const imageSource = isSmallDevice ? staticImages : banners
 
   return (
     <div className="relative" ref={slideshowRef}>
@@ -230,15 +329,18 @@ const Slideshow = () => {
           containIntrinsicSize: '1200px 800px'
         }}
       >
-        {banners.map((banner, index) => {
+        {imageSource && imageSource.map((item, index) => {
           // Only render visible image and next image to save resources
           const isVisible = index === currentImageIndex
-          const isNextInQueue = index === (currentImageIndex + 1) % banners.length
+          const isNextInQueue = isSmallDevice 
+            ? index === (currentImageIndex + 1) % 2 
+            : index === (currentImageIndex + 1) % imageSource.length
+            
           if (!isVisible && !isNextInQueue && index > 0) return null
 
           return (
             <div
-              key={banner._id}
+              key={item._id}
               className={`absolute inset-0 transition-opacity duration-1000 ${index === currentImageIndex ? "opacity-100" : "opacity-0"
                 }`}
               onMouseEnter={() => setHoveredIndex(index)}
@@ -252,10 +354,10 @@ const Slideshow = () => {
               {/* Optimized image element with modern loading attributes */}
               <img
                 ref={index === 0 ? lcpImageRef : null}
-                src={`/api/image/download/${banner.image}`}
-                alt={banner.altName || `Slide ${index + 1}`}
+                src={isSmallDevice ? item.image : `/api/image/download/${item.image}`}
+                alt={item.altName || `Slide ${index + 1}`}
                 className="w-full h-full object-cover"
-                title={hoveredIndex === index ? banner.title : ""}
+                title={hoveredIndex === index ? item.title : ""}
                 fetchPriority={index === 0 ? "high" : "auto"}
                 loading={index === 0 ? "lazy" : "eager"}
                 decoding={index === 0 ? "sync" : "async"}
@@ -303,7 +405,7 @@ const Slideshow = () => {
         className={`absolute bottom-4 left-1/2 transform -translate-x-1/2 flex space-x-2 ${!lcpImageLoaded ? "hidden" : ""}`}
         style={{ contain: 'layout style' }}
       >
-        {banners.map((_, index) => (
+        {imageSource && imageSource.map((_, index) => (
           <button
             key={index}
             onClick={() => setCurrentImageIndex(index)}
