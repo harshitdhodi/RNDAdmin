@@ -1,6 +1,0 @@
-import{i as h,j as o,b as g}from"./main-CHwjN9ww.js";import{c as r}from"./vendor-CgeupRFx.js";/**
- * @license lucide-react v0.462.0 - ISC
- *
- * This source code is licensed under the ISC license.
- * See the LICENSE file in the root directory of this source tree.
- */const m=h("Minus",[["path",{d:"M5 12h14",key:"1ays0h"}]]);function f(){const[a,n]=r.useState([]),[l,i]=r.useState(0),c="/api/logo/download/";return r.useEffect(()=>{(async()=>{try{const e=await g.get("/api/slideShow/getAll");e.data&&n(e.data.map(s=>({url:`${c}${s.image}`,altText:s.altText||"Slideshow Image",title:s.title||s.altText||"Slideshow Image"})))}catch(e){console.error("Error fetching slideshow images:",e)}})()},[]),r.useEffect(()=>{if(a.length>0){const t=setInterval(()=>{i(e=>(e+1)%a.length)},3e3);return()=>clearInterval(t)}},[l,a.length]),o.jsx("div",{className:"w-62 relative h-[55vh] overflow-hidden",children:a.length>0?a.map((t,e)=>o.jsx("img",{src:t.url,alt:t.altText,title:t.title,className:`w-full h-full absolute object-cover transition-opacity duration-1000 ease-in-out ${e===l?"opacity-100":"opacity-0"}`},e)):o.jsx("p",{className:"text-center text-gray-500",children:"Loading images..."})})}export{m as M,f as P};

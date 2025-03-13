@@ -122,6 +122,7 @@ const CareerInfoForm = lazy(() => import('./websiteBackend/career/CareerInfoForm
 
 // Non-lazy imports
 import useDocumentTitle from './websiteBackend/staticMetaKeyword/DynamicMeta';
+import CriticalStyles from './website/componets/CriticalStyles';
 
 // Auth Components
 const PrivateRoute = ({ children }) => {
@@ -137,7 +138,7 @@ const LoginRoute = () => {
 // Dynamic meta function
 const AppContent = () => {
   useDocumentTitle(); // Use the hook here
-
+<CriticalStyles/>
   return (
     <Suspense fallback={<LoadingFallback />}>
       <Outlet /> {/* Render the rest of the app */}
