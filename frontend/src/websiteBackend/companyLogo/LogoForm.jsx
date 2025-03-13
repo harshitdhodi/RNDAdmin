@@ -91,7 +91,7 @@ const LogoForm = () => {
                             {preview[previewKey] && (
                                 <div className="mt-4 p-4 bg-white border border-gray-200 rounded-lg">
                                     <p className="text-sm text-gray-600 mb-2">Preview:</p>
-                                    <img src={preview[previewKey]} alt={label} className="h-20 object-contain" />
+                                    <img src={preview[previewKey]} alt={label || "img"} className="h-20 object-contain" />
                                 </div>
                             )}
                             <input 

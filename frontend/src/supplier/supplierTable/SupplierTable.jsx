@@ -185,14 +185,14 @@ const SuppliersTable = () => {
                                     </TableCell>
                                     <TableCell>{supplier.country}</TableCell>
                                     <TableCell>
-                                        <a
-                                            href={supplier.website}
+                                        <Link
+                                            to={supplier.website}
                                             target="_blank"
                                             rel="noopener noreferrer"
                                             className="text-blue-600 hover:underline"
                                         >
                                             {supplier.website}
-                                        </a>
+                                        </Link>
                                     </TableCell>
                                 </TableRow>
                             </React.Fragment>

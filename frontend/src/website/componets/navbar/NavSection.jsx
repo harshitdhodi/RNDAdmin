@@ -1,10 +1,8 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { motion } from "framer-motion";
 import { NavLink } from "./NavLink";
 
-const NavSection
- = ({ 
+const NavSection = ({ 
     categories, 
     parsedBlogCategories, 
     isHomeActive, 
@@ -34,27 +32,28 @@ const NavSection
                         >
                             Corporate
                         </NavLink>
-                        {corporateDropdownOpen && (
-                            <motion.div
-                                initial={{ opacity: 0, y: -10 }}
-                                animate={{ opacity: 1, y: 0 }}
-                                exit={{ opacity: 0, y: -10 }}
-                                className="absolute left-0 w-64 bg-blue-800 text-white shadow-lg z-50 font-normal"
+                        <div
+                            className={`
+                                absolute left-0 w-64 bg-blue-800 text-white shadow-lg z-50 font-normal
+                                transition-all duration-200 ease-in-out
+                                ${corporateDropdownOpen 
+                                    ? 'opacity-100 translate-y-0' 
+                                    : 'opacity-0 -translate-y-2 pointer-events-none'}
+                            `}
+                        >
+                            <Link
+                                to="/introduction"
+                                className="block px-4 py-2 hover:bg-blue-600 transition-colors"
                             >
-                                <Link
-                                    to="/introduction"
-                                    className="block px-4 py-2 hover:bg-blue-600 transition-colors"
-                                >
-                                    <span>Introduction</span>
-                                </Link>
-                                <Link
-                                    to="/vision-mission"
-                                    className="block px-4 py-2 hover:bg-blue-600 transition-colors"
-                                >
-                                    Vision
-                                </Link>
-                            </motion.div>
-                        )}
+                                <span>Introduction</span>
+                            </Link>
+                            <Link
+                                to="/vision-mission"
+                                className="block px-4 py-2 hover:bg-blue-600 transition-colors"
+                            >
+                                Vision
+                            </Link>
+                        </div>
                     </div>
 
                     {/* Products Dropdown */}
@@ -94,28 +93,29 @@ const NavSection
                         >
                             Blogs
                         </NavLink>
-                        {blogDropdownOpen && (
-                            <motion.div
-                                initial={{ opacity: 0, y: -10 }}
-                                animate={{ opacity: 1, y: 0 }}
-                                exit={{ opacity: 0, y: -10 }}
-                                className="absolute left-0 w-64 bg-blue-800 text-white shadow-lg z-50 font-normal"
-                            >
-                                {parsedBlogCategories.length > 0 ? (
-                                    parsedBlogCategories.map((category) => (
-                                        <Link
-                                            key={category.id}
-                                            to={`/blog/${category.slug}`}
-                                            className="block px-4 py-2 hover:bg-blue-600 transition-colors"
-                                        >
-                                            {category.name}
-                                        </Link>
-                                    ))
-                                ) : (
-                                    <p className="px-4 py-2">No blog categories available</p>
-                                )}
-                            </motion.div>
-                        )}
+                        <div
+                            className={`
+                                absolute left-0 w-64 bg-blue-800 text-white shadow-lg z-50 font-normal
+                                transition-all duration-200 ease-in-out
+                                ${blogDropdownOpen 
+                                    ? 'opacity-100 translate-y-0' 
+                                    : 'opacity-0 -translate-y-2 pointer-events-none'}
+                            `}
+                        >
+                            {parsedBlogCategories.length > 0 ? (
+                                parsedBlogCategories.map((category) => (
+                                    <Link
+                                        key={category.id}
+                                        to={`/blog/${category.slug}`}
+                                        className="block px-4 py-2 hover:bg-blue-600 transition-colors"
+                                    >
+                                        {category.name}
+                                    </Link>
+                                ))
+                            ) : (
+                                <p className="px-4 py-2">No blog categories available</p>
+                            )}
+                        </div>
                     </div>
 
                     {/* Contact Us Link */}
@@ -125,23 +125,22 @@ const NavSection
                     >
                         Contact Us
                     </NavLink>
-                {/* Advanced Search Button */}
-                {!mobileMenuOpen && (
-                    <div className="hidden md:flex justify-center items-center">
-                        <Link 
-                            to="/advance-search"
-                            className="text-white bg-orange-500 rounded-none px-4 lg:px-7 py-6 lg:py-8 hover:bg-orange-500 hover:text-white text-sm lg:text-[16px] font-bold"
-                        >
-                            Advanced Search
-                        </Link>
-                    </div>
-                )}
-                </div>
 
+                    {/* Advanced Search Button */}
+                    {!mobileMenuOpen && (
+                        <div className="hidden md:flex justify-center items-center">
+                            <Link 
+                                to="/advance-search"
+                                className="text-white bg-orange-500 rounded-none px-4 lg:px-7 py-6 lg:py-8 hover:bg-orange-500 hover:text-white text-sm lg:text-[16px] font-bold"
+                            >
+                                Advanced Search
+                            </Link>
+                        </div>
+                    )}
+                </div>
             </div>
         </nav>
     );
 };
 
-export default NavSection
-;
+export default NavSection;

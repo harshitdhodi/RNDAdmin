@@ -3,6 +3,7 @@ import axios from 'axios';
 import callIcon from "../../../assets/call-icon.png";
 import emailIcon from "../../../assets/email-us.png";
 import contactImg from "../../../assets/contact.png";
+import { Link } from 'react-router-dom';
 
 export default function LeftSection() {
   const [contactInfo, setContactInfo] = useState(null);
@@ -49,7 +50,7 @@ export default function LeftSection() {
             {/* Display mobile numbers */}
             <div className="space-y-2">
               <div className="flex gap-3 items-center">
-                <img src={callIcon} alt="Call Icon" />
+                <img src={callIcon} alt="Call Icon"/>
                 <span className="font-semibold">Call Us</span>
               </div>
               {contactInfo.mobiles?.length > 0 ? (
@@ -71,13 +72,13 @@ export default function LeftSection() {
               </div>
               {contactInfo.emails?.length > 0 ? (
                 contactInfo.emails.map((email, index) => (
-                  <a 
+                  <Link 
                     key={index} 
-                    href={`mailto:${email}`} 
+                    to={`mailto:${email}`} 
                     className="text-gray-800 block hover:underline"
                   >
                     {email}
-                  </a>
+                  </Link>
                 ))
               ) : (
                 <p className="text-gray-600">No email addresses available</p>

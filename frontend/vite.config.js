@@ -1,76 +1,107 @@
-/* eslint-disable no-undef */
-import { defineConfig } from 'vite';
-import react from '@vitejs/plugin-react';
-import path from 'path';
-import svgr from 'vite-plugin-svgr';
-import compression from 'vite-plugin-compression';
-import babel from '@rollup/plugin-babel';
-import terser from '@rollup/plugin-terser';
+import { defineConfig } from "vite";
+import react from "@vitejs/plugin-react";
+import { VitePWA } from "vite-plugin-pwa";
+import path from "path";
 
-// https://vite.dev/config/
 export default defineConfig({
   plugins: [
     react(),
-    svgr(),
-    compression({
-      algorithm: "gzip", // Enables Gzip compression
-      threshold: 1024, // Compress files >1KB
+    VitePWA({
+      registerType: "autoUpdate",
+      includeAssets: ["favicon.ico", "apple-touch-icon.png", "mask-icon.svg"],
+      manifest: {
+        name: "Vite PWA Project",
+        short_name: "Vite PWA Project",
+        theme_color: "#ffffff",
+        icons: [
+          {
+            src: "pwa-64x64.png",
+            sizes: "64x64",
+            type: "image/png",
+          },
+          {
+            src: "pwa-192x192.png",
+            sizes: "192x192",
+            type: "image/png",
+          },
+          {
+            src: "pwa-512x512.png",
+            sizes: "512x512",
+            type: "image/png",
+            purpose: "any",
+          },
+          {
+            src: "maskable-icon-512x512.png",
+            sizes: "512x512",
+            type: "image/png",
+            purpose: "maskable",
+          },
+        ],
+      },
+      workbox: {
+        maximumFileSizeToCacheInBytes: 5 * 1024 * 1024, // 5MB
+        runtimeCaching: [
+          {
+            urlPattern: /.*\.(?:png|jpg|jpeg|svg|gif|pdf)$/,
+            handler: 'CacheFirst',
+            options: {
+              cacheName: 'large-assets',
+              expiration: {
+                maxEntries: 10,
+                maxAgeSeconds: 7 * 24 * 60 * 60, // 7 days
+              },
+            },
+          },
+          {
+            urlPattern: /.*\.(?:js|css)/,
+            handler: 'NetworkFirst',
+            options: {
+              cacheName: 'static-resources',
+            },
+          },
+        ],
+      },
     }),
-    compression({
-      algorithm: "brotliCompress", // Enables Brotli compression (better than Gzip)
-      threshold: 1024,
-    }),
-    babel({
-      babelHelpers: 'bundled',
-      compact: true,
-      plugins: [
-        ["import", { libraryName: "antd", libraryDirectory: "es", style: "css" }, "antd"]
-      ]
-    })
   ],
+  
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),
-      react: path.resolve(__dirname, "node_modules/react"),
-      "react-is": path.resolve(__dirname, "node_modules/react-is"),
-      "react-hook-form": "react-hook-form",
-      classnames: path.resolve(__dirname, "node_modules/classnames"), // Ensures compatibility
     },
   },
-  optimizeDeps: {
-    include: ["react-is", "rc-util", "classnames"],
-    exclude: ["antd"], // Keeps antd excluded if needed
+
+  build: {
+    rollupOptions: {
+      input: {
+        main: './index.html',
+        'service-worker': './public/service-worker.js'
+      },
+      output: {
+        manualChunks: {
+          'vendor': [
+            'react',
+            'react-dom',
+            'react-router-dom',
+          ]
+        }
+      }
+    },
+    chunkSizeWarningLimit: 1000, // Increase warning limit to 1000kb
   },
+
   server: {
-    mimeTypes: {
-      "application/javascript": ["js"],
+    port: 3000, // Added port configuration
+    headers: {
+      'Service-Worker-Allowed': '/'
     },
     proxy: {
       "/api": {
         target: "http://localhost:3028",
-        changeOrigin: true,
+        changeOrigin: false,
         secure: false,
       },
-    },
+    },  
   },
-  build: {
-    minify: 'terser', // Uses Terser for minification
-    terserOptions: {
-      compress: {
-        drop_console: true, // Removes console.log() in production
-        drop_debugger: true,
-      },
-    },
-    rollupOptions: {
-      output: {
-        manualChunks(id) {
-          if (id.includes("node_modules")) {
-            if (id.includes("lucide-react")) return "lucide";
-            if (id.includes("@ant-design/icons")) return "ant-design-icons";
-            return id.split("node_modules/")[1].split("/")[0];
-          }
-        }
-      }
-    }
-  }
-});
+
+  base: '/',
+}); 

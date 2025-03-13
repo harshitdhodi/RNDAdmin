@@ -31,7 +31,7 @@ const MenuItem = memo(({ item, index }) => (
     <div className="text-orange-500 group-hover:scale-110 transition-transform">
       <img 
         src={`/api/logo/download/${item.icon}`} 
-        alt={item.name} 
+        alt={item.name || 'img'} 
         className="sm:w-10 w-5 object-fit sm:h-10 sm:object-fill"
         loading="lazy" 
         width="40"

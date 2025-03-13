@@ -89,9 +89,9 @@ export default function BlogPage() {
                       </div>
                       <div className="md:w-3/5 h-[50vh] p-4">
                         <h3 className="text-2xl font-bold mb-2 text-gray-800">
-                          <a href="#" className="hover:underline text-[#052852]">
+                          <Link to="#" className="hover:underline text-[#052852]">
                             {latestBlog.title}
-                          </a>
+                          </Link>
                         </h3>
                         <p
                           className="text-gray-600 mb-4"
@@ -136,9 +136,9 @@ export default function BlogPage() {
                     />
                     <div className="card-header px-4 mt-3">
                       <h3 className="text-xl font-bold text-gray-800">
-                        <a href="#" className="hover:underline hover:text-[#1290ca] transition-colors duration-300">
+                        <Link to="#" className="hover:underline hover:text-[#1290ca] transition-colors duration-300">
                           {post.title}
-                        </a>
+                        </Link>
                       </h3>
                     </div>
                     <div className="card-content px-4 flex justify-between items-center">
@@ -185,9 +185,9 @@ export default function BlogPage() {
                       {contactInfo.emails.map((email, index) => (
                         <div className="flex items-center" key={index}>
                           <MailIcon className="h-6 text-[#ffffff] w-6 mr-2" />
-                          <a href={`mailto:${email}`} className="text-lg text-[#ffffff] hover:underline">
+                          <Link to={`mailto:${email}`} className="text-lg text-[#ffffff] hover:underline">
                             {email}
-                          </a>
+                          </Link>
                         </div>
                       ))}
                     </div>
