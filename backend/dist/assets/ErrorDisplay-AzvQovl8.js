@@ -1,1 +1,0 @@
-import{j as t}from"./main-D1Nesbqm.js";import{c as s}from"./vendor-CxfDVdnA.js";const e=({message:r})=>t.jsx("div",{className:"text-center p-4 text-red-500",children:r}),m=s.memo(e);export{m as default};
