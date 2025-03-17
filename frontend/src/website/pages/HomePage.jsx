@@ -1,10 +1,11 @@
 import React from 'react'
-import Slideshow from './../componets/home/SlideShow';
+// import Slideshow from './../componets/home/SlideShow';
 import NavigationMenu from '../componets/home/NavigationMenu';
 import CategoryCards from '../componets/home/CategoryCards';
 import FeaturedProducts from '../componets/home/FeatureProducts';
 import CorporateProfile from '../componets/home/CorporateProfile';
 import Footer from '../componets/home/Footer';
+import Slideshow from '../componets/home/slideshow/SlideShow';
 // import FeaturedProducts from '../componets/home/feature/FeatureProducts';
 
 const HomePage = () => {
