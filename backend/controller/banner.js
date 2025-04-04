@@ -1,12 +1,13 @@
 const Banner = require('../model/banner');
-
+const mongoose = require('mongoose');
 // Create new banner
 exports.createBanner = async (req, res) => {
     try {
         const image = req.files['image'] ? req.files['image'][0].filename : null;
-
+        const photo = req.files['photo'] ? req.files['photo'][0].filename : null;
         const banner = new Banner({
             image: image,
+            photo: photo,
             imgName: req.body.imgName,
             altName: req.body.altName,
             title: req.body.title,
@@ -35,22 +36,44 @@ exports.getAllBanners = async (req, res) => {
 // Get banner by ID
 exports.getBannerById = async (req, res) => {
     try {
-        const banner = await Banner.findById(req.query.id);
+        const { id } = req.query;
+        if (!mongoose.Types.ObjectId.isValid(id)) {
+            return res.status(400).json({ message: "Invalid ID format" });
+        }
+        console.log("Fetching Banner with ID:", id);
+
+        const banner = await Banner.findById(id);
         if (!banner) return res.status(404).json({ message: 'Banner not found' });
+
         res.status(200).json(banner);
     } catch (err) {
-        res.status(400).json({ message: err.message });
+        console.error("Error fetching banner:", err);
+        res.status(500).json({ message: "Server error" });
     }
 };
+
 
 // Get banner by pageSlug 
 exports.getBannerByPageSlug = async (req, res) => {
     try {
-        const banner = await Banner.find({ pageSlug: req.query.pageSlug });
-        if (!banner) return res.status(404).json({ message: 'Banner not found' });
+        const { pageSlug } = req.query;
+
+        if (!pageSlug) {
+            return res.status(400).json({ message: "pageSlug is required" });
+        }
+
+        console.log("Fetching Banner with pageSlug:", pageSlug);
+
+        const banner = await Banner.find({ pageSlug });
+
+        if (!banner || banner.length === 0) {
+            return res.status(404).json({ message: "Banner not found" });
+        }
+
         res.status(200).json(banner);
     } catch (err) {
-        res.status(400).json({ message: err.message });
+        console.error("Error fetching banner by pageSlug:", err);
+        res.status(500).json({ message: "Server error" });
     }
 };
 
@@ -73,6 +96,9 @@ exports.updateBanner = async (req, res) => {
             updateData.image = req.files['image'][0].filename;
         }
 
+        if (req.files && req.files['photo']) {
+            updateData.photo = req.files['photo'][0].filename;
+        }
         const updatedBanner = await Banner.findByIdAndUpdate(
             id,
             updateData,

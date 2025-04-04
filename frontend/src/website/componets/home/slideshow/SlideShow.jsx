@@ -1,4 +1,3 @@
-// File: src/components/Slideshow/index.jsx
 "use client"
 
 import { useState, useEffect, useRef } from "react"
@@ -10,7 +9,6 @@ import SlideshowImages from "./SlideShowImages"
 import SlideshowControls from "./SlideShowControlles"
 import ReadMoreButton from "./ReadMoreButton"
 import { preloadResources } from "./PreLoad"
-import { staticImages } from "./StaticImg"
 
 // Initialize immediate preloading before React hydrates
 if (typeof window !== 'undefined') {
@@ -48,10 +46,7 @@ const Slideshow = () => {
 
   // Load Delay Optimization
   useEffect(() => {
-    if (isSmallDevice) {
-      setLcpImageLoaded(true);
-      setImagesLoaded((prev) => ({ ...prev, 0: true }));
-    } else if (Array.isArray(banners) && banners.length > 0) {
+    if (Array.isArray(banners) && banners.length > 0) {
       const lcpImage = banners[0];
       if (lcpImage) {
         const imagePath = `/api/image/download/${lcpImage.image}`;
@@ -63,7 +58,7 @@ const Slideshow = () => {
         };
       }
     }
-  }, [banners, isSmallDevice]);
+  }, [banners]);
 
   // Preload next image
   useEffect(() => {
@@ -71,14 +66,7 @@ const Slideshow = () => {
 
     // Delay loading the next image by 500ms to prioritize the LCP image
     const timeoutId = setTimeout(() => {
-      if (isSmallDevice) {
-        const img = new Image();
-        img.src = staticImages[1].image;
-        img.fetchPriority = "low";
-        img.onload = () => {
-          setImagesLoaded((prev) => ({ ...prev, 1: true }));
-        };
-      } else if (Array.isArray(banners) && banners.length > 1) {
+      if (Array.isArray(banners) && banners.length > 1) {
         // Only preload the next image to avoid resource contention
         const img = new Image();
         img.src = `/api/image/download/${banners[1].image}`;
@@ -90,13 +78,13 @@ const Slideshow = () => {
     }, 500);
 
     return () => clearTimeout(timeoutId);
-  }, [banners, lcpImageLoaded, isSmallDevice]);
+  }, [banners, lcpImageLoaded]);
 
   // Slideshow interval
   useEffect(() => {
     if (!lcpImageLoaded) return;
 
-    const imageCount = isSmallDevice ? 2 : (Array.isArray(banners) ? banners.length : 0);
+    const imageCount = Array.isArray(banners) ? banners.length : 0;
     if (!imageCount) return;
 
     let animationFrameId;
@@ -121,7 +109,7 @@ const Slideshow = () => {
         cancelAnimationFrame(animationFrameId);
       }
     };
-  }, [banners, lcpImageLoaded, isSmallDevice]);
+  }, [banners, lcpImageLoaded]);
 
   // Render Delay Optimization
   useEffect(() => {
@@ -152,7 +140,6 @@ const Slideshow = () => {
   // Performance monitoring
   useEffect(() => {
     if (typeof PerformanceObserver !== "undefined") {
-      // Performance monitoring code (unchanged)
       const lcpObserver = new PerformanceObserver((entryList) => {
         const entries = entryList.getEntries();
         const lastEntry = entries[entries.length - 1];
@@ -168,10 +155,8 @@ const Slideshow = () => {
       const resourceObserver = new PerformanceObserver((entryList) => {
         const entries = entryList.getEntries();
         entries.forEach(entry => {
-          if ((entry.name.includes('/api/image/download/') ||
-            entry.name.includes('m1.jpg') ||
-            entry.name.includes('m2.jpg')) &&
-            entry.initiatorType === 'img') {
+          if (entry.name.includes('/api/image/download/') && 
+              entry.initiatorType === 'img') {
             console.log('Image timing:', {
               name: entry.name,
               duration: entry.duration,
@@ -192,13 +177,11 @@ const Slideshow = () => {
     }
   }, []);
 
-  if ((isLoading || !Array.isArray(banners)) && !isSmallDevice) {
+  if (isLoading || !Array.isArray(banners)) {
     return <SkeletonLoader />;
   }
 
-  if (!isSmallDevice && banners?.length === 0) return <div>No banners available</div>;
-
-  const imageSource = isSmallDevice ? staticImages : banners;
+  if (banners?.length === 0) return <div>No banners available</div>;
 
   return (
     <div className="relative" ref={slideshowRef}>
@@ -206,7 +189,7 @@ const Slideshow = () => {
       {!lcpImageLoaded && <SkeletonLoader />}
 
       <SlideshowImages 
-        imageSource={imageSource}
+        imageSource={banners}
         currentImageIndex={currentImageIndex}
         hoveredIndex={hoveredIndex}
         setHoveredIndex={setHoveredIndex}
@@ -219,7 +202,7 @@ const Slideshow = () => {
       <ReadMoreButton lcpImageLoaded={lcpImageLoaded} />
 
       <SlideshowControls 
-        imageSource={imageSource}
+        imageSource={banners}
         currentImageIndex={currentImageIndex}
         setCurrentImageIndex={setCurrentImageIndex}
         lcpImageLoaded={lcpImageLoaded}
