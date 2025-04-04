@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import ReCAPTCHA from "react-google-recaptcha";
 import Modal from 'react-modal';
-import { FaTimes } from 'react-icons/fa';
+import { X } from "lucide-react";
 import { useCreateInquiryMutation } from '@/slice/inquiry/productInquiry';
 // Set the app element for the modal (optional)
 Modal.setAppElement('#root');
@@ -165,7 +165,7 @@ function InquiryForm({ productName, onClose }) {
                         onClick={() => setModalIsOpen(false)}
                         className="text-black px-4 py-2 absolute top-2 right-2"
                     >
-                        <FaTimes size={25} />
+                        <X size={25} />
                     </button>
                 </div>
             </Modal>

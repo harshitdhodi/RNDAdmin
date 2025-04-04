@@ -1,58 +1,28 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { Form, Button, message } from 'antd';
-import JoditEditor from 'jodit-react';
+import { Form } from '@/components/ui/form';
+import { Button } from '@/components/ui/button';
+import { useToast } from 'react-toastify';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Card, CardHeader, CardContent } from '@/components/ui/card';
+import ReactQuill from 'react-quill';
+import 'react-quill/dist/quill.snow.css';
 
 const BlogCardForm = () => {
   const [form] = Form.useForm();
   const [blogCard, setBlogCard] = useState('');
-  const [displayContent, setDisplayContent] = useState(''); // New state for display
+  const [displayContent, setDisplayContent] = useState('');
   const [blogCardId, setBlogCardId] = useState(null);
-
-  const editorRef = useRef(null);
-
-  const config = {
-    uploader: { insertImageAsBase64URI: true },
-    toolbarAdaptive: false,
-    toolbarSticky: false,
-    buttons: [
-      'bold',
-      'italic',
-      'underline',
-      'ul',
-      'ol',
-      'fontsize',
-      'paragraph',
-      'link',
-      'image',
-      'video',
-      'table',
-      'align',
-      'undo',
-      'redo',
-      'font',
-      'fontsize',
-      'brush',
-      'foreColor',
-      'backColor',
-    ],
-    // Force black text in editor display
-    style: {
-      color: 'black'
-    }
-  };
+;
 
   const fetchBlogCard = async () => {
     try {
       const response = await axios.get('/api/blogCard/getCard');
       const blogCardData = response.data[0];
-      console.log(response);
       setBlogCardId(blogCardData._id);
-      
-      // Store original content (with white text)
       setBlogCard(blogCardData.blogCard);
-      
-      // Convert white text to black for display
+
       const parser = new DOMParser();
       const doc = parser.parseFromString(blogCardData.blogCard, 'text/html');
       const elements = doc.getElementsByTagName('*');
@@ -64,8 +34,7 @@ const BlogCardForm = () => {
       setDisplayContent(doc.body.innerHTML);
       form.setFieldsValue({ blogCard: blogCardData.blogCard });
     } catch (error) {
-      console.error('Failed to fetch blog card:', error);
-      message.error('Failed to fetch blog card.');
+      toast({ title: 'Error', description: 'Failed to fetch blog card.', variant: 'destructive' });
     }
   };
 
@@ -74,10 +43,7 @@ const BlogCardForm = () => {
   }, [form]);
 
   const handleEditorChange = (newContent) => {
-    // Keep the original content with white text in blogCard state
     setBlogCard(newContent);
-    
-    // Convert white text to black for display
     const parser = new DOMParser();
     const doc = parser.parseFromString(newContent, 'text/html');
     const elements = doc.getElementsByTagName('*');
@@ -89,57 +55,59 @@ const BlogCardForm = () => {
     setDisplayContent(doc.body.innerHTML);
   };
 
-  const onFinish = async (values) => {
+  const onFinish = async () => {
     try {
       if (blogCardId) {
-        // Update existing blog card
-        await axios.put(`/api/blogCard/editCard/${blogCardId}`, {
-          blogCard: blogCard,
-        });
-        message.success('Blog card updated successfully!');
+        await axios.put(`/api/blogCard/editCard/${blogCardId}`, { blogCard });
+        toast({ title: 'Success', description: 'Blog card updated successfully!' });
       } else {
-        // Add new blog card
-        await axios.post('/api/blogCard/addCard', {
-          blogCard: blogCard,
-        });
-        message.success('Blog card added successfully!');
+        await axios.post('/api/blogCard/addCard', { blogCard });
+        toast({ title: 'Success', description: 'Blog card added successfully!' });
       }
       form.resetFields();
       setBlogCard('');
       setDisplayContent('');
-      fetchBlogCard(); // Fetch the updated data
+      fetchBlogCard();
     } catch (error) {
-      console.error('Failed to save blog card:', error);
-      message.error('Failed to save blog card.');
+      toast({ title: 'Error', description: 'Failed to save blog card.', variant: 'destructive' });
     }
   };
 
   return (
-    <Form 
-      form={form} 
-      layout="vertical" 
-      onFinish={onFinish}
-      name="blog_card_form"
-    >
-      <Form.Item
-        name="blogCard"
-        label="Blog Card Content"
-        rules={[{ required: true, message: 'Please input the blog card content!' }]}
-      >
-        <JoditEditor 
-          ref={editorRef} 
-          value={displayContent || blogCard} // Use displayContent if available
-          config={config} 
-          onChange={handleEditorChange}
-        />
-      </Form.Item>
-
-      <Form.Item>
-        <Button type="primary" htmlType="submit">
-          {blogCardId ? 'Update Blog Card' : 'Add Blog Card'}
-        </Button>
-      </Form.Item>
-    </Form>
+    <Card className="p-6 max-w-2xl mx-auto">
+      <CardHeader>
+        <h2 className="text-xl font-bold">Blog Card Form</h2>
+      </CardHeader>
+      <CardContent>
+        <Form form={form} layout="vertical" onFinish={onFinish} name="blog_card_form">
+          <div className="mb-4">
+            <Label htmlFor="blogCard">Blog Card Content</Label>
+            <ReactQuill
+              id="blogCard"
+              value={displayContent || blogCard}
+              onChange={handleEditorChange}
+              modules={{
+                toolbar: [
+                  [{ header: '1' }, { header: '2' }, { font: [] }],
+                  [{ list: 'ordered' }, { list: 'bullet' }],
+                  ['bold', 'italic', 'underline', 'blockquote'],
+                  [{ align: [] }],
+                  ['link', 'image', 'video'],
+                  ['clean']
+                ]
+              }}
+              formats={[
+                'header', 'font', 'list', 'bold', 'italic', 'underline',
+                'blockquote', 'align', 'link', 'image', 'video'
+              ]}
+            />
+          </div>
+          <Button type="submit" className="w-full">
+            {blogCardId ? 'Update Blog Card' : 'Add Blog Card'}
+          </Button>
+        </Form>
+      </CardContent>
+    </Card>
   );
 };
 

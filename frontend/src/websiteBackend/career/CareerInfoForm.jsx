@@ -1,34 +1,38 @@
-import React, { useState, useEffect } from 'react';
-import { Form, Input, Button, Upload, message, Image, Breadcrumb, Typography } from 'antd';
-import { UploadOutlined, HomeOutlined } from '@ant-design/icons';
-import JoditEditor from 'jodit-react';
-import axios from 'axios';
-
-const { Title } = Typography;
+import React, { useState, useEffect } from "react";
+import axios from "axios";
+import { Form } from "@/components/ui/form";
+import { Button } from "@/components/ui/button";
+import { Label } from "@/components/ui/label";
+import { Card, CardHeader, CardContent } from "@/components/ui/card";
+import ReactQuill from "react-quill";
+import "react-quill/dist/quill.snow.css";
 
 const CareerInfoForm = () => {
   const [form] = Form.useForm();
-  const [info, setInfo] = useState('');
+  const [info, setInfo] = useState("");
   const [image, setImage] = useState(null);
   const [imageUrl, setImageUrl] = useState(null);
   const [careerInfo, setCareerInfo] = useState(null);
 
-  const fetchCareerInfo = () => {
-    axios.get('/api/careerInfo')
-      .then(response => {
-        if (response.data.length > 0) {
-          const data = response.data[0];
-          setCareerInfo(data);
-          setInfo(data.info);
-          form.setFieldsValue({ info: data.info });
-          if (data.image) {
-            setImageUrl(`/api/image/download/${data.image}`);
-          }
+  const fetchCareerInfo = async () => {
+    try {
+      const response = await axios.get("/api/careerInfo");
+      if (response.data.length > 0) {
+        const data = response.data[0];
+        setCareerInfo(data);
+        setInfo(data.info);
+        form.setFieldsValue({ info: data.info });
+        if (data.image) {
+          setImageUrl(`/api/image/download/${data.image}`);
         }
-      })
-      .catch(error => {
-        console.error('Error fetching career info:', error);
+      }
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to fetch career info.",
+        variant: "destructive",
       });
+    }
   };
 
   useEffect(() => {
@@ -37,78 +41,103 @@ const CareerInfoForm = () => {
 
   const handleInfoChange = (newInfo) => {
     setInfo(newInfo);
+
+    // Convert white text to black for visibility
+    const parser = new DOMParser();
+    const doc = parser.parseFromString(newInfo, "text/html");
+    const elements = doc.getElementsByTagName("*");
+    for (let element of elements) {
+      if (element.style.color === "white" || element.style.color === "#ffffff") {
+        element.style.color = "black";
+      }
+    }
+    setInfo(doc.body.innerHTML);
   };
 
-  const handleImageChange = ({ file }) => {
-    setImage(file);
-    setImageUrl(URL.createObjectURL(file));
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setImage(file);
+      setImageUrl(URL.createObjectURL(file)); // Show preview
+    }
   };
 
-  const handleSubmit = async (values) => {
+  const handleSubmit = async () => {
     const formData = new FormData();
-    formData.append('info', info);
+    formData.append("info", info);
     if (image) {
-      formData.append('image', image);
+      formData.append("image", image);
     }
 
     try {
       if (careerInfo) {
-        // Update existing career info
         await axios.put(`/api/careerInfo/${careerInfo._id}`, formData);
-        message.success('Career info updated successfully');
-        fetchCareerInfo(); // Fetch updated data
+        toast({ title: "Success", description: "Career info updated successfully!" });
       } else {
-        // Create new career info
-        await axios.post('/api/careerInfo', formData);
-        message.success('Career info created successfully');
-        fetchCareerInfo(); // Fetch updated data
+        await axios.post("/api/careerInfo", formData);
+        toast({ title: "Success", description: "Career info created successfully!" });
       }
+      fetchCareerInfo();
     } catch (error) {
-      console.error('Error saving career info:', error);
-      message.error('Error saving career info');
+      toast({ title: "Error", description: "Failed to save career info.", variant: "destructive" });
     }
   };
 
   return (
-    <div>
-      <Breadcrumb>
-        <Breadcrumb.Item href="/dashboard">
-        Dashboard
-        </Breadcrumb.Item>
-       
-        <Breadcrumb.Item>Career Info</Breadcrumb.Item>
-      </Breadcrumb>
-      <Title level={2} style={{ margin: '16px 0' }}>Career Info</Title>
-      <Form form={form} onFinish={handleSubmit} layout="vertical">
-        <Form.Item label="Info" name="info" rules={[{ required: true, message: 'Please enter the info' }]}>
-          <JoditEditor
-            value={info}
-            onChange={handleInfoChange}
-          />
-        </Form.Item>
-        <Form.Item label="Image" name="image">
-          {imageUrl && (
-            <Image
-              width={200}
-              src={imageUrl}
-              alt="Career Info Image"
+    <Card className="p-6 max-w-2xl mx-auto">
+      <CardHeader>
+        <h2 className="text-xl font-bold">Career Info</h2>
+      </CardHeader>
+      <CardContent>
+        <Form form={form} layout="vertical" onFinish={handleSubmit}>
+          <div className="mb-4">
+            <Label htmlFor="info">Info</Label>
+            <ReactQuill
+              id="info"
+              value={info}
+              onChange={handleInfoChange}
+              modules={{
+                toolbar: [
+                  [{ header: "1" }, { header: "2" }, { font: [] }],
+                  [{ list: "ordered" }, { list: "bullet" }],
+                  ["bold", "italic", "underline", "blockquote"],
+                  [{ align: [] }],
+                  ["link", "image", "video"],
+                  ["clean"],
+                ],
+              }}
+              formats={[
+                "header",
+                "font",
+                "list",
+                "bold",
+                "italic",
+                "underline",
+                "blockquote",
+                "align",
+                "link",
+                "image",
+                "video",
+              ]}
             />
-          )}
-          <Upload
-            beforeUpload={() => false}
-            onChange={handleImageChange}
-            maxCount={1}
-          >
-            <Button icon={<UploadOutlined />}>Select Image</Button>
-          </Upload>
-        </Form.Item>
-        <Form.Item>
-          <Button type="primary" htmlType="submit">
-            {careerInfo ? 'Update' : 'Submit'}
+          </div>
+          <div className="mb-4">
+            <Label htmlFor="image">Image</Label>
+            {imageUrl && <img className="w-32 mb-2 rounded" src={imageUrl} alt="Career Info" />}
+            <input
+              type="file"
+              id="image"
+              accept="image/*"
+              onChange={handleImageChange}
+              className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
+            />
+          </div>
+          <Button type="submit" className="w-full">
+            {careerInfo ? "Update Career Info" : "Submit Career Info"}
           </Button>
-        </Form.Item>
-      </Form>
-    </div>
+        </Form>
+      </CardContent>
+    </Card>
   );
 };
 

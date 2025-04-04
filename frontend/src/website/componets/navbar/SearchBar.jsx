@@ -108,7 +108,7 @@ export default function SearchBar() {
             {showSuggestions && searchTerm && chemicals.length > 0 && (
                 <div className="absolute z-50 w-full mt-1 bg-white border border-gray-200 rounded shadow-lg max-h-[400px] overflow-y-auto">
                     {chemicals.map((chemical) => (
-                        <button
+                        <button 
                             key={chemical._id}
                             onClick={() => handleChemicalSelect(chemical)}
                             className="w-full px-4 py-2 text-left hover:bg-gray-100 border-b border-gray-100 last:border-b-0"

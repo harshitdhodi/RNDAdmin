@@ -10,7 +10,7 @@ const careerInfoSchema = new mongoose.Schema({
     
   },
   createdAt: {
-    type: Date,
+    type: Date, 
     default: Date.now,
   },
   updatedAt: {

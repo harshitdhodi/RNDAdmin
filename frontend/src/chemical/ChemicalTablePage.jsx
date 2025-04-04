@@ -38,6 +38,7 @@ import { useGetSupplierCountByChemicalIdQuery, useGetSuppliersQuery } from "@/sl
 import { useGetCustomersQuery } from "@/slice/customerSlice/customerApiSlice";
 import { Link, useNavigate } from "react-router-dom";
 import Swal from 'sweetalert2';
+import CustomAlert from "@/website/CustomeAlert";
 
 
 export default function ChemicalTable() {

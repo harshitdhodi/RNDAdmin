@@ -1,36 +1,37 @@
-import React, { useEffect, useState } from 'react';
-import { Form, Input, Button, message, Breadcrumb } from 'antd';
+import React, { useEffect } from 'react';
+import { useForm } from 'react-hook-form';
+import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
+import { Textarea } from '@/components/ui/textarea';
+import { Breadcrumb } from '@/components/ui/breadcrumb';
+import { toast } from 'react-toastify';
 import { useGetWhatsUpInfoQuery, useUpdateWhatsUpInfoByIdMutation } from '@/slice/whatsUpInfo/WhatsUpInfo';
 
 const WhatsUpInfoForm = ({ onClose }) => {
-    const [form] = Form.useForm();
+    const { register, handleSubmit, setValue } = useForm();
     const { data: whatsUpInfo, isLoading, refetch } = useGetWhatsUpInfoQuery();
     const [updateWhatsUpInfoById, { isLoading: isUpdating }] = useUpdateWhatsUpInfoByIdMutation();
-    const [initialValues, setInitialValues] = useState(null);
 
     useEffect(() => {
         if (whatsUpInfo && whatsUpInfo.length > 0) {
-            form.setFieldsValue(whatsUpInfo[0]);
-            setInitialValues(whatsUpInfo[0]);
+            setValue("message", whatsUpInfo[0].message);
+            setValue("number", whatsUpInfo[0].number);
         }
-    }, [whatsUpInfo, form]);
+    }, [whatsUpInfo, setValue]);
 
-    const onFinish = async (values) => {
+    const onSubmit = async (values) => {
         try {
-            console.log('Updating WhatsUp Info with values:', values);
-
-            if (!initialValues || !initialValues._id) {
-                throw new Error("Invalid initialValues: Missing _id");
+            if (!whatsUpInfo || whatsUpInfo.length === 0 || !whatsUpInfo[0]._id) {
+                throw new Error("Invalid data: Missing _id");
             }
 
-            await updateWhatsUpInfoById({ id: initialValues._id, ...values }).unwrap();
+            await updateWhatsUpInfoById({ id: whatsUpInfo[0]._id, ...values }).unwrap();
             await refetch();
-            message.success('WhatsUp Info updated successfully!');
-            form.resetFields();
+            toast.success('WhatsUp Info updated successfully!');
             onClose();
         } catch (error) {
-            console.log('Failed to save WhatsUp Info:', error);
-            console.log(error.message || 'Failed to update WhatsUp Info.');
+            console.error('Failed to update WhatsUp Info:', error);
+            toast.error(error.message || 'Failed to update WhatsUp Info.');
         }
     };
 
@@ -40,42 +41,31 @@ const WhatsUpInfoForm = ({ onClose }) => {
 
     return (
         <div>
-            <Breadcrumb className='mb-5'>
+            <Breadcrumb className="mb-5">
                 <Breadcrumb.Item>Home</Breadcrumb.Item>
                 <Breadcrumb.Item>WhatsUp Info</Breadcrumb.Item>
-                
             </Breadcrumb>
-            <Form
-                form={form}
-                layout="vertical"
-                initialValues={initialValues}
-                onFinish={onFinish}
-            >
-                <Form.Item
-                    name="message"
-                    label="Message"
-                    rules={[{ required: true, message: 'Please input the message!' }]}
-                >
-                    <Input.TextArea />
-                </Form.Item>
 
-                <Form.Item
-                    name="number"
-                    label="Number"
-                    rules={[
-                        { required: true, message: 'Please input the number!' },
-                        { pattern: /^[0-9]+$/, message: 'Number must contain only digits!' }
-                    ]}
-                >
-                    <Input />
-                </Form.Item>
+            <form className="space-y-4" onSubmit={handleSubmit(onSubmit)}>
+                <div>
+                    <label className="block text-sm font-medium">Message</label>
+                    <Textarea {...register("message", { required: "Please input the message!" })} />
+                </div>
 
-                <Form.Item>
-                    <Button type="primary" htmlType="submit" loading={isUpdating}>
-                        Update
-                    </Button>
-                </Form.Item>
-            </Form>
+                <div>
+                    <label className="block text-sm font-medium">Number</label>
+                    <Input
+                        {...register("number", {
+                            required: "Please input the number!",
+                            pattern: { value: /^[0-9]+$/, message: "Number must contain only digits!" },
+                        })}
+                    />
+                </div>
+
+                <Button type="submit" disabled={isUpdating} className="mt-2">
+                    {isUpdating ? "Updating..." : "Update"}
+                </Button>
+            </form>
         </div>
     );
 };
