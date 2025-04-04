@@ -76,7 +76,6 @@ const SlideshowImages = ({
               } transition-opacity duration-300`}
               title={hoveredIndex === index ? item.title : ""}
               fetchPriority={index === 0 ? "high" : "low"}
-              loading={index === 0 ? "eager" : "lazy"}
               decoding={index === 0 ? "sync" : "async"}
               width={1200}
               height={800}
