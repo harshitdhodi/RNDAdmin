@@ -79,7 +79,7 @@ export default defineConfig({
     rollupOptions: {
       input: { main: "./index.html" },
       output: {
-        // Simpler chunking strategy to avoid initialization order issues
+       
         manualChunks: {
           'vendor-react': ['react', 'react-dom'],
           'vendor-router': ['react-router-dom'],
