@@ -2,8 +2,6 @@
 
 import { useState, useEffect } from 'react'
 import { useForm } from 'react-hook-form'
-import { zodResolver } from '@hookform/resolvers/zod'
-import * as z from 'zod'
 import { Button } from '@/components/ui/button'
 import {
   Form,
@@ -17,72 +15,26 @@ import {
 import { Input } from '@/components/ui/input'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import axios from 'axios'
-
 import { Textarea } from '@/components/ui/textarea'
 import { ImageUploadForm } from './ImageUpload'
 import { Loader2 } from 'lucide-react'
-
-const formSchema = z.object({
-  category: z.string().min(1, { message: 'Category is required' }),
-  categorySlug: z.string().optional(),
-  sub_category: z.string().optional(),
-  subCategorySlug: z.string().optional(),
-  subsub_category_id: z.string().optional(),
-  subSubCategorySlug: z.string().optional(),
-  name: z.string().min(1, { message: 'Name is required' }),
-  slug: z.string().optional(),
-  image: z.array(z.instanceof(File)).optional(),
-  unit: z.string().min(1, { message: 'Unit is required' }),
-  chemical_type: z.string().min(1, { message: 'Chemical type is required' }),
-  cas_number: z.string().optional(),
-  h_bond_acceptor: z.string().optional(),
-  h_bond_donor: z.string().optional(),
-  iupac: z.string().optional(),
-  inchikey: z.string().optional(),
-  molecular_weight: z.number().optional(),
-  molecular_formula: z.string().optional(),
-  synonyms: z.array(z.string()).optional(),
-  chemical_industries: z.array(z.string()).optional(),
-  product_code: z.string().optional(),
-
-  packing: z.string().optional(),
-  grade: z.string().optional(),
-  hs_code: z.string().optional(),
-  metatitle: z.string().optional(),
-  metadescription: z.string().optional(),
-  metakeywords: z.string().optional(),
-  metacanonical: z.string().optional(),
-  metalanguage: z.string().optional(),
-  metaschema: z.string().optional(),
-  otherMeta: z.string().optional(),
-  global_tagline: z.string().optional(),
-}).refine(data => {
-  // Optional: Add additional custom validations if needed
-  return true;
-}, {
-  message: "Validation failed"
-});
 
 export function ChemicalForm() {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [categories, setCategories] = useState([])
   const [subCategories, setSubCategories] = useState([])
   const [subSubCategories, setSubSubCategories] = useState([])
-
-  // Add state for selected values
   const [selectedCategory, setSelectedCategory] = useState('')
   const [selectedSubCategory, setSelectedSubCategory] = useState('')
   const [selectedSubSubCategory, setSelectedSubSubCategory] = useState('')
 
-  // Fetch categories on component mount
   useEffect(() => {
     const fetchCategories = async () => {
       try {
         const response = await axios.get('/api/chemicalCategory/getall', { withCredentials: true });
-        // Map the categories to match the expected structure
         const mappedCategories = response.data.map(cat => ({
           _id: cat._id,
-          name: cat.name || cat.category, // Handle both name and category properties
+          name: cat.name || cat.category,
           slug: cat.slug,
           subCategories: cat.subCategories || []
         }));
@@ -99,9 +51,7 @@ export function ChemicalForm() {
     fetchCategories();
   }, []);
 
-  // Initialize form with react-hook-form and zod resolver
   const form = useForm({
-    resolver: zodResolver(formSchema),
     defaultValues: {
       category: '',
       sub_category: '',
@@ -121,7 +71,6 @@ export function ChemicalForm() {
       synonyms: [],
       chemical_industries: [],
       product_code: '',
-
       packing: '',
       grade: '',
       hs_code: '',
@@ -136,7 +85,34 @@ export function ChemicalForm() {
     },
   })
 
-  // If editing existing chemical, populate form
+  // Custom validation function
+  const validateForm = (data) => {
+    const errors = {};
+
+    if (!data.category) {
+      errors.category = 'Category is required';
+    }
+
+    if (!data.name) {
+      errors.name = 'Name is required';
+    }
+
+    if (!data.unit) {
+      errors.unit = 'Unit is required';
+    }
+
+    if (!data.chemical_type) {
+      errors.chemical_type = 'Chemical type is required';
+    }
+
+    // Add more custom validations as needed
+    if (data.molecular_weight && isNaN(Number(data.molecular_weight))) {
+      errors.molecular_weight = 'Molecular weight must be a number';
+    }
+
+    return errors;
+  };
+
   useEffect(() => {
     if (chemical) {
       form.reset({
@@ -147,15 +123,12 @@ export function ChemicalForm() {
         subCategorySlug: chemical.subCategorySlug || '',
         subSubCategorySlug: chemical.subSubCategorySlug || '',
         name: chemical.name || '',
-        // ... rest of your form fields
       });
 
-      // Set selected categories for dropdowns
       setSelectedCategory(chemical.category?._id || '');
       setSelectedSubCategory(chemical.sub_category?._id || '');
       setSelectedSubSubCategory(chemical.subsub_category_id?._id || '');
 
-      // Update sub-categories if category exists
       if (chemical.category?._id) {
         const selectedCat = categories.find(cat => cat._id === chemical.category._id);
         if (selectedCat) {
@@ -168,7 +141,6 @@ export function ChemicalForm() {
         }
       }
 
-      // Update sub-sub-categories if sub-category exists
       if (chemical.sub_category?._id) {
         const selectedSubCat = subCategories.find(subCat => subCat._id === chemical.sub_category._id);
         if (selectedSubCat) {
@@ -182,19 +154,24 @@ export function ChemicalForm() {
     }
   }, [chemical, categories]);
 
-  // Get setValue from form
   const { control, setValue } = form;
 
-  // Enhanced submit handler with comprehensive error handling
   const onSubmit = async (values) => {
+    const validationErrors = validateForm(values);
+    
+    if (Object.keys(validationErrors).length > 0) {
+      Object.keys(validationErrors).forEach(field => {
+        form.setError(field, { type: 'manual', message: validationErrors[field] });
+      });
+      return;
+    }
+
     try {
       setIsSubmitting(true);
       const formData = new FormData();
 
-      // Handle arrays that come as strings
       Object.keys(values).forEach(key => {
         if (key === 'images') {
-          // Handle images array separately
           values.images.forEach((image, index) => {
             if (image.file) {
               formData.append('images', image.file);
@@ -207,13 +184,11 @@ export function ChemicalForm() {
         } else if (key === 'msds' && values[key]) {
           formData.append('msds', values[key]);
         } else if (key === 'packings') {
-          // Send packings as comma-separated string
           const packingsString = Array.isArray(values[key]) 
             ? values[key].join(',') 
             : values[key];
           formData.append('packings', packingsString);
         } else if (key === 'application') {
-          // Send application as comma-separated string
           const applicationString = Array.isArray(values[key])
             ? values[key].join(',')
             : values[key];
@@ -223,7 +198,6 @@ export function ChemicalForm() {
         }
       });
 
-      // Log FormData contents for debugging
       for (let pair of formData.entries()) {
         console.log(pair[0], pair[1]);
       }
@@ -232,7 +206,7 @@ export function ChemicalForm() {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
-        withCredentials: true, // Add this if using cookies
+        withCredentials: true,
         onUploadProgress: (progressEvent) => {
           const percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total);
           console.log('Upload Progress:', percentCompleted);
@@ -246,7 +220,6 @@ export function ChemicalForm() {
           variant: "success",
         });
         form.reset();
-        // Optionally redirect or update UI
       } else {
         throw new Error('Unexpected response status');
       }
@@ -272,7 +245,6 @@ export function ChemicalForm() {
         className="space-y-8"
       >
         <div className="grid grid-cols-3 gap-4">
-          {/* Category Dropdown */}
           <FormField
             control={form.control}
             name="category"
@@ -283,10 +255,8 @@ export function ChemicalForm() {
                   onValueChange={(value) => {
                     field.onChange(value);
                     setSelectedCategory(value);
-                    // Find selected category and update sub-categories
                     const selectedCat = categories.find(cat => cat._id === value);
                     setSubCategories(selectedCat?.subCategories || []);
-                    // Reset dependent fields
                     setSelectedSubCategory('');
                     setSelectedSubSubCategory('');
                     form.setValue('sub_category', '');
@@ -312,7 +282,6 @@ export function ChemicalForm() {
             )}
           />
 
-          {/* Sub-Category Dropdown */}
           <FormField
             control={form.control}
             name="sub_category"
@@ -323,10 +292,8 @@ export function ChemicalForm() {
                   onValueChange={(value) => {
                     field.onChange(value);
                     setSelectedSubCategory(value);
-                    // Find selected sub-category and update sub-sub-categories
                     const selectedSubCat = subCategories.find(subCat => subCat._id === value);
                     setSubSubCategories(selectedSubCat?.subSubCategory || []);
-                    // Reset dependent field
                     setSelectedSubSubCategory('');
                     form.setValue('subsub_category_id', '');
                   }}
@@ -351,7 +318,6 @@ export function ChemicalForm() {
             )}
           />
 
-          {/* Sub-Sub Category Dropdown */}
           <FormField
             control={form.control}
             name="subsub_category_id"
@@ -384,7 +350,6 @@ export function ChemicalForm() {
             )}
           />
 
-          {/* Name Input */}
           <FormField
             control={form.control}
             name="name"
@@ -399,7 +364,6 @@ export function ChemicalForm() {
             )}
           />
 
-          {/* Slug Input */}
           <FormField
             control={form.control}
             name="slug"
@@ -414,35 +378,6 @@ export function ChemicalForm() {
             )}
           />
 
-          {/* Image Upload */}
-          {/* <FormField
-            control={form.control}
-            name="image"
-            render={({ field: { onChange, value, ...field } }) => (
-              <FormItem>
-                <FormLabel>Image</FormLabel>
-                <FormControl>
-                  <Input
-                    type="file"
-                    accept="image/*"
-                    multiple
-                    {...field}
-                    onChange={(e) => {
-                      // Convert FileList to an array of files
-                      const files = e.target.files ? Array.from(e.target.files) : []
-                      onChange(files)
-                    }}
-                  />
-                </FormControl>
-                {value && value.length > 0 && (
-                  <FormDescription>
-                    {value.length} file(s) selected
-                  </FormDescription>
-                )}
-                <FormMessage />
-              </FormItem>
-            )}
-          /> */}
           <ImageUploadForm 
             control={control} 
             setValue={setValue}
@@ -461,6 +396,7 @@ export function ChemicalForm() {
               </FormItem>
             )}
           />
+          
           <FormField
             control={form.control}
             name="chemical_type"
@@ -474,6 +410,7 @@ export function ChemicalForm() {
               </FormItem>
             )}
           />
+          
           <FormField
             control={form.control}
             name="cas_number"
@@ -487,6 +424,7 @@ export function ChemicalForm() {
               </FormItem>
             )}
           />
+          
           <FormField
             control={form.control}
             name="h_bond_acceptor"
@@ -500,6 +438,7 @@ export function ChemicalForm() {
               </FormItem>
             )}
           />
+          
           <FormField
             control={form.control}
             name="h_bond_donor"
@@ -513,6 +452,7 @@ export function ChemicalForm() {
               </FormItem>
             )}
           />
+          
           <FormField
             control={form.control}
             name="iupac"
@@ -526,6 +466,7 @@ export function ChemicalForm() {
               </FormItem>
             )}
           />
+          
           <FormField
             control={form.control}
             name="inchikey"
@@ -539,6 +480,7 @@ export function ChemicalForm() {
               </FormItem>
             )}
           />
+          
           <FormField
             control={form.control}
             name="molecular_weight"
@@ -546,12 +488,18 @@ export function ChemicalForm() {
               <FormItem>
                 <FormLabel>Molecular Weight</FormLabel>
                 <FormControl>
-                  <Input type="number" placeholder="Molecular weight" {...field} onChange={(e) => field.onChange(parseFloat(e.target.value))} />
+                  <Input 
+                    type="number" 
+                    placeholder="Molecular weight" 
+                    {...field} 
+                    onChange={(e) => field.onChange(parseFloat(e.target.value))} 
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
             )}
           />
+          
           <FormField
             control={form.control}
             name="molecular_formula"
@@ -565,6 +513,7 @@ export function ChemicalForm() {
               </FormItem>
             )}
           />
+          
           <FormField
             control={form.control}
             name="synonyms"
@@ -572,12 +521,17 @@ export function ChemicalForm() {
               <FormItem>
                 <FormLabel>Synonyms</FormLabel>
                 <FormControl>
-                  <Input placeholder="Comma-separated synonyms" {...field} onChange={(e) => field.onChange(e.target.value.split(','))} />
+                  <Input 
+                    placeholder="Comma-separated synonyms" 
+                    {...field} 
+                    onChange={(e) => field.onChange(e.target.value.split(','))} 
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
             )}
           />
+          
           <FormField
             control={form.control}
             name="chemical_industries"
@@ -585,12 +539,17 @@ export function ChemicalForm() {
               <FormItem>
                 <FormLabel>Chemical Industries</FormLabel>
                 <FormControl>
-                  <Input placeholder="Comma-separated industries" {...field} onChange={(e) => field.onChange(e.target.value.split(','))} />
+                  <Input 
+                    placeholder="Comma-separated industries" 
+                    {...field} 
+                    onChange={(e) => field.onChange(e.target.value.split(','))} 
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
             )}
           />
+          
           <FormField
             control={form.control}
             name="product_code"
@@ -604,6 +563,7 @@ export function ChemicalForm() {
               </FormItem>
             )}
           />
+          
           <FormField
             control={form.control}
             name="packing"
@@ -617,6 +577,7 @@ export function ChemicalForm() {
               </FormItem>
             )}
           />
+          
           <FormField
             control={form.control}
             name="grade"
@@ -630,6 +591,7 @@ export function ChemicalForm() {
               </FormItem>
             )}
           />
+          
           <FormField
             control={form.control}
             name="hs_code"
@@ -644,6 +606,7 @@ export function ChemicalForm() {
             )}
           />
         </div>
+        
         <div className="space-y-4">
           <FormField
             control={form.control}
@@ -658,6 +621,7 @@ export function ChemicalForm() {
               </FormItem>
             )}
           />
+          
           <FormField
             control={form.control}
             name="metadescription"
@@ -675,6 +639,7 @@ export function ChemicalForm() {
               </FormItem>
             )}
           />
+          
           <FormField
             control={form.control}
             name="metakeywords"
@@ -688,6 +653,7 @@ export function ChemicalForm() {
               </FormItem>
             )}
           />
+          
           <FormField
             control={form.control}
             name="metacanonical"
@@ -701,6 +667,7 @@ export function ChemicalForm() {
               </FormItem>
             )}
           />
+          
           <FormField
             control={form.control}
             name="metalanguage"
@@ -714,6 +681,7 @@ export function ChemicalForm() {
               </FormItem>
             )}
           />
+          
           <FormField
             control={form.control}
             name="metaschema"
@@ -731,6 +699,7 @@ export function ChemicalForm() {
               </FormItem>
             )}
           />
+          
           <FormField
             control={form.control}
             name="otherMeta"
@@ -750,7 +719,6 @@ export function ChemicalForm() {
           />
         </div>
 
-        {/* Submit Button */}
         <Button 
           type="submit" 
           disabled={isSubmitting}

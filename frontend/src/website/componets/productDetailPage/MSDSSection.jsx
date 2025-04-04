@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { FaWhatsapp } from "react-icons/fa";
+import { MessageCircle } from "lucide-react"; // Importing the MessageCircle icon from lucide-react
 import { useGetWhatsUpInfoQuery } from '@/slice/whatsUpInfo/WhatsUpInfo';
 
 export default function MSDSSection({ msds, specs, name, onInquiry }) {
@@ -59,7 +58,7 @@ export default function MSDSSection({ msds, specs, name, onInquiry }) {
           variant="outline" 
           className="flex items-center gap-2 bg-white hover:bg-blue-50 border-blue-200 hover:border-blue-300 text-blue-700"
           onClick={() => openPdf('msds')}
-        >
+        >       
           <svg
             className="w-4 h-4"
             fill="none"
@@ -80,7 +79,7 @@ export default function MSDSSection({ msds, specs, name, onInquiry }) {
           className="flex items-center gap-2 cursor-pointer hover:opacity-80 transition-opacity"
           onClick={handleWhatsAppClick}
         >
-          <FaWhatsapp className="text-4xl text-green-500"/>
+          <MessageCircle className="text-4xl text-green-500"/> {/* Using the MessageCircle icon from lucide-react */}
           {/* <span className="text-green-600">Chat on WhatsApp</span> */}
         </div>
       </div>

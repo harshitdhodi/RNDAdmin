@@ -50,7 +50,6 @@ const cacheMiddleware = (duration = 18000) => (req, res, next) => {
   };
   next();
 };
-
 // Custom image optimization route
 app.get('/images/:filename', async (req, res) => {
   const { filename } = req.params;
