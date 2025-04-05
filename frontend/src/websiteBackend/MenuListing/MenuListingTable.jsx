@@ -124,8 +124,41 @@ const MenuListingTable = () => {
           </Button>
         </Link>
       </div>
-      <Table columns={columns} dataSource={formattedData} expandable={{ defaultExpandAllRows: false }} />
-    </Card>
+      <table className="w-full text-left border-collapse">
+  <thead>
+    <tr>
+      {columns.map((col) => (
+        <th key={col.key} className="border-b p-2 font-semibold">
+          {col.title}
+        </th>
+      ))}
+    </tr>
+  </thead>
+  <tbody>
+    {formattedData.map((row) => (
+      <tr key={row.key} className="border-b">
+        <td className="p-2">{row.name}</td>
+        <td className="p-2">{row.path}</td>
+        <td className="p-2">
+          <div className="flex gap-2">
+            <Popconfirm title="Are you sure?" onConfirm={() => handleDelete(row.key)}>
+              <Button variant="destructive" size="icon">
+                <Trash className="w-4 h-4" />
+              </Button>
+            </Popconfirm>
+            {!row.name.includes("└──") && (
+              <Button variant="outline" size="icon" onClick={() => handleEdit(row.key)}>
+                <Edit className="w-4 h-4 text-black" />
+              </Button>
+            )}
+          </div>
+        </td>
+      </tr>
+    ))}
+  </tbody>
+</table>
+
+     </Card>
   );
 };
 

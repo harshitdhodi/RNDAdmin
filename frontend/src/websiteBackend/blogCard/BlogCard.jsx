@@ -1,20 +1,17 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import { Form } from '@/components/ui/form';
+import { useForm } from 'react-hook-form';
 import { Button } from '@/components/ui/button';
-import { useToast } from 'react-toastify';
-import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardHeader, CardContent } from '@/components/ui/card';
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
 
 const BlogCardForm = () => {
-  const [form] = Form.useForm();
-  const [blogCard, setBlogCard] = useState('');
-  const [displayContent, setDisplayContent] = useState('');
+  const { register, handleSubmit, setValue, reset } = useForm();
   const [blogCardId, setBlogCardId] = useState(null);
-;
+  const [displayContent, setDisplayContent] = useState('');
+  const [blogCard, setBlogCard] = useState('');
 
   const fetchBlogCard = async () => {
     try {
@@ -31,21 +28,23 @@ const BlogCardForm = () => {
           element.style.color = 'black';
         }
       }
+
       setDisplayContent(doc.body.innerHTML);
-      form.setFieldsValue({ blogCard: blogCardData.blogCard });
+      setValue('blogCard', blogCardData.blogCard); // set form value
     } catch (error) {
-      toast({ title: 'Error', description: 'Failed to fetch blog card.', variant: 'destructive' });
+      console.error('Failed to fetch blog card:', error);
+      // You can use toast here
     }
   };
 
   useEffect(() => {
     fetchBlogCard();
-  }, [form]);
+  }, []);
 
-  const handleEditorChange = (newContent) => {
-    setBlogCard(newContent);
+  const handleEditorChange = (content) => {
+    setBlogCard(content);
     const parser = new DOMParser();
-    const doc = parser.parseFromString(newContent, 'text/html');
+    const doc = parser.parseFromString(content, 'text/html');
     const elements = doc.getElementsByTagName('*');
     for (let element of elements) {
       if (element.style.color === 'white' || element.style.color === '#ffffff') {
@@ -53,9 +52,10 @@ const BlogCardForm = () => {
       }
     }
     setDisplayContent(doc.body.innerHTML);
+    setValue('blogCard', content); // update react-hook-form state
   };
 
-  const onFinish = async () => {
+  const onSubmit = async () => {
     try {
       if (blogCardId) {
         await axios.put(`/api/blogCard/editCard/${blogCardId}`, { blogCard });
@@ -64,7 +64,8 @@ const BlogCardForm = () => {
         await axios.post('/api/blogCard/addCard', { blogCard });
         toast({ title: 'Success', description: 'Blog card added successfully!' });
       }
-      form.resetFields();
+
+      reset();
       setBlogCard('');
       setDisplayContent('');
       fetchBlogCard();
@@ -79,8 +80,8 @@ const BlogCardForm = () => {
         <h2 className="text-xl font-bold">Blog Card Form</h2>
       </CardHeader>
       <CardContent>
-        <Form form={form} layout="vertical" onFinish={onFinish} name="blog_card_form">
-          <div className="mb-4">
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+          <div>
             <Label htmlFor="blogCard">Blog Card Content</Label>
             <ReactQuill
               id="blogCard"
@@ -101,11 +102,13 @@ const BlogCardForm = () => {
                 'blockquote', 'align', 'link', 'image', 'video'
               ]}
             />
+            {/* Register hidden field so form state includes it */}
+            <input type="hidden" {...register('blogCard')} />
           </div>
           <Button type="submit" className="w-full">
             {blogCardId ? 'Update Blog Card' : 'Add Blog Card'}
           </Button>
-        </Form>
+        </form>
       </CardContent>
     </Card>
   );
