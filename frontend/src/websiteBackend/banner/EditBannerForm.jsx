@@ -356,7 +356,7 @@ const EditBannerForm = () => {
                                 )}
                             />
 
-                            <Button type="submit" className="mt-6">
+                            <Button type="submit" className="mt-6 text-white">
                                 Update
                             </Button>
                         </form>

@@ -1,2 +1,0 @@
-import{u as r,j as o}from"./main-BcUd3ASm.js";import{r as s}from"./vendor-router-CaZtIe2_.js";import t from"./Navbar-Pgo3fEIz.js";import"./vendor-react-DD_RYU77.js";import"./vendor-utils-CfKmydC0.js";import"./Footer-DyYfLYii.js";import"./mail-BPkzLcA_.js";import"./phone-L1cTApZs.js";const e=()=>{const[e,a]=s.useState(!1),{data:m}=r();return o.jsx("header",{className:"w-full",children:o.jsx(t,{categories:m})})};export{e as default};
-//# sourceMappingURL=Navbar-e28h6WbD.js.map
