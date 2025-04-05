@@ -24,32 +24,55 @@ const Slideshow = () => {
   const [hoveredIndex, setHoveredIndex] = useState(null)
   const [imagesLoaded, setImagesLoaded] = useState({})
   const [lcpImageLoaded, setLcpImageLoaded] = useState(false)
-  const [isSmallDevice, setIsSmallDevice] = useState(false)
+  const [deviceType, setDeviceType] = useState("desktop") // Default to desktop
   const lcpImageRef = useRef(null)
   const slideshowRef = useRef(null)
 
-  // Check if device is small (based on screen width)
+  // Determine device type based on screen width
   useEffect(() => {
-    const checkDeviceSize = () => {
-      setIsSmallDevice(window.innerWidth < 640);
+    const checkDeviceType = () => {
+      const width = window.innerWidth;
+      if (width < 640) {
+        setDeviceType("mobile");
+      } else if (width < 1024) {
+        setDeviceType("tablet");
+      } else {
+        setDeviceType("desktop");
+      }
     };
 
     // Check on initial load
-    checkDeviceSize();
+    checkDeviceType();
 
     // Add event listener for resize
-    window.addEventListener('resize', checkDeviceSize);
+    window.addEventListener('resize', checkDeviceType);
 
     // Cleanup
-    return () => window.removeEventListener('resize', checkDeviceSize);
+    return () => window.removeEventListener('resize', checkDeviceType);
   }, []);
+
+  // Helper function to get the appropriate image based on device type
+  const getDeviceSpecificImage = (banner) => {
+    if (!banner) return null;
+
+    // Assuming your banner object has device-specific image fields
+    switch (deviceType) {
+      case "mobile":
+        return banner.mobileImage || banner.image; // Fallback to default if mobileImage doesn't exist
+      case "tablet":
+        return banner.tabletImage || banner.image; // Fallback to default if tabletImage doesn't exist
+      default:
+        return banner.image; // Desktop or fallback
+    }
+  };
 
   // Load Delay Optimization
   useEffect(() => {
     if (Array.isArray(banners) && banners.length > 0) {
-      const lcpImage = banners[0];
-      if (lcpImage) {
-        const imagePath = `/api/image/download/${lcpImage.image}`;
+      const lcpBanner = banners[0];
+      if (lcpBanner) {
+        const imageId = getDeviceSpecificImage(lcpBanner);
+        const imagePath = `/api/image/download/${imageId}`;
         const img = new Image();
         img.src = imagePath;
         img.onload = () => {
@@ -58,7 +81,7 @@ const Slideshow = () => {
         };
       }
     }
-  }, [banners]);
+  }, [banners, deviceType]); // Added deviceType dependency
 
   // Preload next image
   useEffect(() => {
@@ -68,8 +91,11 @@ const Slideshow = () => {
     const timeoutId = setTimeout(() => {
       if (Array.isArray(banners) && banners.length > 1) {
         // Only preload the next image to avoid resource contention
+        const nextBanner = banners[1];
+        const imageId = getDeviceSpecificImage(nextBanner);
+        
         const img = new Image();
-        img.src = `/api/image/download/${banners[1].image}`;
+        img.src = `/api/image/download/${imageId}`;
         img.fetchPriority = "low";
         img.onload = () => {
           setImagesLoaded((prev) => ({ ...prev, 1: true }));
@@ -78,7 +104,7 @@ const Slideshow = () => {
     }, 500);
 
     return () => clearTimeout(timeoutId);
-  }, [banners, lcpImageLoaded]);
+  }, [banners, lcpImageLoaded, deviceType]); // Added deviceType dependency
 
   // Slideshow interval
   useEffect(() => {
@@ -183,18 +209,24 @@ const Slideshow = () => {
 
   if (banners?.length === 0) return <div>No banners available</div>;
 
+  // Modify the banner data to include device-specific images
+  const deviceSpecificBanners = banners.map(banner => ({
+    ...banner,
+    dynamicImage: getDeviceSpecificImage(banner)
+  }));
+
   return (
     <div className="relative" ref={slideshowRef}>
       {/* Skeleton shows until first image loads */}
       {!lcpImageLoaded && <SkeletonLoader />}
 
       <SlideshowImages 
-        imageSource={banners}
+        imageSource={deviceSpecificBanners}
         currentImageIndex={currentImageIndex}
         hoveredIndex={hoveredIndex}
         setHoveredIndex={setHoveredIndex}
         lcpImageRef={lcpImageRef}
-        isSmallDevice={isSmallDevice}
+        deviceType={deviceType}
         lcpImageLoaded={lcpImageLoaded}
         setLcpImageLoaded={setLcpImageLoaded}
       />
@@ -202,7 +234,7 @@ const Slideshow = () => {
       <ReadMoreButton lcpImageLoaded={lcpImageLoaded} />
 
       <SlideshowControls 
-        imageSource={banners}
+        imageSource={deviceSpecificBanners}
         currentImageIndex={currentImageIndex}
         setCurrentImageIndex={setCurrentImageIndex}
         lcpImageLoaded={lcpImageLoaded}

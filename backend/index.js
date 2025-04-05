@@ -50,6 +50,7 @@ const cacheMiddleware = (duration = 18000) => (req, res, next) => {
   };
   next();
 };
+
 // Custom image optimization route
 app.get('/images/:filename', async (req, res) => {
   const { filename } = req.params;
@@ -58,7 +59,6 @@ app.get('/images/:filename', async (req, res) => {
 
   try {
     if (!fs.existsSync(imagePath)) return res.status(404).send('Image not found');
-
     const cacheKey = `image_${filename}_${w}_${q}`;
     const cachedImage = cache.get(cacheKey);
     if (cachedImage) {
