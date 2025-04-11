@@ -99,7 +99,7 @@ app.use(express.static(path.join(__dirname, 'public'), {
   },
 }));
 
-app.use(express.static(path.join(__dirname, 'dist'), { maxAge: '30d' }));
+app.use(express.static(path.join(__dirname, 'dist'), { maxAge: '365d' }));
 
 // API Routes with caching
 const apiRoutes = [

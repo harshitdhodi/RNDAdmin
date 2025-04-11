@@ -4,23 +4,25 @@ import { VitePWA } from "vite-plugin-pwa";
 import path from "path";
 import viteCompression from "vite-plugin-compression";
 import svgr from "vite-plugin-svgr";
+import { visualizer } from "rollup-plugin-visualizer";
+import critical from "rollup-plugin-critical"; // Critical CSS
 
 export default defineConfig({
   plugins: [
     react(),
-    
+
     // SVGR Configuration
     svgr({
       svgrOptions: {
-        icon: true, // This will optimize SVG files for icon usage
+        icon: true,
         ref: true,
       },
     }),
-    
-    // Compression - both Brotli and gzip
-    viteCompression({ algorithm: "brotliCompress" }), // Brotli compression
-    viteCompression({ algorithm: "gzip" }), // Also add gzip for broader compatibility
-    
+
+    // Compression - Brotli and Gzip
+    viteCompression({ algorithm: "brotliCompress" }),
+    viteCompression({ algorithm: "gzip" }),
+
     // PWA Configuration
     VitePWA({
       registerType: "autoUpdate",
@@ -37,14 +39,17 @@ export default defineConfig({
         ],
       },
       workbox: {
-        maximumFileSizeToCacheInBytes: 5 * 1024 * 1024, // 5MB
+        maximumFileSizeToCacheInBytes: 5 * 1024 * 1024,
         runtimeCaching: [
           {
             urlPattern: /.*\.(?:png|jpg|jpeg|svg|gif|pdf)$/,
             handler: "CacheFirst",
             options: {
               cacheName: "large-assets",
-              expiration: { maxEntries: 10, maxAgeSeconds: 7 * 24 * 60 * 60 },
+              expiration: {
+                maxEntries: 10,
+                maxAgeSeconds: 7 * 24 * 60 * 60,
+              },
             },
           },
           {
@@ -57,6 +62,39 @@ export default defineConfig({
         ],
       },
     }),
+
+    // Critical CSS (used with SSR or pre-rendered HTML)
+    critical({
+      criticalUrl: "", // optional: use your base URL or entry HTML
+      criticalBase: "dist/",
+      criticalPages: [{ uri: "", template: "index" }],
+      criticalConfig: {},
+    }),
+
+    // Rollup Visualizer Plugin
+    visualizer({
+      filename: "dist/stats.html",
+      open: true,
+    }),
+
+    // Append build timestamp
+    {
+      name: "append-build-timestamp",
+      config: () => {
+        const timestamp = Date.now();
+        return {
+          build: {
+            rollupOptions: {
+              output: {
+                entryFileNames: `assets/[name]-[hash]-${timestamp}.js`,
+                chunkFileNames: `assets/[name]-[hash]-${timestamp}.js`,
+                assetFileNames: `assets/[name]-[hash]-${timestamp}[extname]`,
+              },
+            },
+          },
+        };
+      },
+    },
   ],
 
   resolve: {
@@ -73,17 +111,16 @@ export default defineConfig({
       },
       output: {
         manualChunks: {
-          // Splitting Vendor JS to optimize loading
           vendor: ["react", "react-dom", "react-router-dom"],
         },
       },
     },
-    chunkSizeWarningLimit: 800, // Reduce chunk size warning to keep JS lightweight
-    target: "esnext", // Optimize JS for modern browsers
-    minify: "esbuild", // Fast and efficient minification
+    chunkSizeWarningLimit: 800,
+    target: "esnext",
+    minify: "esbuild",
     terserOptions: {
       compress: {
-        drop_console: true, // Remove console logs for smaller JS files
+        drop_console: true,
       },
     },
   },

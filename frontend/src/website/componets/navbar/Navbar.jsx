@@ -75,12 +75,24 @@ export default function NavbarComp({ categories }) {
             <header className={`w-full relative z-[70] ${isSticky ? 'sticky top-0 bg-white shadow-md' : ''}`}>
                 <div className="max-w-[75rem] mx-auto px-4 py-4 flex items-center justify-between">
                     <Link to="/" className="flex items-center gap-2">
-                        <img
-                            src={logoData?.headerLogo ? `/api/logo/download/${logoData.headerLogo}` : ""}
-                            alt="Company Logo"
-                            title={logoData?.headerLogoName}
-                            className="h-auto w-[100px] md:w-[130px] lg:w-[150px]"
-                        />
+                        <picture>
+                            {/* WebP source for modern browsers */}
+                            {logoData?.headerLogo && (
+                                <source
+                                    srcSet={`/api/logo/download/${logoData.headerLogo}`}
+                                    type="image/webp"
+                                />
+                            )}
+
+                            {/* Fallback image */}
+                            <img
+                                src={logoData?.headerLogo ? `/api/logo/download/${logoData.headerLogo}` : ""}
+                                alt="Company Logo"
+                                title={logoData?.headerLogoName}
+                                className="h-auto w-[100px] md:w-[130px] lg:w-[150px] max-w-[200px] max-h-[100px] min-w-[80px] min-h-[40px]"
+                            />
+                        </picture>
+
                     </Link>
                     <div className="w-1/2 md:mt-0 hidden md:block">
                         <SearchBar />
@@ -114,16 +126,16 @@ export default function NavbarComp({ categories }) {
                 <div className={`
                     md:hidden fixed top-0 left-0 right-0 w-full z-[80]
                     transition-all duration-300 ease-in-out
-                    ${mobileMenuOpen 
-                        ? 'opacity-100 h-screen' 
+                    ${mobileMenuOpen
+                        ? 'opacity-100 h-screen'
                         : 'opacity-0 h-0 pointer-events-none overflow-hidden'}
                 `}>
                     {/* Backdrop */}
-                    <div 
+                    <div
                         className="fixed inset-0 bg-black bg-opacity-50 z-[75]"
                         onClick={() => setMobileMenuOpen(false)}
                     />
-                    
+
                     {/* Menu Content */}
                     <div className="relative bg-[#2d4899] w-full px-4 py-2 space-y-2 overflow-y-auto">
                         <div className="flex items-center justify-between pb-4 bg-white -mx-4 px-4 pt-2">
