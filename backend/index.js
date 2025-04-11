@@ -11,7 +11,7 @@ const app = express();
 require('dotenv').config();
 const cookieParser = require('cookie-parser');
 const { generateAllSitemaps } = require('./route/sitemap');
-
+ 
 app.use(cookieParser());
 app.use(express.json());
 app.use(bodyParser.json({ limit: '10mb' }));
