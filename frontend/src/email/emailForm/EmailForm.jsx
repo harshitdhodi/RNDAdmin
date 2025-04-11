@@ -1,7 +1,5 @@
 import { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import * as z from 'zod';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import {
@@ -19,25 +17,15 @@ import { useGetAllTemplatesQuery } from '@/slice/template/emailTemplate';
 import { useSendEmailMutation } from '@/slice/smtpSlice/email';
 import { useGetEmailCategoriesQuery } from '@/slice/emailCategory/emailCategory';
 
-const formSchema = z.object({
-  category: z.string().min(1, 'Please select a category'),
-  template: z.string().min(1, 'Please select a template'),
-  email: z.string().min(1, 'To field is required').email('Invalid email format'),
-  cc_email: z.array(z.string()).optional(),
-  subject: z.string().min(1, 'Subject is required'),
-  body: z.string().min(1, 'Body is required'),
-  attachment: z.any().optional(),
-});
-
 export default function EmailForm({ defaultTo = "", onSuccess }) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { data: categories, isLoading: isCategoriesLoading } = useGetEmailCategoriesQuery();
   const { data: templates, isLoading: isTemplatesLoading } = useGetAllTemplatesQuery();
   const [sendEmail, { isLoading: isSending }] = useSendEmailMutation();
   const [attachment, setAttachment] = useState(null);
-  const [ccEmails, setCcEmails] = useState([]); // Array to store CC emails
+  const [ccEmails, setCcEmails] = useState([]);
   const [filteredTemplates, setFilteredTemplates] = useState([]);
-console.log(templates.data)
+
   const {
     register,
     handleSubmit,
@@ -45,15 +33,24 @@ console.log(templates.data)
     reset,
     watch,
     setValue,
+    setError,
+    clearErrors
   } = useForm({
-    resolver: zodResolver(formSchema),
+    defaultValues: {
+      category: '',
+      template: '',
+      email: '',
+      cc_email: [],
+      subject: '',
+      body: '',
+      attachment: null
+    }
   });
 
   const selectedCategory = watch('category');
   const selectedTemplate = watch('template');
   const body = watch('body');
 
-  // Update subject and body when template changes
   useEffect(() => {
     if (selectedTemplate && templates?.data) {
       const template = templates.data.find((t) => t._id === selectedTemplate);
@@ -64,37 +61,77 @@ console.log(templates.data)
     }
   }, [selectedTemplate, templates, setValue]);
 
-  // Update the form when defaultTo changes
   useEffect(() => {
     if (defaultTo) {
       setValue('email', defaultTo);
     }
   }, [defaultTo, setValue]);
 
-  // Handle file changes
   const handleFileChange = (e) => {
     const file = e.target.files[0];
     setAttachment(file);
   };
 
-  // Remove an attachment
   const removeAttachment = () => {
     setAttachment(null);
   };
 
-  // Add a new email to CC list
   const addCcEmail = (email) => {
     if (email && !ccEmails.includes(email)) {
       setCcEmails((prev) => [...prev, email]);
     }
   };
 
-  // Remove an email from CC list
   const removeCcEmail = (index) => {
     setCcEmails((prev) => prev.filter((_, i) => i !== index));
   };
 
+  const validateForm = (data) => {
+    let isValid = true;
+    clearErrors();
+
+    // Category validation
+    if (!data.category) {
+      setError('category', { message: 'Please select a category' });
+      isValid = false;
+    }
+
+    // Template validation
+    if (!data.template) {
+      setError('template', { message: 'Please select a template' });
+      isValid = false;
+    }
+
+    // Email validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!data.email) {
+      setError('email', { message: 'To field is required' });
+      isValid = false;
+    } else if (!emailRegex.test(data.email)) {
+      setError('email', { message: 'Invalid email format' });
+      isValid = false;
+    }
+
+    // Subject validation
+    if (!data.subject.trim()) {
+      setError('subject', { message: 'Subject is required' });
+      isValid = false;
+    }
+
+    // Body validation
+    if (!data.body || data.body === '<p><br></p>' || data.body.trim() === '') {
+      setError('body', { message: 'Body is required' });
+      isValid = false;
+    }
+
+    return isValid;
+  };
+
   const onSubmit = async (data) => {
+    if (!validateForm(data)) {
+      return;
+    }
+
     const formData = new FormData();
     formData.append('email', data.email);
     formData.append('cc_email', ccEmails);
@@ -112,7 +149,7 @@ console.log(templates.data)
       reset();
       setAttachment(null);
       setCcEmails([]);
-      onSuccess?.(); // Call the success callback if provided
+      onSuccess?.();
     } catch (error) {
       console.error('Error sending email:', error);
       alert('Failed to send email. Please try again.');
@@ -121,7 +158,6 @@ console.log(templates.data)
     }
   };
 
-  // Update filtered templates when category changes
   useEffect(() => {
     if (selectedCategory && templates?.data) {
       const filtered = templates.data.filter(
@@ -136,9 +172,7 @@ console.log(templates.data)
     <Card className="w-full mx-auto max-h-[80vh] flex flex-col">
       <CardContent className="p-6 overflow-y-auto">
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-          {/* Category and Template Selection Row */}
           <div className="grid grid-cols-2 gap-4">
-            {/* Category Selection */}
             <div className="space-y-2">
               <label htmlFor="category" className="text-sm font-medium">
                 Select Category
@@ -166,7 +200,6 @@ console.log(templates.data)
               )}
             </div>
 
-            {/* Template Selection */}
             <div className="space-y-2">
               <label htmlFor="template" className="text-sm font-medium">
                 Select Email Template
@@ -202,9 +235,7 @@ console.log(templates.data)
             </div>
           </div>
 
-          {/* Email Fields Row */}
           <div className="grid grid-cols-3 gap-4">
-            {/* To Field */}
             <div className="space-y-2">
               <label htmlFor="email" className="text-sm font-medium">
                 To*
@@ -219,7 +250,6 @@ console.log(templates.data)
               {errors.email && <p className="text-sm text-red-500">{errors.email.message}</p>}
             </div>
 
-            {/* CC Field */}
             <div className="space-y-2">
               <label htmlFor="cc_email" className="text-sm font-medium">
                 CC
@@ -231,7 +261,7 @@ console.log(templates.data)
                   placeholder="Enter CC email"
                   onBlur={(e) => {
                     addCcEmail(e.target.value);
-                    e.target.value = ''; // Clear input after adding
+                    e.target.value = '';
                   }}
                 />
                 {ccEmails.length > 0 && (
@@ -254,7 +284,6 @@ console.log(templates.data)
               </div>
             </div>
 
-            {/* Subject Field */}
             <div className="space-y-2">
               <label htmlFor="subject" className="text-sm font-medium">
                 Subject*
@@ -272,7 +301,6 @@ console.log(templates.data)
             </div>
           </div>
 
-          {/* Body Field */}
           <div className="space-y-2">
             <label htmlFor="body" className="text-sm font-medium">
               Body*
@@ -285,7 +313,6 @@ console.log(templates.data)
             {errors.body && <p className="text-sm text-red-500">{errors.body.message}</p>}
           </div>
 
-          {/* Attachments */}
           <div className="space-y-2">
             <label htmlFor="file-upload" className="text-sm font-medium">
               Attachments
@@ -321,7 +348,6 @@ console.log(templates.data)
             )}
           </div>
 
-          {/* Submit Button */}
           <Button type="submit" className="w-full" disabled={isSubmitting || isSending}>
             {isSubmitting || isSending ? 'Sending...' : 'Send Email'}
           </Button>
