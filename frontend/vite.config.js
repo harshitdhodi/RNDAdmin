@@ -66,7 +66,7 @@ export default defineConfig({
 
     // Critical CSS (used with SSR or pre-rendered HTML)
     critical({
-      criticalUrl: "http://localhost:3028", // optional: use your base URL or entry HTML
+      criticalUrl: "https://vbrschemicals.com/", // optional: use your base URL or entry HTML
       criticalBase: "dist/",
       criticalPages: [{ uri: "", template: "index" }],
      
