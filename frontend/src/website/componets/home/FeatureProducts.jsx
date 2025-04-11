@@ -50,7 +50,7 @@ export default function FeaturedProducts() {
         const data = await response.json();
         setProducts(data.map(chemical => ({
           title: chemical.name || chemical.category,
-          image: chemical.images && chemical.images.length > 0 
+          image: chemical.images && chemical.images.length > 0
             ? `/api/image/download/${chemical.images[0].url}`
             : '',
           slug: chemical.slug || chemical.name?.toLowerCase().replace(/\s+/g, '-') || chemical.category?.toLowerCase().replace(/\s+/g, '-'),
@@ -65,14 +65,14 @@ export default function FeaturedProducts() {
     const fetchEvent = async () => {
       try {
         setIsLoading(true); // Assuming you have a loading state defined
-        
+
         // Add timestamp parameter to prevent caching
         const response = await fetch(`/api/events/getEvent?t=${new Date().getTime()}`);
-        
+
         if (!response.ok) {
           throw new Error('Failed to fetch event');
         }
-        
+
         const data = await response.json();
         setEvent(data[0]); // Assuming the API returns an array of events
       } catch (err) {
@@ -110,27 +110,21 @@ export default function FeaturedProducts() {
                   <Link
                     key={index}
                     to={`/${product.slug}`}
-                    className="overflow-hidden w-full lg:w-[250px] lg:h-[220px] h-[200px] md:w-full md:h-[220px] border hover:shadow-lg transition-shadow"
+                    className="overflow-hidden w-full lg:w-[250px] lg:h-[220px] h-[300px] md:w-full md:h-[220px] border hover:shadow-lg transition-shadow"
                   >
                     <div className="h-full flex flex-col items-center justify-between">
-                      <div className="relative w-full h-[50%]  md:h-[60%]  flex items-center justify-center">
+                      <div className="relative w-full h-[70%]  md:h-[60%]  flex items-center justify-center">
                         {product.image ? (
-                        <img
-                        alt={product.title}
-                        className="object-contain mt-16 w-auto max-w-full max-h-full"
-                        src={product.image}
-                        srcSet={`
-                          ${product.image}?w=400 400w,
-                          ${product.image}?w=800 800w,
-                          ${product.image}?w=1200 1200w
-                        `}
-                        sizes="(max-width: 600px) 400px, (max-width: 1200px) 800px, 1200px"
-                        loading="lazy"
-                        title={product.title}
-                        style={{ zIndex: 1 }}
-                        onError={(e) => { e.target.onerror = null; e.target.src = defaultImage; }}
-                      />
-                      
+                          <img
+                            alt={product.title}
+                            className="object-contain mt-16 w-auto max-h-[300px] min-h-[150px] max-w-[300px] min-w-[150px]"
+                            src={product.image}
+                            loading="lazy"
+                            title={product.title}
+                            style={{ zIndex: 1 }}
+                            onError={(e) => { e.target.onerror = null; e.target.src = defaultImage; }}
+                          />
+
                         ) : (
                           <img
                             alt={product.title}
@@ -191,7 +185,7 @@ export default function FeaturedProducts() {
                           onError={(e) => { e.target.onerror = null; e.target.src = defaultImage; }}
                         />
                         <Button className="w-[75%] bg-orange-500 hover:bg-orange-600" onClick={() => window.open(`/api/image/pdf/view/${catalogue.catalogue}`, '_blank')}>
-                          DOWNLOAD 
+                          DOWNLOAD
                           <ArrowRight className="ml-2 h-4 w-4" />
                         </Button>
                       </div>

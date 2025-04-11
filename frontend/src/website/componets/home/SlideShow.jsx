@@ -305,7 +305,7 @@ const Slideshow = () => {
                 ref={index === 0 ? lcpImageRef : null}
                 src={isSmallDevice ? item.image : `/api/image/download/${item.image}`}
                 alt={item.altName || `Slide ${index + 1}`}
-                className="w-full h-full object-cover max-w-screen-3xl max-h-[70vh] min-w-[300px]  min-h-[200px]"
+                className="w-full h-full object-cover max-w-screen-3xl  min-w-[300px]  min-h-[200px]"
                 title={hoveredIndex === index ? item.title : ""}
                 fetchPriority={index === 0 ? "high" : "low"}
                 loading={index === 0 ? "eager" : "lazy"}

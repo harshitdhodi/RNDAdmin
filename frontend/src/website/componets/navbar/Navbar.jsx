@@ -89,7 +89,7 @@ export default function NavbarComp({ categories }) {
                                 src={logoData?.headerLogo ? `/api/logo/download/${logoData.headerLogo}` : ""}
                                 alt="Company Logo"
                                 title={logoData?.headerLogoName}
-                                className="h-auto w-[100px] md:w-[130px] lg:w-[150px] max-w-[200px] max-h-[100px] min-w-[80px] min-h-[40px]"
+                                className="max-w-[120px] max-h-[50x] min-w-[80px] min-h-[46px]"
                             />
                         </picture>
 

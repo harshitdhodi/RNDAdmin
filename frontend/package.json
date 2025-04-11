@@ -76,6 +76,7 @@
     "vite-plugin-compression": "^0.5.1",
     "vite-plugin-pwa": "^0.21.1",
     "vite-plugin-svgr": "^4.3.0",
+    "vite-plugin-tailwind-purgecss": "^0.3.5",
     "yup": "^1.5.0",
     "zod": "^3.23.8"
   },

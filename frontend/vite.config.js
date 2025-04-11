@@ -6,6 +6,7 @@ import viteCompression from "vite-plugin-compression";
 import svgr from "vite-plugin-svgr";
 import { visualizer } from "rollup-plugin-visualizer";
 import critical from "rollup-plugin-critical"; // Critical CSS
+import { purgeCss } from "vite-plugin-tailwind-purgecss"; // Updated PurgeCSS import
 
 export default defineConfig({
   plugins: [
@@ -65,11 +66,14 @@ export default defineConfig({
 
     // Critical CSS (used with SSR or pre-rendered HTML)
     critical({
-      criticalUrl: "", // optional: use your base URL or entry HTML
+      criticalUrl: "http://localhost:3028", // optional: use your base URL or entry HTML
       criticalBase: "dist/",
       criticalPages: [{ uri: "", template: "index" }],
-      criticalConfig: {},
+     
     }),
+
+    // Tailwind PurgeCSS Plugin (Updated)
+    purgeCss(),
 
     // Rollup Visualizer Plugin
     visualizer({
@@ -126,6 +130,7 @@ export default defineConfig({
   },
 
   server: {
+    historyApiFallback: true,
     port: 3000,
     headers: {
       "Service-Worker-Allowed": "/",
