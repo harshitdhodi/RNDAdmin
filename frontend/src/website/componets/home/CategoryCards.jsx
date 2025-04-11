@@ -32,8 +32,8 @@ export default function CategoryCards() {
                 <img
                   src={`/api/logo/download/${category.photo}`}
                   alt={category.name || "Download"}
-                  className="object-cover w-full h-full transition-transform group-hover:scale-105"
-                  width={300}
+                  className="object-cover  transition-transform group-hover:scale-105"
+                  width={400}
                   height={300}
                   loading="lazy" // Lazy loading for performance
                   title={category.alt}
