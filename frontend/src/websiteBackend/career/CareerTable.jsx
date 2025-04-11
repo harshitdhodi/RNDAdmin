@@ -1,127 +1,160 @@
-import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import React from 'react';
+import { Table, Space, Breadcrumb, Modal, message, Button } from 'antd';
+import { EditOutlined, DeleteOutlined, DownloadOutlined, PlusOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
-import { Button } from '@/components/ui/button';
-import { Table, TableHeader, TableBody, TableRow, TableCell } from '@/components/ui/table';
-import { Breadcrumb } from '@/components/ui/breadcrumb';
-import { Dialog, DialogTrigger, DialogContent, DialogTitle, DialogDescription } from '@/components/ui/dialog';
-import { useToast } from 'react-toastify';
-import { Pencil, Trash2, Download, Plus } from 'lucide-react';
+import { useGetAllApplicationsQuery, useDeleteApplicationMutation } from '../../slice/career/CareerForm';
 
 const CareerTable = () => {
-  const navigate = useNavigate();
-;
-  const [applications, setApplications] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [deleteId, setDeleteId] = useState(null);
+    const navigate = useNavigate();
+    const { data: applications, isLoading } = useGetAllApplicationsQuery();
+    const [deleteApplication] = useDeleteApplicationMutation();
 
-  useEffect(() => {
-    const fetchApplications = async () => {
-      try {
-        const response = await axios.get('/api/career/applications');
-        setApplications(response.data || []);
-      } catch (error) {
-        toast({ title: 'Error', description: 'Failed to fetch applications.', variant: 'destructive' });
-      } finally {
-        setIsLoading(false);
-      }
+    const handleEdit = (record) => {
+        navigate(`/career/edit/${record._id}`);
     };
-    fetchApplications();
-  }, [toast]);
 
-  const handleDelete = async () => {
-    try {
-      await axios.delete(`/api/career/applications/${deleteId}`);
-      setApplications(applications.filter(app => app._id !== deleteId));
-      toast({ title: 'Success', description: 'Application deleted successfully!' });
-    } catch (error) {
-      toast({ title: 'Error', description: 'Failed to delete application.', variant: 'destructive' });
-    }
-  };
+    const handleDelete = (id) => {
+        Modal.confirm({
+            title: 'Are you sure you want to delete this application?',
+            content: 'This action cannot be undone.',
+            okText: 'Yes',
+            okType: 'danger',
+            cancelText: 'No',
+            onOk: async () => {
+                try {
+                    await deleteApplication(id).unwrap();
+                    message.success('Application deleted successfully!');
+                } catch (error) {
+                    message.error(error.message || 'Something went wrong');
+                }
+            },
+        });
+    };
 
-  const handleDownload = async (filePath) => {
-    try {
-      const filename = filePath.split('/').pop();
-      const response = await fetch(`/api/image/pdf/download/${filename}`);
-      if (!response.ok) throw new Error('Download failed');
-      const blob = await response.blob();
-      const url = window.URL.createObjectURL(blob);
-      const link = document.createElement('a');
-      link.href = url;
-      link.download = filename;
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-      window.URL.revokeObjectURL(url);
-    } catch (error) {
-      toast({ title: 'Error', description: 'Failed to download file.', variant: 'destructive' });
-    }
-  };
+    const handleDownload = async (filePath) => {
+        try {
+            const filename = filePath.split('/').pop();
+            const response = await fetch(`/api/image/pdf/download/${filename}`);
+            
+            if (!response.ok) {
+                throw new Error('Download failed');
+            }
 
-  return (
-    <div>
-      <Breadcrumb>
-        <Breadcrumb.Item onClick={() => navigate('/dashboard')}>Dashboard</Breadcrumb.Item>
-        <Breadcrumb.Item>Career Applications</Breadcrumb.Item>
-      </Breadcrumb>
-      <div className="flex justify-between items-center mb-5">
-        <h2 className="text-2xl font-semibold">Career List</h2>
-        <Button onClick={() => navigate('/career/add')}>
-          <Plus className="mr-2" /> Add New Application
-        </Button>
-      </div>
-      <Table>
-        <TableHeader>
-          <TableRow>
-            <TableCell>Info</TableCell>
-            <TableCell>Email</TableCell>
-            <TableCell>Post Applied For</TableCell>
-            <TableCell>Resume</TableCell>
-            <TableCell>Applied Date</TableCell>
-            <TableCell>Actions</TableCell>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {applications.map((record) => (
-            <TableRow key={record._id}>
-              <TableCell>
-                <strong>{record.name}</strong>
-                <div>{record.contactNo}</div>
-                <div className="text-gray-500">{record.address}</div>
-              </TableCell>
-              <TableCell>{record.email}</TableCell>
-              <TableCell>{record.postAppliedFor}</TableCell>
-              <TableCell>
-                <Button variant="ghost" onClick={() => handleDownload(record.resumeFile)}>
-                  <Download className="text-blue-500" />
-                </Button>
-              </TableCell>
-              <TableCell>{new Date(record.createdAt).toLocaleDateString()}</TableCell>
-              <TableCell>
-                <Button variant="ghost" onClick={() => navigate(`/career/edit/${record._id}`)}>
-                  <Pencil className="text-blue-500" />
-                </Button>
-                <Dialog>
-                  <DialogTrigger asChild>
-                    <Button variant="ghost" onClick={() => setDeleteId(record._id)}>
-                      <Trash2 className="text-red-500" />
-                    </Button>
-                  </DialogTrigger>
-                  <DialogContent>
-                    <DialogTitle>Confirm Deletion</DialogTitle>
-                    <DialogDescription>
-                      Are you sure you want to delete this application? This action cannot be undone.
-                    </DialogDescription>
-                    <Button variant="destructive" onClick={handleDelete}>Delete</Button>
-                  </DialogContent>
-                </Dialog>
-              </TableCell>
-            </TableRow>
-          ))}
-        </TableBody>
-      </Table>
-    </div>
-  );
+            const blob = await response.blob();
+            const url = window.URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = filename;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            window.URL.revokeObjectURL(url);
+        } catch (error) {
+            message.error('Failed to download file');
+            console.error('Download error:', error);
+        }
+    };
+
+    const columns = [
+        {
+            title: 'Info',
+            key: 'info',
+            render: (_, record) => (
+                <div>
+                    <strong>{record.name}</strong>
+                    <div>{record.contactNo}</div>
+                    <div style={{ color: '#666' }}>{record.address}</div>
+                </div>
+            ),
+            sorter: (a, b) => a.name.localeCompare(b.name),
+        },
+        {
+            title: 'Email',
+            dataIndex: 'email',
+            key: 'email',
+        },
+        {
+            title: 'Post Applied For',
+            dataIndex: 'postAppliedFor',
+            key: 'postAppliedFor',
+            sorter: (a, b) => a.postAppliedFor.localeCompare(b.postAppliedFor),
+        },
+        {
+            title: 'Resume',
+            key: 'resume',
+            render: (_, record) => (
+                <DownloadOutlined 
+                    onClick={() => handleDownload(record.resumeFile)}
+                    style={{ cursor: 'pointer', color: '#1890ff' }}
+                />
+            ),
+        },
+        {
+            title: 'Applied Date',
+            dataIndex: 'createdAt',
+            key: 'createdAt',
+            render: (date) => new Date(date).toLocaleDateString(),
+            sorter: (a, b) => new Date(a.createdAt) - new Date(b.createdAt),
+        },
+        {
+            title: 'Actions',
+            key: 'actions',
+            render: (_, record) => (
+                <Space size="middle">
+                    <EditOutlined 
+                        style={{ color: '#1890ff', cursor: 'pointer' }}
+                        onClick={() => handleEdit(record)}
+                    />
+                    <DeleteOutlined 
+                        style={{ color: '#ff4d4f', cursor: 'pointer' }}
+                        onClick={() => handleDelete(record._id)}
+                    />
+                </Space>
+            ),
+        },
+    ];
+
+    return (
+        <div >
+            <Breadcrumb
+                items={[
+                    { 
+                        title: <span onClick={() => navigate('/dashboard')} className='cursor-pointer'>
+                            Dashboard
+                        </span>
+                    },
+                    { title: 'Career Applications' }
+                ]}
+                className='mb-4'
+            />
+
+           <div className='flex justify-between items-center mb-5'>
+            <div className='text-2xl font-semibold'>Career List </div>
+           <Button 
+                type="primary" 
+                icon={<PlusOutlined />}
+                onClick={() => navigate('/career/add')}
+                style={{ marginBottom: '16px' }}
+                className='float-right'
+            >
+                Add New Application
+            </Button>
+           </div>
+
+            <Table 
+                columns={columns}
+                dataSource={applications?.data || []}
+                loading={isLoading}
+                rowKey="_id"
+                pagination={{ 
+                    pageSize: 10,
+                    showSizeChanger: true,
+                    showTotal: (total) => `Total ${total} applications`
+                }}
+                scroll={{ x: true }}
+            />
+        </div>
+    );
 };
 
-export default CareerTable;
+export default CareerTable; 

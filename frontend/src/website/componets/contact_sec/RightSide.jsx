@@ -7,40 +7,47 @@ import { Textarea } from '@/components/ui/textarea'
 import { Checkbox } from '@/components/ui/checkbox'
 import { toast } from 'react-toastify'
 import { useAddInquiryMutation } from '@/slice/inquiry/inquiry'
+import Swal from 'sweetalert2'
 import ReCAPTCHA from 'react-google-recaptcha'
-import CustomAlert from '@/website/CustomeAlert'
 
 export default function RightSection() {
   const [loading, setLoading] = useState(false)
   const [captchaValue, setCaptchaValue] = useState(null)
   const [addInquiry] = useAddInquiryMutation()
-  const [alert, setAlert] = useState(null);
+
   const handleSubmit = async (e) => {
-    e.preventDefault();
+    e.preventDefault()
 
     if (!captchaValue) {
-      setAlert({ message: "Please complete the reCAPTCHA", type: "error" });
-      return;
+      toast.error('Please complete the reCAPTCHA')
+      return
     }
 
-    setLoading(true);
+    setLoading(true)
 
     try {
-      const formData = new FormData(e.target);
-      const data = Object.fromEntries(formData.entries());
+      const formData = new FormData(e.target)
+      const data = Object.fromEntries(formData.entries())
 
-      const result = await addInquiry(data).unwrap();
+      const result = await addInquiry(data).unwrap()
 
-      setAlert({ message: "Your message has been sent successfully!", type: "success" });
-
-      e.target.reset();
-      setCaptchaValue(null); // Reset reCAPTCHA value
+      Swal.fire({
+        title: 'Success!',
+        text: 'Your message has been sent successfully',
+        icon: 'success',
+        confirmButtonColor: '#2c4899',
+        timer: 3000,
+        timerProgressBar: true
+      })
+      
+      e.target.reset()
+      setCaptchaValue(null) // Reset reCAPTCHA value
     } catch (error) {
-      setAlert({ message: error.data?.message || error.message || "Something went wrong", type: "error" });
+      toast.error(error.data?.message || error.message || 'Something went wrong')
     } finally {
-      setLoading(false);
+      setLoading(false)
     }
-  };
+  }
 
   return (
     <div className="bg-gray-100 p-6 rounded-lg">
@@ -51,8 +58,7 @@ export default function RightSection() {
       <p className="text-gray-600 mb-6">
         Fields marked <span className="text-red-500">*</span> are mandatory.
       </p>
-      {alert && <CustomAlert message={alert.message} type={alert.type} onClose={() => setAlert(null)} />}
-      
+
       <form onSubmit={handleSubmit} className="space-y-1">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>

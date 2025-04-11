@@ -4,21 +4,11 @@ import { VitePWA } from "vite-plugin-pwa";
 import path from "path";
 import viteCompression from "vite-plugin-compression";
 import svgr from "vite-plugin-svgr";
-import { visualizer } from "rollup-plugin-visualizer";
 
 export default defineConfig({
   plugins: [
     react(),
-    visualizer({
-      open: true, 
-      filename: "stats.html",  
-      template: "treemap",  
-      gzipSize: true,
-      brotliSize: true,
-      sourcemap: true,
-      title: "Bundle Analysis",
-      moduleOnly: true,
-    }),
+    
     // SVGR Configuration
     svgr({
       svgrOptions: {
@@ -77,28 +67,25 @@ export default defineConfig({
 
   build: {
     rollupOptions: {
-      input: { main: "./index.html" },
+      input: {
+        main: "./index.html",
+        "service-worker": "./public/service-worker.js",
+      },
       output: {
-        // Simpler chunking strategy to avoid initialization order issues
         manualChunks: {
-          'vendor-react': ['react', 'react-dom'],
-          'vendor-router': ['react-router-dom'],
-          'vendor-utils': ['axios'],
+          // Splitting Vendor JS to optimize loading
+          vendor: ["react", "react-dom", "react-router-dom"],
         },
-        chunkFileNames: "assets/[name]-[hash].js",
-        entryFileNames: "assets/[name]-[hash].js",
       },
     },
-    chunkSizeWarningLimit: 600,
-    target: "esnext",
-    minify: "terser",
+    chunkSizeWarningLimit: 800, // Reduce chunk size warning to keep JS lightweight
+    target: "esnext", // Optimize JS for modern browsers
+    minify: "esbuild", // Fast and efficient minification
     terserOptions: {
       compress: {
-        drop_console: true,
-        pure_funcs: ["console.log", "console.info"],
+        drop_console: true, // Remove console logs for smaller JS files
       },
     },
-    sourcemap: true,
   },
 
   server: {

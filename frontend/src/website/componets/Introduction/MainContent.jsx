@@ -8,7 +8,7 @@ import {
   DropdownMenuContent,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { ArrowRight } from "lucide-react";
+import { FaArrowRight } from "react-icons/fa";
 import { cn } from '@/lib/utils';
 import AboutDescription from '../home/AboutUs';
 import MissionVision from './MissionVision';
@@ -48,7 +48,7 @@ export default function MainContent() {
             : 'text-gray-700'
         )}
       >
-        <ArrowRight className={cn("h-4 w-4", isActive && "text-orange-500")} />
+        <FaArrowRight className={cn("h-4 w-4", isActive && "text-orange-500")} />
         {title}
       </Link>
     );

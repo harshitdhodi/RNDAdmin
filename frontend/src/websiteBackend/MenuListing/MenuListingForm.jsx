@@ -1,128 +1,102 @@
 import React, { useEffect } from "react";
-import { useNavigate, useParams } from "react-router-dom";
-import { toast } from "react-toastify";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
-import { Plus, Minus } from "lucide-react";
+import { Form, Input, Button, Space, Card } from "antd";
+import { MinusCircleOutlined, PlusOutlined } from "@ant-design/icons";
 import { useCreateMenuListingMutation, useUpdateMenuListingMutation, useGetMenuListingByIdQuery, useGetAllMenuListingsQuery } from "@/slice/menuListing/menuList";
+import { useNavigate, useParams } from "react-router-dom";
 
 const MenuListingForm = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-
+  
+  const [form] = Form.useForm();
+  
   const { data, isLoading } = useGetMenuListingByIdQuery(id, { skip: !id });
   const { refetch: refetchAllMenuListings } = useGetAllMenuListingsQuery();
   const [createMenuListing] = useCreateMenuListingMutation();
   const [updateMenuListing] = useUpdateMenuListingMutation();
 
-  const [formData, setFormData] = React.useState({
-    parent: { name: "", path: "" },
-    children: [],
-  });
-
   useEffect(() => {
     if (data) {
-      setFormData(data.data);
+      form.setFieldsValue(data.data);
     }
-  }, [data]);
+  }, [data, form]);
 
-  const handleInputChange = (field, value) => {
-    setFormData((prev) => ({
-      ...prev,
-      [field]: value,
-    }));
-  };
-
-  const handleChildChange = (index, field, value) => {
-    const updatedChildren = [...formData.children];
-    updatedChildren[index][field] = value;
-    setFormData((prev) => ({ ...prev, children: updatedChildren }));
-  };
-
-  const handleAddChild = () => {
-    setFormData((prev) => ({
-      ...prev,
-      children: [...prev.children, { name: "", path: "", subChildren: [] }],
-    }));
-  };
-
-  const handleRemoveChild = (index) => {
-    setFormData((prev) => ({
-      ...prev,
-      children: prev.children.filter((_, i) => i !== index),
-    }));
-  };
-
-  const handleSubmit = async () => {
-    try {
-      if (id) {
-        await updateMenuListing({ id, ...formData });
-        toast.success("Menu updated successfully!");
-      } else {
-        await createMenuListing(formData);
-        toast.success("Menu created successfully!");
-      }
-      await refetchAllMenuListings();
-      navigate("/menu-listing-table");
-    } catch (error) {
-      toast.error("Failed to save menu.");
+  const handleSubmit = async (values) => {
+    if (id) {
+      await updateMenuListing({ id, ...values });
+    } else {
+      await createMenuListing(values);
     }
+    await refetchAllMenuListings();
+    navigate("/menu-listing-table");
   };
 
   if (isLoading) return <p>Loading...</p>;
 
   return (
-    <Card className="p-6 max-w-2xl mx-auto">
-      <h2 className="text-xl font-bold mb-4">{id ? "Update Menu Listing" : "Create Menu Listing"}</h2>
+    <Card title={id ? "Update Menu Listing" : "Create Menu Listing"} bordered={false}>
+      <Form form={form} layout="vertical" onFinish={handleSubmit} initialValues={{ children: [] }}>
+        
+        {/* Parent Menu */}
+        <Card title="Parent Menu" bordered={true} style={{ marginBottom: "20px" }}>
+          <Form.Item name={["parent", "name"]} label="Name" rules={[{ required: true, message: "Please enter parent menu name" }]}>
+            <Input placeholder="Enter parent menu name" />
+          </Form.Item>
+          <Form.Item name={["parent", "path"]} label="Path" rules={[{ required: true, message: "Please enter parent menu path" }]}>
+            <Input placeholder="Enter parent menu path" />
+          </Form.Item>
+        </Card>
 
-      {/* Parent Menu */}
-      <Card className="p-4 mb-4">
-        <h3 className="text-lg font-semibold mb-3">Parent Menu</h3>
-        <Input
-          placeholder="Enter parent menu name"
-          value={formData.parent.name}
-          onChange={(e) => handleInputChange("parent", { ...formData.parent, name: e.target.value })}
-        />
-        <Input
-          className="mt-2"
-          placeholder="Enter parent menu path"
-          value={formData.parent.path}
-          onChange={(e) => handleInputChange("parent", { ...formData.parent, path: e.target.value })}
-        />
-      </Card>
+        {/* Children Menus */}
+        <Form.List name="children">
+          {(fields, { add, remove }) => (
+            <Card title="Children Menus" bordered={true}>
+              {fields.map(({ key, name, ...restField }) => (
+                <Card key={key} bordered={true} style={{ marginBottom: "15px" }}>
+                  <Space align="baseline">
+                    <Form.Item {...restField} name={[name, "name"]} label="Child Name" rules={[{ required: true, message: "Enter child name" }]}>
+                      <Input placeholder="Enter child name" />
+                    </Form.Item>
+                    <Form.Item {...restField} name={[name, "path"]} label="Child Path" rules={[{ required: true, message: "Enter child path" }]}>
+                      <Input placeholder="Enter child path" />
+                    </Form.Item>
+                    <MinusCircleOutlined onClick={() => remove(name)} />
+                  </Space>
 
-      {/* Children Menus */}
-      <Card className="p-4 mb-4">
-        <h3 className="text-lg font-semibold mb-3">Children Menus</h3>
-        {formData.children.map((child, index) => (
-          <Card key={index} className="p-3 mb-3">
-            <div className="flex items-center gap-3">
-              <Input
-                placeholder="Enter child name"
-                value={child.name}
-                onChange={(e) => handleChildChange(index, "name", e.target.value)}
-              />
-              <Input
-                placeholder="Enter child path"
-                value={child.path}
-                onChange={(e) => handleChildChange(index, "path", e.target.value)}
-              />
-              <Button variant="outline" onClick={() => handleRemoveChild(index)}>
-                <Minus className="w-4 h-4" />
+                  {/* SubChildren */}
+                  <Form.List name={[name, "subChildren"]}>
+                    {(subFields, { add: addSub, remove: removeSub }) => (
+                      <Card title="Sub-Children" bordered={true}>
+                        {subFields.map(({ key: subKey, name: subName, ...subRestField }) => (
+                          <Space key={subKey} align="baseline">
+                            <Form.Item {...subRestField} name={[subName, "name"]} label="Sub-Child Name" rules={[{ required: true, message: "Enter sub-child name" }]}>
+                              <Input placeholder="Enter sub-child name" />
+                            </Form.Item>
+                            <Form.Item {...subRestField} name={[subName, "path"]} label="Sub-Child Path" rules={[{ required: true, message: "Enter sub-child path" }]}>
+                              <Input placeholder="Enter sub-child path" />
+                            </Form.Item>
+                            <MinusCircleOutlined onClick={() => removeSub(subName)} />
+                          </Space>
+                        ))}
+                        <Button type="dashed" onClick={() => addSub()} block icon={<PlusOutlined />}>
+                          Add Sub-Child
+                        </Button>
+                      </Card>
+                    )}
+                  </Form.List>
+                </Card>
+              ))}
+              <Button type="dashed" onClick={() => add()} block icon={<PlusOutlined />}>
+                Add Child
               </Button>
-            </div>
-          </Card>
-        ))}
-        <Button variant="outline" onClick={handleAddChild} className="w-full">
-          <Plus className="w-4 h-4 mr-2" /> Add Child
-        </Button>
-      </Card>
+            </Card>
+          )}
+        </Form.List>
 
-      {/* Submit Button */}
-      <Button className="w-full mt-4" onClick={handleSubmit}>
-        {id ? "Update" : "Create"}
-      </Button>
+        <Button type="primary" htmlType="submit" style={{ marginTop: "20px" }}>
+          {id ? "Update" : "Create"}
+        </Button>
+      </Form>
     </Card>
   );
 };

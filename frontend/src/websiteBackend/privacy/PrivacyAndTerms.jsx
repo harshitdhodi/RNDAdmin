@@ -1,16 +1,12 @@
 import React, { useState, useEffect } from 'react';
+import { Form, Button, message, Breadcrumb } from 'antd';
 import { useNavigate, Link } from 'react-router-dom';
-import ReactQuill from 'react-quill';
-import 'react-quill/dist/quill.snow.css';
+import JoditEditor from 'jodit-react';
 import axios from 'axios';
-import { Breadcrumb } from '@/components/ui/breadcrumb';
-import { Button } from '@/components/ui/button';
-import { Card } from '@/components/ui/card';
-import { useToast } from 'react-toastify';
 
 const PrivacyForm = () => {
   const navigate = useNavigate();
-;
+  const [form] = Form.useForm();
   const [privacyPolicy, setPrivacyPolicy] = useState('');
   const [isLoading, setIsLoading] = useState(true);
   const [isExistingData, setIsExistingData] = useState(false);
@@ -21,52 +17,63 @@ const PrivacyForm = () => {
       try {
         const response = await axios.get('/api/privacy');
         if (response.data.length > 0) {
-          const privacyData = response.data[0];
+          const privacyData = response.data[0]; // Assuming the API returns an array with one object
           setPrivacyPolicy(privacyData.privacyPolicy);
           setPrivacyId(privacyData._id);
+          form.setFieldsValue({
+            privacyPolicy: privacyData.privacyPolicy,
+          });
           setIsExistingData(true);
         }
       } catch (error) {
-        toast({ title: 'Error', description: 'Failed to fetch privacy data', variant: 'destructive' });
+        message.error('Failed to fetch privacy data');
       } finally {
         setIsLoading(false);
       }
     };
-    fetchPrivacyData();
-  }, [toast]);
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+    fetchPrivacyData();
+  }, [form]);
+
+  const handleFinish = async () => {
     try {
       if (isExistingData) {
         await axios.put(`/api/privacy/${privacyId}`, { privacyPolicy });
-        toast({ title: 'Success', description: 'Privacy data updated successfully', variant: 'success' });
+        message.success('Privacy data updated successfully');
       } else {
         await axios.post('/api/privacy/add', { privacyPolicy });
-        toast({ title: 'Success', description: 'Privacy data created successfully', variant: 'success' });
+        message.success('Privacy data created successfully');
       }
       navigate('/privacypolicy-terms');
     } catch (error) {
-      toast({ title: 'Error', description: 'Failed to save privacy data', variant: 'destructive' });
+      message.error('Failed to save privacy data');
     }
   };
 
   if (isLoading) return <p>Loading...</p>;
 
   return (
-    <Card className="p-6 max-w-2xl mx-auto">
-      <Breadcrumb items={[
-        { label: 'Dashboard', link: '/dashboard' },
-        { label: 'Privacy Form' },
-      ]} className="mb-4" />
-      <form onSubmit={handleSubmit} className="space-y-4">
-        <div>
-          <label className="font-medium text-gray-700">Privacy Policy</label>
-          <ReactQuill theme="snow" value={privacyPolicy} onChange={setPrivacyPolicy} />
-        </div>
-        <Button type="submit" className="w-full">Save</Button>
-      </form>
-    </Card>
+    <>
+      <Breadcrumb style={{ marginBottom: '16px' }}>
+        <Breadcrumb.Item>
+          <Link to="/dashboard">Dashboard</Link>
+        </Breadcrumb.Item>
+        <Breadcrumb.Item>Privacy Form</Breadcrumb.Item>
+      </Breadcrumb>
+      <Form form={form} layout="vertical" onFinish={handleFinish}>
+        <Form.Item name="privacyPolicy" label="Privacy Policy" rules={[{ required: true, message: 'Please enter the privacy policy' }]}>
+          <JoditEditor
+            value={privacyPolicy}
+            onChange={(content) => setPrivacyPolicy(content)}
+          />
+        </Form.Item>
+        <Form.Item>
+          <Button type="primary" htmlType="submit">
+            Save
+          </Button>
+        </Form.Item>
+      </Form>
+    </>
   );
 };
 

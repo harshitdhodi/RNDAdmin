@@ -21,21 +21,12 @@ import FollowUpModal from "./FollowUpModel";
 import { useDeleteInquiryMutation } from "@/slice/inquiry/inquiry";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { useGetInquiriesQuery } from "@/slice/inquiry/inquiry";
-import { Link } from "react-router-dom";
+import { Link, Links } from "react-router-dom";
 import { useGetAllStatusesQuery } from "@/slice/status/status";
 import { Checkbox } from "@/components/ui/checkbox";
 import EmailForm from "@/email/emailForm/EmailForm";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { 
-    AlertDialog,
-    AlertDialogAction,
-    AlertDialogCancel,
-    AlertDialogContent,
-    AlertDialogDescription,
-    AlertDialogFooter,
-    AlertDialogHeader,
-    AlertDialogTitle,
-} from "@/components/ui/alert-dialog";
+import { Modal } from "antd";
 
 // Define all possible statuses
 const ALL_STATUSES = [
@@ -56,7 +47,6 @@ export default function InquiryList() {
     const [deleteInquiry] = useDeleteInquiryMutation();
     const { data: statuses, isLoading: statusesLoading } = useGetAllStatusesQuery();
     console.log(statuses)
-    
     // State for filters
     const [companyNameFilter, setCompanyNameFilter] = useState("");
     const [statusFilter, setStatusFilter] = useState(null);
@@ -67,10 +57,6 @@ export default function InquiryList() {
     const [cityFilter, setCityFilter] = useState("");
     const [selectedInquiries, setSelectedInquiries] = useState([]);
     const [showEmailModal, setShowEmailModal] = useState(false);
-    
-    // State for delete confirmation modal
-    const [deleteModalOpen, setDeleteModalOpen] = useState(false);
-    const [inquiryToDelete, setInquiryToDelete] = useState(null);
 
     // Filtering function
     const filteredData = inquiryData.filter(item => {
@@ -94,22 +80,24 @@ export default function InquiryList() {
         ?.map((inquiry) => inquiry.email)
         ?.join(", ");
 
-    const openDeleteModal = (inquiryId) => {
-        setInquiryToDelete(inquiryId);
-        setDeleteModalOpen(true);
+    const handleDelete = async (inquiryId) => {
+        Modal.confirm({
+            title: 'Are you sure you want to delete this inquiry?',
+            content: 'This action cannot be undone.',
+            okText: 'Yes',
+            okType: 'danger',
+            cancelText: 'No',
+            onOk: async () => {
+                try {
+                    await deleteInquiry(inquiryId);
+                    setData(prevData => prevData.filter(item => item._id !== inquiryId));
+                } catch (error) {
+                    console.error("Error deleting inquiry:", error);
+                }
+            },
+        });
     };
 
-    const handleDelete = async () => {
-        try {
-            await deleteInquiry(inquiryToDelete);
-            setData(prevData => prevData.filter(item => item._id !== inquiryToDelete));
-        } catch (error) {
-            console.error("Error deleting inquiry:", error);
-        } finally {
-            setDeleteModalOpen(false);
-            setInquiryToDelete(null);
-        }
-    };
 
     // Handle status update for a specific inquiry
     const handleStatusUpdate = (inquiry, newStatus) => {
@@ -153,7 +141,6 @@ export default function InquiryList() {
                 </div>
             )}
 
-            {/* Email Modal using shadcn Dialog */}
             <Dialog open={showEmailModal} onOpenChange={setShowEmailModal}>
                 <DialogContent className="max-w-4xl">
                     <DialogHeader>
@@ -169,24 +156,6 @@ export default function InquiryList() {
                 </DialogContent>
             </Dialog>
 
-            {/* Delete Confirmation Modal using shadcn AlertDialog */}
-            <AlertDialog open={deleteModalOpen} onOpenChange={setDeleteModalOpen}>
-                <AlertDialogContent>
-                    <AlertDialogHeader>
-                        <AlertDialogTitle>Are you sure you want to delete this inquiry?</AlertDialogTitle>
-                        <AlertDialogDescription>
-                            This action cannot be undone.
-                        </AlertDialogDescription>
-                    </AlertDialogHeader>
-                    <AlertDialogFooter>
-                        <AlertDialogCancel>Cancel</AlertDialogCancel>
-                        <AlertDialogAction onClick={handleDelete} className="bg-red-600 hover:bg-red-700">
-                            Delete
-                        </AlertDialogAction>
-                    </AlertDialogFooter>
-                </AlertDialogContent>
-            </AlertDialog>
-
             <div className="flex justify-between items-center mb-4">
                 <h1 className="text-xl font-semibold">Inquiry List</h1>
                 <Link to='/add-inquiry'>
@@ -195,6 +164,7 @@ export default function InquiryList() {
                         Add Inquiry
                     </Button>
                 </Link>
+
             </div>
 
             <Table className="border">
@@ -203,6 +173,7 @@ export default function InquiryList() {
                         <TableHead className="w-12"></TableHead>
                         <TableHead className="lg:w-[100px] w-[50px] sticky left-0 bg-background z-50">Date</TableHead>
                         <TableHead className="text-left">Info</TableHead>
+                        {/* <TableHead className="text-left">Email</TableHead> */}
                         <TableHead className="text-left">Message</TableHead>
                         <TableHead className="text-left">Follow Up</TableHead>
                         <TableHead className="w-[80px] text-left">Actions</TableHead>
@@ -218,11 +189,22 @@ export default function InquiryList() {
                                 onChange={(e) => setNameFilter(e.target.value)}
                             />
                         </TableHead>
+                        {/* <TableHead>
+                            <Input
+                                placeholder="Email"
+                                className="w-[200px]"
+                                value={emailFilter}
+                                onChange={(e) => setEmailFilter(e.target.value)}
+                            />
+                        </TableHead> */}
                         <TableHead>
                             <Select
                                 value={statusFilter || "reset"}
                                 onValueChange={(value) => setStatusFilter(value === "reset" ? null : value)}
                             >
+                                {/* <SelectTrigger className="w-[160px]">
+                                    <SelectValue placeholder="Status" />
+                                </SelectTrigger> */}
                                 <SelectContent>
                                     <SelectItem value="reset">All Statuses</SelectItem>
                                     {statuses?.data?.map((status) => (
@@ -260,6 +242,7 @@ export default function InquiryList() {
                                     </div>
                                 </div>
                             </TableCell>
+                            {/* <TableCell>{item.email}</TableCell> */}
                             <TableCell>{item.message}</TableCell>
                             <TableCell className="text-left">
                                 <FollowUpModal
@@ -278,7 +261,7 @@ export default function InquiryList() {
                                         <Link to={`/edit-inquiry/${item._id}`}>
                                             <DropdownMenuItem>Edit</DropdownMenuItem>
                                         </Link>
-                                        <DropdownMenuItem onClick={() => openDeleteModal(item._id)}>
+                                        <DropdownMenuItem onClick={() => handleDelete(item._id)}>
                                             Delete
                                         </DropdownMenuItem>
                                     </DropdownMenuContent>

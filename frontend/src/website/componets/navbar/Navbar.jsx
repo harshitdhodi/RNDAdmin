@@ -77,17 +77,9 @@ export default function NavbarComp({ categories }) {
                     <Link to="/" className="flex items-center gap-2">
                         <img
                             src={logoData?.headerLogo ? `/api/logo/download/${logoData.headerLogo}` : ""}
-                            srcSet={
-                                logoData?.headerLogo
-                                    ? `/api/logo/download/${logoData.headerLogo}?w=100 100w,
-         /api/logo/download/${logoData.headerLogo}?w=130 130w,
-         /api/logo/download/${logoData.headerLogo}?w=150 150w`
-                                    : ""
-                            }
-                            sizes="(max-width: 640px) 100px, (max-width: 768px) 130px, 150px"
                             alt="Company Logo"
                             title={logoData?.headerLogoName}
-                            className="h-auto w-[100px] md:w-[130px] lg:w-[150px] max-w-[150px] min-w-[100px] max-h-[80px] min-h-[40px]"
+                            className="h-auto w-[100px] md:w-[130px] lg:w-[150px]"
                         />
                     </Link>
                     <div className="w-1/2 md:mt-0 hidden md:block">
@@ -122,16 +114,16 @@ export default function NavbarComp({ categories }) {
                 <div className={`
                     md:hidden fixed top-0 left-0 right-0 w-full z-[80]
                     transition-all duration-300 ease-in-out
-                    ${mobileMenuOpen
-                        ? 'opacity-100 h-screen'
+                    ${mobileMenuOpen 
+                        ? 'opacity-100 h-screen' 
                         : 'opacity-0 h-0 pointer-events-none overflow-hidden'}
                 `}>
                     {/* Backdrop */}
-                    <div
+                    <div 
                         className="fixed inset-0 bg-black bg-opacity-50 z-[75]"
                         onClick={() => setMobileMenuOpen(false)}
                     />
-
+                    
                     {/* Menu Content */}
                     <div className="relative bg-[#2d4899] w-full px-4 py-2 space-y-2 overflow-y-auto">
                         <div className="flex items-center justify-between pb-4 bg-white -mx-4 px-4 pt-2">

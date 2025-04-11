@@ -1,5 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import * as z from 'zod';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -10,6 +12,20 @@ import { useGetCustomerByIdQuery, useUpdateCustomerMutation } from '@/slice/cust
 import { useNavigate, useParams } from 'react-router-dom';
 import { BreadcrumbWithCustomSeparator } from '@/breadCrumb/BreadCrumb';
 import { toast } from 'react-toastify';
+
+const customerSchema = z.object({
+  name: z.string().min(1, 'Customer name is required'),
+  contactPerson: z.string().optional(),
+  email: z.string().email('Invalid email address'),
+  mobile: z.string().min(1, 'Mobile number is required'),
+  website: z.string().url('Invalid URL').optional().or(z.literal('')),
+  address: z.string().optional(),
+  country: z.string().optional(),
+  state: z.string().optional(),
+  city: z.string().optional(),
+  description: z.string().optional(),
+  image: z.any().optional()
+});
 
 const breadcrumbItems = [
   { label: "Dashboard", href: "/dashboard" },
@@ -23,14 +39,17 @@ export default function EditCustomerForm() {
   const [updateCustomer, { isLoading }] = useUpdateCustomerMutation();
   const navigate = useNavigate();
 
+  // Manual location data (replace with your own data or API)
   const [countries] = useState([
     { isoCode: 'US', name: 'United States' },
     { isoCode: 'CA', name: 'Canada' },
     { isoCode: 'UK', name: 'United Kingdom' },
     { isoCode: 'IN', name: 'India' },
     { isoCode: 'AU', name: 'Australia' }
+    // Add more countries as needed
   ]);
   
+  // You can replace these with your own data or fetch from your API
   const countryStates = {
     'US': [
       { isoCode: 'NY', name: 'New York' },
@@ -42,12 +61,14 @@ export default function EditCustomerForm() {
       { isoCode: 'DL', name: 'Delhi' },
       { isoCode: 'KA', name: 'Karnataka' }
     ],
+    // Add more states for other countries
   };
   
   const stateCities = {
     'NY': [{ name: 'New York City' }, { name: 'Buffalo' }],
     'CA': [{ name: 'Los Angeles' }, { name: 'San Francisco' }],
     'MH': [{ name: 'Mumbai' }, { name: 'Pune' }],
+    // Add more cities for other states
   };
   
   const [states, setStates] = useState([]);
@@ -59,10 +80,9 @@ export default function EditCustomerForm() {
     watch,
     setValue,
     reset,
-    formState: { errors },
-    setError,
-    clearErrors
+    formState: { errors }
   } = useForm({
+    resolver: zodResolver(customerSchema),
     defaultValues: {
       name: '',
       contactPerson: '',
@@ -82,6 +102,7 @@ export default function EditCustomerForm() {
   const watchState = watch('state');
   const watchImage = watch('image');
 
+  // Update states when country changes
   useEffect(() => {
     if (watchCountry) {
       const stateList = countryStates[watchCountry] || [];
@@ -96,6 +117,7 @@ export default function EditCustomerForm() {
     }
   }, [watchCountry, setValue, customerData]);
 
+  // Update cities when state changes
   useEffect(() => {
     if (watchState) {
       const cityList = stateCities[watchState] || [];
@@ -108,6 +130,7 @@ export default function EditCustomerForm() {
     }
   }, [watchState, setValue, customerData]);
 
+  // Populate form with customer data
   useEffect(() => {
     if (customerData?.data) {
       const fields = [
@@ -123,44 +146,7 @@ export default function EditCustomerForm() {
     }
   }, [customerData, setValue]);
 
-  const validateForm = (data) => {
-    let isValid = true;
-    clearErrors();
-
-    // Name validation
-    if (!data.name.trim()) {
-      setError('name', { message: 'Customer name is required' });
-      isValid = false;
-    }
-
-    // Email validation
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!data.email) {
-      setError('email', { message: 'Email is required' });
-      isValid = false;
-    } else if (!emailRegex.test(data.email)) {
-      setError('email', { message: 'Invalid email address' });
-      isValid = false;
-    }
-
-    // Mobile validation
-    if (!data.mobile.trim()) {
-      setError('mobile', { message: 'Mobile number is required' });
-      isValid = false;
-    }
-
-    // Website validation (if provided)
-    if (data.website) {
-      const urlRegex = /^(https?:\/\/)?([\w-]+(\.[\w-]+)+)(\/[\w-]*)*\/?$/;
-      if (!urlRegex.test(data.website)) {
-        setError('website', { message: 'Invalid URL' });
-        isValid = false;
-      }
-    }
-
-    return isValid;
-  };
-
+  // Handle image upload
   const handleImageUpload = (e) => {
     const file = e.target.files[0];
     if (file) {
@@ -178,24 +164,24 @@ export default function EditCustomerForm() {
     }
   };
 
+  // Form submission
   const onSubmit = async (data) => {
-    if (!validateForm(data)) {
-      return;
-    }
-
     try {
       const formData = new FormData();
       
+      // Handle all non-image fields
       Object.keys(data).forEach(key => {
         if (key !== 'image') {
           formData.append(key, data[key] || '');
         }
       });
 
+      // Handle image field specifically
       if (data.image instanceof File) {
         formData.append('image', data.image);
       }
 
+      // Add the ID to the formData
       formData.append('id', id);
 
       const result = await updateCustomer({ 
@@ -225,6 +211,7 @@ export default function EditCustomerForm() {
         <CardContent>
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              {/* Customer Name */}
               <div className="space-y-2">
                 <Label htmlFor="name">
                   Customer Name <span className="text-red-500">*</span>
@@ -239,6 +226,7 @@ export default function EditCustomerForm() {
                 )}
               </div>
 
+              {/* Contact Person */}
               <div className="space-y-2">
                 <Label htmlFor="contactPerson">Contact Person</Label>
                 <Input
@@ -247,6 +235,7 @@ export default function EditCustomerForm() {
                 />
               </div>
 
+              {/* Email */}
               <div className="space-y-2">
                 <Label htmlFor="email">
                   Email <span className="text-red-500">*</span>
@@ -262,6 +251,7 @@ export default function EditCustomerForm() {
                 )}
               </div>
 
+              {/* Mobile Number */}
               <div className="space-y-2">
                 <Label htmlFor="mobile">
                   Mobile Number <span className="text-red-500">*</span>
@@ -276,6 +266,7 @@ export default function EditCustomerForm() {
                 )}
               </div>
 
+              {/* Website */}
               <div className="space-y-2">
                 <Label htmlFor="website">Website</Label>
                 <Input
@@ -290,7 +281,9 @@ export default function EditCustomerForm() {
               </div>
             </div>
 
+            {/* Location Information */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              {/* Country */}
               <div className="space-y-2">
                 <Label htmlFor="country">Country</Label>
                 <Select
@@ -310,6 +303,7 @@ export default function EditCustomerForm() {
                 </Select>
               </div>
 
+              {/* State */}
               <div className="space-y-2">
                 <Label htmlFor="state">State/Province</Label>
                 <Select
@@ -330,6 +324,7 @@ export default function EditCustomerForm() {
                 </Select>
               </div>
 
+              {/* City */}
               <div className="space-y-2">
                 <Label htmlFor="city">City</Label>
                 <Select
@@ -351,6 +346,7 @@ export default function EditCustomerForm() {
               </div>
             </div>
 
+            {/* Address */}
             <div className="space-y-2">
               <Label htmlFor="address">Address</Label>
               <Textarea
@@ -360,6 +356,7 @@ export default function EditCustomerForm() {
               />
             </div>
 
+            {/* Upload image */}
             <div className="space-y-2">
               <Label>Upload image</Label>
               <div className="border-2 border-dashed border-gray-200 rounded-lg p-4 text-center">
@@ -392,6 +389,7 @@ export default function EditCustomerForm() {
               </div>
             </div>
 
+            {/* Description */}
             <div className="space-y-2">
               <Label htmlFor="description">Description</Label>
               <Textarea
@@ -402,6 +400,7 @@ export default function EditCustomerForm() {
               />
             </div>
 
+            {/* Form Actions */}
             <div className="flex gap-4">
               <Button
                 type="submit"

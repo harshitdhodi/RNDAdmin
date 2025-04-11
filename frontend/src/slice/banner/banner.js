@@ -17,7 +17,7 @@ export const bannerApi = createApi({
         url: '/get',
         params: { id },
       }),
-      providesTags: (result, error, id) => [{ type: 'Banner', id }],
+      providesTags: ['Banner'],
     }),
 
     // Get banner by pageSlug
@@ -28,7 +28,6 @@ export const bannerApi = createApi({
       }),
       providesTags: ['Banner'],
     }),
-
     // Create new banner
     createBanner: builder.mutation({
       query: (bannerData) => ({
@@ -41,12 +40,12 @@ export const bannerApi = createApi({
 
     // Update banner
     updateBanner: builder.mutation({
-      query: ({ id, bannerData }) => ({
+      query: ({id,bannerData}) => ({
         url: `/update?id=${id}`,
         method: 'PUT',
         body: bannerData,
       }),
-      invalidatesTags: (result, error, { id }) => [{ type: 'Banner', id }],
+      invalidatesTags: ['Banner'],
     }),
 
     // Delete banner

@@ -117,7 +117,7 @@ export default function FeaturedProducts() {
                         {product.image ? (
                         <img
                         alt={product.title}
-                        className="object-contain mt-16"
+                        className="object-contain mt-16 w-auto max-w-full max-h-full"
                         src={product.image}
                         srcSet={`
                           ${product.image}?w=400 400w,
@@ -136,11 +136,6 @@ export default function FeaturedProducts() {
                             alt={product.title}
                             className="object-contain mt-16 w-full h-full"
                             src={defaultImage}
-                            srcSet={`
-                              ${product.image}?w=600 400w,
-                              ${product.image}?w=800 800w,
-                              ${product.image}?w=1200 1200w
-                            `}
                             loading="lazy"
                             title={product.title}
                             style={{ zIndex: 1 }}

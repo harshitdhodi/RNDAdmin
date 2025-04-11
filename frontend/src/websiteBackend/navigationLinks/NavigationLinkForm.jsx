@@ -1,83 +1,81 @@
-import React, { useState, useEffect } from "react";
-import { useNavigate, useParams } from "react-router-dom";
-import { Card } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import { Label } from "@/components/ui/label";
-import { Breadcrumb } from "@/components/ui/breadcrumb";
-import { useCreateNavigationLinkMutation, useUpdateNavigationLinkMutation, useGetNavigationLinkByIdQuery } from "@/slice/navigationLink/navigationSlice";
+import React, { useState, useEffect } from 'react';
+import { Form, Input, Button, Upload, message, Breadcrumb } from 'antd';
+import { UploadOutlined } from '@ant-design/icons';
+import { useNavigate, useParams, Link } from 'react-router-dom';
+import { useCreateNavigationLinkMutation, useUpdateNavigationLinkMutation, useGetNavigationLinkByIdQuery } from '@/slice/navigationLink/navigationSlice';
 
 const NavigationLinkForm = () => {
+  const [form] = Form.useForm();
   const navigate = useNavigate();
   const { id } = useParams();
-
-  const { data: navigationLink, isLoading } = useGetNavigationLinkByIdQuery(id, { skip: !id });
+  const { data: navigationLink, isLoading: isFetching } = useGetNavigationLinkByIdQuery(id, { skip: !id });
   const [createNavigationLink] = useCreateNavigationLinkMutation();
   const [updateNavigationLink] = useUpdateNavigationLinkMutation();
-  const [name, setName] = useState("");
-  const [file, setFile] = useState(null);
-  const [preview, setPreview] = useState(null);
+  const [fileList, setFileList] = useState([]);
 
   useEffect(() => {
     if (navigationLink) {
-      setName(navigationLink.name);
-      if (navigationLink.icon) {
-        setPreview(`/api/logo/download/${navigationLink.icon}`);
-      }
+      form.setFieldsValue(navigationLink);
+      setFileList([{ url: `/api/logo/download/${navigationLink.icon}`, name: navigationLink.icon }]);
     }
-  }, [navigationLink]);
+  }, [navigationLink, form]);
 
-  const handleFileChange = (e) => {
-    const selectedFile = e.target.files[0];
-    setFile(selectedFile);
-    if (selectedFile) {
-      setPreview(URL.createObjectURL(selectedFile));
-    }
-  };
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  const handleFinish = async (values) => {
     const formData = new FormData();
-    formData.append("name", name);
-    if (file) {
-      formData.append("icon", file);
+    formData.append('name', values.name);
+    if (fileList[0]?.originFileObj) {
+      formData.append('icon', fileList[0].originFileObj);
     }
+
     try {
       if (id) {
         await updateNavigationLink({ id, formData }).unwrap();
-        toast({ title: "Success", description: "Navigation link updated successfully", variant: "success" });
+        message.success('Navigation link updated successfully');
       } else {
         await createNavigationLink(formData).unwrap();
-        toast({ title: "Success", description: "Navigation link created successfully", variant: "success" });
+        message.success('Navigation link created successfully');
       }
-      navigate("/navigationLink");
+      navigate('/navigationLink');
     } catch (error) {
-      toast({ title: "Error", description: "Failed to save navigation link", variant: "destructive" });
+      message.error('Failed to save navigation link');
     }
   };
 
+  const handleFileChange = ({ fileList }) => setFileList(fileList);
+
   return (
-    <Card className="p-6 max-w-lg mx-auto">
-      <Breadcrumb items={[
-        { label: "Dashboard", link: "/dashboard" },
-        { label: "Navigation Links", link: "/navigationLink" },
-        { label: id ? "Edit Navigation Link" : "Add Navigation Link" },
-      ]} className="mb-4" />
-      <form onSubmit={handleSubmit} className="space-y-4">
-        <div>
-          <Label htmlFor="name">Name</Label>
-          <Input id="name" value={name} onChange={(e) => setName(e.target.value)} required />
-        </div>
-        <div>
-          <Label htmlFor="icon">Icon</Label>
-          {preview && <img src={preview} alt="Preview" className="w-16 h-16 mb-2" />}
-          <input type="file" id="icon" accept="image/*" onChange={handleFileChange} />
-        </div>
-        <Button type="submit" disabled={isLoading} className="w-full">
-          {id ? "Update" : "Create"}
-        </Button>
-      </form>
-    </Card>
+    <>
+      <Breadcrumb style={{ marginBottom: '16px' }}>
+        <Breadcrumb.Item>
+          <Link to="/dashboard">Dashboard</Link>
+        </Breadcrumb.Item>
+        <Breadcrumb.Item>
+          <Link to="/navigationLink">Navigation Links</Link>
+        </Breadcrumb.Item>
+        <Breadcrumb.Item>{id ? 'Edit Navigation Link' : 'Add Navigation Link'}</Breadcrumb.Item>
+      </Breadcrumb>
+      <Form form={form} layout="vertical" onFinish={handleFinish}>
+        <Form.Item name="name" label="Name" rules={[{ required: true, message: 'Please enter the name' }]}>
+          <Input />
+        </Form.Item>
+        <Form.Item name="icon" label="Icon" rules={[{ required: true, message: 'Please upload an icon' }]}>
+          <Upload
+            listType="picture"
+            maxCount={1}
+            fileList={fileList}
+            beforeUpload={() => false}
+            onChange={handleFileChange}
+          >
+            <Button icon={<UploadOutlined />}>Upload Icon</Button>
+          </Upload>
+        </Form.Item>
+        <Form.Item>
+          <Button type="primary" htmlType="submit" loading={isFetching}>
+            {id ? 'Update' : 'Create'}
+          </Button>
+        </Form.Item>
+      </Form>
+    </>
   );
 };
 
