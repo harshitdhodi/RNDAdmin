@@ -32,41 +32,7 @@ export default function Footer() {
       });
   }, []);
   
-  // For lazy loading the background image
-  useEffect(() => {
-    // Create an intersection observer
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach(entry => {
-          // When footer is about to enter viewport
-          if (entry.isIntersecting) {
-            // Dynamically import the actual image
-            import('../../images/footerbg.webp').then(imgModule => {
-              setBgImage(imgModule.default);
-            }).catch(error => {
-              console.error('Failed to load footer background image:', error);
-              // Fallback to a dark color if image fails to load
-              setBgImage('');
-            });
-            // Unobserve after loading
-            observer.unobserve(entry.target);
-          }
-        });
-      },
-      // Start loading when footer is 200px from entering viewport
-      { rootMargin: '200px' }
-    );
-    
-    if (footerRef.current) {
-      observer.observe(footerRef.current);
-    }
-    
-    return () => {
-      if (footerRef.current) {
-        observer.unobserve(footerRef.current);
-      }
-    };
-  }, []);
+
 
   const ScrollLink = ({ to, children, className }) => {
     const handleClick = (e) => {
@@ -88,12 +54,8 @@ export default function Footer() {
     <>
       <footer
         ref={footerRef}
-        className="text-white py-12 bg-gray-800" // Add a bg color as fallback
-        style={{
-          backgroundImage: bgImage ? `url(${bgImage})` : 'none',
-          backgroundSize: 'cover',
-          backgroundPosition: 'center',
-        }}
+        className="text-white py-12 bg-[#2d4899]" // Add a bg color as fallback
+       
       >
         <div className="max-w-[75rem] mx-auto px-4">
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-8">
