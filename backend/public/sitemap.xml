@@ -2,19 +2,19 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>http://localhost:3028/chemical-sitemap.xml</loc>
-    <lastmod>2025-04-12T06:26:57.234Z</lastmod>
+    <lastmod>2025-04-12T08:43:08.293Z</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
     <loc>http://localhost:3028/blog-sitemap.xml</loc>
-    <lastmod>2025-04-12T06:26:56.895Z</lastmod>
+    <lastmod>2025-04-12T08:43:07.982Z</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
     <loc>http://localhost:3028/sitemap.xml</loc>
-    <lastmod>2025-04-12T06:26:55.734Z</lastmod>
+    <lastmod>2025-04-12T08:43:06.994Z</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
   </url>
