@@ -117,7 +117,7 @@ export default function FeaturedProducts() {
                         {product.image ? (
                           <img
                             alt={product.title}
-                            className="object-contain mt-16 w-auto max-h-[300px] min-h-[150px] max-w-[300px] min-w-[150px]"
+                            className="object-contain mt-16  max-h-[300px] min-h-[150px] max-w-[300px] min-w-[150px]"
                             src={product.image}
                             loading="lazy"
                             title={product.title}
