@@ -1,0 +1,1 @@
+import{j as r}from"./main-CuiBl65R-1744447280152.js";import"./vendor-C9iLKeEQ-1744447280152.js";function a({imageUrl:e}){return r.jsx("div",{className:"relative w-full h-[30vh] lg:h-[250px]",children:r.jsx("img",{src:e,alt:"Banner",className:"w-full h-full object-cover"})})}export{a as B};

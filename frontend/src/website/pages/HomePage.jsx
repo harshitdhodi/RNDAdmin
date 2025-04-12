@@ -14,7 +14,7 @@ const HomePage = () => {
       <Slideshow />
       <NavigationMenu />
       <CategoryCards />
-      <FeaturedProducts />
+      {/* <FeaturedProducts /> */}
       <CorporateProfile />
       
     </div>
