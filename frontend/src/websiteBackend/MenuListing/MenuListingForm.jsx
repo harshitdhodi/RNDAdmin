@@ -38,7 +38,7 @@ const MenuListingForm = () => {
       <Form form={form} layout="vertical" onFinish={handleSubmit} initialValues={{ children: [] }}>
         
         {/* Parent Menu */}
-        <Card title="Parent Menu" bordered={true} style={{ marginBottom: "20px" }}>
+        <Card title="Parent Menu" bordered={true} className="mb-5">
           <Form.Item name={["parent", "name"]} label="Name" rules={[{ required: true, message: "Please enter parent menu name" }]}>
             <Input placeholder="Enter parent menu name" />
           </Form.Item>
@@ -52,7 +52,7 @@ const MenuListingForm = () => {
           {(fields, { add, remove }) => (
             <Card title="Children Menus" bordered={true}>
               {fields.map(({ key, name, ...restField }) => (
-                <Card key={key} bordered={true} style={{ marginBottom: "15px" }}>
+                <Card key={key} bordered={true} className="mb-4">
                   <Space align="baseline">
                     <Form.Item {...restField} name={[name, "name"]} label="Child Name" rules={[{ required: true, message: "Enter child name" }]}>
                       <Input placeholder="Enter child name" />
@@ -93,7 +93,7 @@ const MenuListingForm = () => {
           )}
         </Form.List>
 
-        <Button type="primary" htmlType="submit" style={{ marginTop: "20px" }}>
+        <Button type="primary" htmlType="submit" className="mt-5">
           {id ? "Update" : "Create"}
         </Button>
       </Form>

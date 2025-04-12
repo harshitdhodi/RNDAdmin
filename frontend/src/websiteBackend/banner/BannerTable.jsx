@@ -25,11 +25,12 @@ const BannerTable = () => {
       key: 'image',
       width: '20%',
       render: (image) => (
-        <img 
-          src={`/api/image/download/${image}`} 
-          alt="Banner" 
-          style={{ width: '150px', height: '50px', objectFit: 'cover' }} 
-        />
+        <img
+        src={`/api/image/download/${image}`}
+        alt="Banner"
+        className="w-36 h-12 object-cover"
+      />
+      
       ),
     },
     {
@@ -67,7 +68,7 @@ const BannerTable = () => {
 
   return (
     <div>
-      <Breadcrumb style={{ padding: '16px 24px' }}>
+      <Breadcrumb className='px-4 py-6'>
         <Breadcrumb.Item>
           <Link to="/dashboard">
             <HomeOutlined /> Dashboard
@@ -76,7 +77,7 @@ const BannerTable = () => {
         <Breadcrumb.Item>Banner Management</Breadcrumb.Item>
       </Breadcrumb>
       
-      <div style={{ padding: '24px' }} className='flex justify-between items-center'>
+      <div  className='p-6 flex justify-between items-center'>
         <div className='text-2xl font-bold'>
           <h1>Banner Management</h1>   
         </div>
@@ -85,7 +86,7 @@ const BannerTable = () => {
             type="primary" 
             icon={<PlusOutlined />}
             onClick={() => navigate('/add-banner')}
-            style={{ marginBottom: '16px' }}
+            className='mb-4'
           >
             Add New Banner
           </Button>

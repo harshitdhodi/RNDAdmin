@@ -1,5 +1,5 @@
 import React from 'react';
-import { Table, Space, Breadcrumb, Modal, message, Button } from 'antd';
+import { Table, Modal, message } from 'antd';
 import { EditOutlined, DeleteOutlined, DownloadOutlined, PlusOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 import { useGetAllApplicationsQuery, useDeleteApplicationMutation } from '../../slice/career/CareerForm';
@@ -35,7 +35,7 @@ const CareerTable = () => {
         try {
             const filename = filePath.split('/').pop();
             const response = await fetch(`/api/image/pdf/download/${filename}`);
-            
+
             if (!response.ok) {
                 throw new Error('Download failed');
             }
@@ -61,9 +61,9 @@ const CareerTable = () => {
             key: 'info',
             render: (_, record) => (
                 <div>
-                    <strong>{record.name}</strong>
-                    <div>{record.contactNo}</div>
-                    <div style={{ color: '#666' }}>{record.address}</div>
+                    <p className="font-semibold">{record.name}</p>
+                    <p>{record.contactNo}</p>
+                    <p className="text-gray-500">{record.address}</p>
                 </div>
             ),
             sorter: (a, b) => a.name.localeCompare(b.name),
@@ -83,9 +83,9 @@ const CareerTable = () => {
             title: 'Resume',
             key: 'resume',
             render: (_, record) => (
-                <DownloadOutlined 
+                <DownloadOutlined
                     onClick={() => handleDownload(record.resumeFile)}
-                    style={{ cursor: 'pointer', color: '#1890ff' }}
+                    className="text-blue-600 cursor-pointer"
                 />
             ),
         },
@@ -100,56 +100,53 @@ const CareerTable = () => {
             title: 'Actions',
             key: 'actions',
             render: (_, record) => (
-                <Space size="middle">
-                    <EditOutlined 
-                        style={{ color: '#1890ff', cursor: 'pointer' }}
+                <div className="flex gap-3">
+                    <EditOutlined
+                        className="text-blue-600 cursor-pointer"
                         onClick={() => handleEdit(record)}
                     />
-                    <DeleteOutlined 
-                        style={{ color: '#ff4d4f', cursor: 'pointer' }}
+                    <DeleteOutlined
+                        className="text-red-500 cursor-pointer"
                         onClick={() => handleDelete(record._id)}
                     />
-                </Space>
+                </div>
             ),
         },
     ];
 
     return (
-        <div >
-            <Breadcrumb
-                items={[
-                    { 
-                        title: <span onClick={() => navigate('/dashboard')} className='cursor-pointer'>
-                            Dashboard
-                        </span>
-                    },
-                    { title: 'Career Applications' }
-                ]}
-                className='mb-4'
-            />
+        <div className="p-4">
+            <div className="mb-4 text-sm text-gray-600 flex gap-2">
+                <span
+                    className="text-blue-600 cursor-pointer hover:underline"
+                    onClick={() => navigate('/dashboard')}
+                >
+                    Dashboard
+                </span>
+                <span>/</span>
+                <span>Career Applications</span>
+            </div>
 
-           <div className='flex justify-between items-center mb-5'>
-            <div className='text-2xl font-semibold'>Career List </div>
-           <Button 
-                type="primary" 
-                icon={<PlusOutlined />}
-                onClick={() => navigate('/career/add')}
-                style={{ marginBottom: '16px' }}
-                className='float-right'
-            >
-                Add New Application
-            </Button>
-           </div>
+            <div className="flex justify-between items-center mb-5">
+                <h2 className="text-2xl font-semibold">Career List</h2>
+                <button
+                    onClick={() => navigate('/career/add')}
+                    className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 flex items-center gap-2"
+                >
+                    <PlusOutlined />
+                    Add New Application
+                </button>
+            </div>
 
-            <Table 
+            <Table
                 columns={columns}
                 dataSource={applications?.data || []}
                 loading={isLoading}
                 rowKey="_id"
-                pagination={{ 
+                pagination={{
                     pageSize: 10,
                     showSizeChanger: true,
-                    showTotal: (total) => `Total ${total} applications`
+                    showTotal: (total) => `Total ${total} applications`,
                 }}
                 scroll={{ x: true }}
             />
@@ -157,4 +154,4 @@ const CareerTable = () => {
     );
 };
 
-export default CareerTable; 
+export default CareerTable;

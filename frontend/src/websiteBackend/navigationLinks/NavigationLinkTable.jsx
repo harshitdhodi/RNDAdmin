@@ -28,13 +28,19 @@ const NavigationLinkTable = () => {
       title: 'Icon',
       dataIndex: 'icon',
       key: 'icon',
-      render: (icon) => <img src={`/api/logo/download/${icon}`} alt="Icon" style={{ width: '50px', height: '50px' }} />,
+      render: (icon) => (
+        <img
+          src={`/api/logo/download/${icon}`}
+          alt="Icon"
+          className="w-12 h-12 object-contain"
+        />
+      ),
     },
     {
       title: 'Actions',
       key: 'actions',
       render: (_, record) => (
-        <Space>
+        <div className="flex gap-2">
           <Button
             type="primary"
             icon={<EditOutlined />}
@@ -45,29 +51,39 @@ const NavigationLinkTable = () => {
             icon={<DeleteOutlined />}
             onClick={() => handleDelete(record._id)}
           />
-        </Space>
+        </div>
       ),
     },
   ];
+  
 
   if (isLoading) return <p>Loading...</p>;
 
   return (
-    <>
-      <Breadcrumb style={{ marginBottom: '16px' }}>
-        <Breadcrumb.Item>
-          <Link to="/dashboard">Dashboard</Link>
-        </Breadcrumb.Item>
-        <Breadcrumb.Item>Navigation Links</Breadcrumb.Item>
-      </Breadcrumb>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
-        <h1 className='font-bold text-2xl '>Navigation Links</h1>
-        <Button type="primary" icon={<PlusOutlined />} onClick={() => navigate('/navigationLink-form')}>
-          Add Navigation Link
-        </Button>
-      </div>
-      <Table columns={columns} dataSource={navigationLinks} rowKey="_id" />
-    </>
+<>
+  <div className="mb-4">
+    <Breadcrumb>
+      <Breadcrumb.Item>
+        <Link to="/dashboard">Dashboard</Link>
+      </Breadcrumb.Item>
+      <Breadcrumb.Item>Navigation Links</Breadcrumb.Item>
+    </Breadcrumb>
+  </div>
+
+  <div className="flex justify-between items-center mb-4">
+    <h1 className="font-bold text-2xl">Navigation Links</h1>
+    <Button
+      type="primary"
+      icon={<PlusOutlined />}
+      onClick={() => navigate('/navigationLink-form')}
+    >
+      Add Navigation Link
+    </Button>
+  </div>
+
+  <Table columns={columns} dataSource={navigationLinks} rowKey="_id" />
+</>
+
   );
 };
 

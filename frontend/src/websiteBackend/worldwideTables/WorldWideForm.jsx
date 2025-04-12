@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import { Form, Input, Select, Button, Card, Breadcrumb, message } from 'antd';
 import { useNavigate, useParams } from 'react-router-dom';
 import { 
@@ -21,7 +21,6 @@ const WorldwideForm = () => {
         skip: !isEditMode
     });
 
-    // Set form values when editing
     useEffect(() => {
         if (isEditMode && editData?.data) {
             form.setFieldsValue(editData.data);
@@ -44,22 +43,26 @@ const WorldwideForm = () => {
     };
 
     return (
-        <div style={{ padding: '20px' }}>
+        <div className="p-5">
             <Breadcrumb
                 items={[
-                    { 
-                        title: <span onClick={() => navigate('/dashboard')} style={{ cursor: 'pointer' }}>
-                            Dashboard
-                        </span>
+                    {
+                        title: (
+                            <span onClick={() => navigate('/dashboard')} className="cursor-pointer text-blue-500">
+                                Dashboard
+                            </span>
+                        ),
                     },
-                    { 
-                        title: <span onClick={() => navigate('/worldwide-table')} style={{ cursor: 'pointer' }}>
-                            Worldwide Locations
-                        </span>
+                    {
+                        title: (
+                            <span onClick={() => navigate('/worldwide-table')} className="cursor-pointer text-blue-500">
+                                Worldwide Locations
+                            </span>
+                        ),
                     },
                     { title: isEditMode ? 'Edit Location' : 'Add Location' }
                 ]}
-                style={{ marginBottom: '16px' }}
+                className="mb-4"
             />
 
             <Card title={isEditMode ? 'Edit Location' : 'Add New Location'}>
@@ -90,11 +93,11 @@ const WorldwideForm = () => {
 
                     <Form.Item
                         noStyle
-                        shouldUpdate={(prevValues, currentValues) => 
+                        shouldUpdate={(prevValues, currentValues) =>
                             prevValues.category !== currentValues.category
                         }
                     >
-                        {({ getFieldValue }) => 
+                        {({ getFieldValue }) =>
                             getFieldValue('category') === 'india' && (
                                 <>
                                     <Form.Item
@@ -110,7 +113,7 @@ const WorldwideForm = () => {
                                         label="Cities (Enter up to 5 cities, one per line)"
                                         rules={[{ required: true, message: 'Please enter at least one city' }]}
                                     >
-                                        <Input.TextArea 
+                                        <Input.TextArea
                                             rows={5}
                                             placeholder="Enter cities, one per line"
                                             onChange={(e) => {
@@ -125,15 +128,14 @@ const WorldwideForm = () => {
                     </Form.Item>
 
                     <Form.Item>
-                        <Button type="primary" htmlType="submit" loading={isLoadingEdit}>
-                            {isEditMode ? 'Update' : 'Submit'}
-                        </Button>
-                        <Button 
-                            style={{ marginLeft: '10px' }}
-                            onClick={() => navigate('/worldwide-table')}
-                        >
-                            Cancel
-                        </Button>
+                        <div className="flex gap-3">
+                            <Button type="primary" htmlType="submit" loading={isLoadingEdit}>
+                                {isEditMode ? 'Update' : 'Submit'}
+                            </Button>
+                            <Button onClick={() => navigate('/worldwide-table')}>
+                                Cancel
+                            </Button>
+                        </div>
                     </Form.Item>
                 </Form>
             </Card>

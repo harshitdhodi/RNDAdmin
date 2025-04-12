@@ -7,11 +7,11 @@ import svgr from "vite-plugin-svgr";
 import { visualizer } from "rollup-plugin-visualizer";
 import critical from "rollup-plugin-critical"; // Critical CSS
 import { purgeCss } from "vite-plugin-tailwind-purgecss"; // Updated PurgeCSS import
-
+import cssInjectedByJsPlugin from 'vite-plugin-css-injected-by-js';
 export default defineConfig({
   plugins: [
     react(),
-
+    cssInjectedByJsPlugin(),
     // SVGR Configuration
     svgr({
       svgrOptions: {
@@ -66,14 +66,17 @@ export default defineConfig({
 
     // Critical CSS (used with SSR or pre-rendered HTML)
     critical({
-      criticalUrl: "https://vbrschemicals.com/", // optional: use your base URL or entry HTML
+      criticalUrl: "http://localhost:3028", // optional: use your base URL or entry HTML
       criticalBase: "dist/",
       criticalPages: [{ uri: "", template: "index" }],
      
     }),
 
     // Tailwind PurgeCSS Plugin (Updated)
-    purgeCss(),
+    purgeCss({
+      content: ['./index.html', './src/**/*.{js,jsx,ts,tsx}'],
+      safelist: ['html', 'body'] // optional
+    }),
 
     // Rollup Visualizer Plugin
     visualizer({
@@ -109,25 +112,12 @@ export default defineConfig({
 
   build: {
     rollupOptions: {
-      input: {
-        main: "./index.html",
-        "service-worker": "./public/service-worker.js",
-      },
       output: {
-        manualChunks: {
-          vendor: ["react", "react-dom", "react-router-dom"],
-        },
-      },
-    },
-    chunkSizeWarningLimit: 800,
-    target: "esnext",
-    minify: "esbuild",
-    terserOptions: {
-      compress: {
-        drop_console: true,
+        manualChunks: () => null, // ❌ disable all chunk splitting
       },
     },
   },
+  
 
   server: {
     historyApiFallback: true,

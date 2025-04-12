@@ -17,13 +17,9 @@ export default function ProductCard({ product }) {
           )}
           <img
             alt={product.title}
-            className="object-contain mt-16 w-full h-full"
+            className={`object-contain mt-16 w-full h-full transition-opacity duration-300 ease-in-out ${imageLoaded ? 'opacity-100' : 'opacity-0'}`}
             src={product.image}
             title={product.title}
-            style={{
-              opacity: imageLoaded ? 1 : 0,
-              transition: 'opacity 0.3s ease-in-out',
-            }}
             onLoad={() => setImageLoaded(true)}
             onError={(e) => {
               e.target.onerror = null;
@@ -32,6 +28,7 @@ export default function ProductCard({ product }) {
             }}
             loading="lazy"
           />
+
         </div>
         <div className="bg-[#3B5998] w-full p-2 text-center">
           <h3 className="text-white font-medium text-sm">{product.title}</h3>

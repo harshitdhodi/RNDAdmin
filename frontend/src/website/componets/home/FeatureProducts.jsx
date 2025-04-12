@@ -117,26 +117,25 @@ export default function FeaturedProducts() {
                         {product.image ? (
                           <img
                             alt={product.title}
-                            className="object-contain mt-16  max-h-[300px] min-h-[150px] max-w-[300px] min-w-[150px]"
+                            className="object-contain mt-16 z-1  max-h-[300px] min-h-[150px] max-w-[300px] min-w-[150px]"
                             src={product.image}
                             loading="lazy"
                             title={product.title}
-                            style={{ zIndex: 1 }}
+                      
                             onError={(e) => { e.target.onerror = null; e.target.src = defaultImage; }}
                           />
 
                         ) : (
                           <img
                             alt={product.title}
-                            className="object-contain mt-16 w-full h-full"
+                            className="object-contain mt-16 w-full z-1 h-full"
                             src={defaultImage}
                             loading="lazy"
                             title={product.title}
-                            style={{ zIndex: 1 }}
                           />
                         )}
                       </div>
-                      <div className="bg-[#3B5998] w-full p-2 text-center" style={{ zIndex: 2, position: 'relative' }}>
+                      <div className="bg-[#3B5998] w-full p-2 text-center z-2 relative" >
                         <h3 className="text-white font-medium text-sm">
                           {product.title}
                         </h3>
@@ -181,7 +180,7 @@ export default function FeaturedProducts() {
                           src={`/api/image/view/${catalogue.image}`}
                           alt={catalogue.title}
                           loading="lazy"
-                          style={{ width: '100px' }}
+                       className="W-[100px]"
                           onError={(e) => { e.target.onerror = null; e.target.src = defaultImage; }}
                         />
                         <Button className="w-[75%] bg-orange-500 hover:bg-orange-600" onClick={() => window.open(`/api/image/pdf/view/${catalogue.catalogue}`, '_blank')}>

@@ -51,14 +51,11 @@ const BlogTable = () => {
       key: 'details',
       render: (text, record) => (
         <div>
-          <div
-            style={{
-              maxHeight: expandedRows[record._id] ? 'none' : '5em',
-              overflow: 'hidden',
-              position: 'relative',
-            }}
-            dangerouslySetInnerHTML={{ __html: text }}
-          />
+        <div
+  className={`relative overflow-hidden ${expandedRows[record._id] ? 'max-h-none' : 'max-h-[5em]'}`}
+  dangerouslySetInnerHTML={{ __html: text }}
+/>
+
           <Button
             type="link"
             onClick={() => toggleDetails(record._id)}
@@ -83,7 +80,7 @@ const BlogTable = () => {
               alt={`Blog Image ${index + 1}`}
               width={50}
               height={50}
-              style={{ objectFit: 'cover', borderRadius: '5px' }}
+              className='object-cover border-2' 
             />
           ))
         ) : (

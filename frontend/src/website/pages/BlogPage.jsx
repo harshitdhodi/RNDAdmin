@@ -59,13 +59,10 @@ export default function BlogPage() {
   return (
     <>
     <div className="px-4 md:px-6 mb-10 bg-white lg:px-8 relative">
-      <div
-        className="absolute inset-0 opacity-5"
-        style={{
-          backgroundImage: `url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M50 50m-40 0a40,40 0 1,0 80,0a40,40 0 1,0 -80,0' fill='none' stroke='%23333' stroke-width='1'/%3E%3C/svg%3E")`,
-          backgroundSize: '100px 100px',
-        }}
-      />
+    <div
+  className="absolute inset-0 opacity-5 bg-[url('data:image/svg+xml,%3Csvg width=\'100\' height=\'100\' viewBox=\'0 0 100 100\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cpath d=\'M50 50m-40 0a40,40 0 1,0 80,0a40,40 0 1,0 -80,0\' fill=\'none\' stroke=\'%23333\' stroke-width=\'1\'/%3E%3C/svg%3E')] bg-[length:100px_100px]"
+/>
+
       <div className="max-w-7xl mx-auto">
         <div className="lg:flex lg:gap-8">
           {/* Main Content */}

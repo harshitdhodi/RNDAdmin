@@ -126,7 +126,7 @@ const InquiryLineChart = () => {
           />
         </div>
       </div>
-      <div className="w-full" style={{ height: '60vh' }}>
+      <div className="w-full h-[60vh]">
         {isLoading ? (
           <p>Loading inquiries...</p>
         ) : (

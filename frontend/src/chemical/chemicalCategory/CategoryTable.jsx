@@ -39,14 +39,18 @@ const CategoryRow = ({ item, level, parentIds = {} }) => {
     <>
       <TableRow>
         <TableCell className="font-medium">
-          <div className="flex items-center" style={{ paddingLeft: `${level * 20}px` }}>
-            {hasSubcategories && (
-              <button onClick={() => setIsOpen(!isOpen)} className="mr-2">
-                {isOpen ? <ChevronDown className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
-              </button>
-            )}
-            {item.category}
-          </div>
+        <div className={`flex items-center pl-[${level * 20}px]`}>
+  {hasSubcategories && (
+    <button onClick={() => setIsOpen(!isOpen)} className="mr-2">
+      {isOpen ? (
+        <ChevronDown className="h-4 w-4" />
+      ) : (
+        <ChevronRight className="h-4 w-4" />
+      )}
+    </button>
+  )}
+  {item.category}
+</div>
         </TableCell>
         <TableCell>
           <div className="flex justify-start ">

@@ -9,65 +9,8 @@ const WorldWideBackend = () => {
     const { data: worldwideData, isLoading } = useGetAllWorldwideQuery();
     const [deleteWorldwide] = useDeleteWorldwideMutation();
 
-    // Separate international and Indian data
     const internationalData = worldwideData?.data?.filter(item => item.category === 'international') || [];
     const indianData = worldwideData?.data?.filter(item => item.category === 'india') || [];
-
-    // Column definitions for international table
-    const internationalColumns = [
-        {
-            title: 'Country Name',
-            dataIndex: 'name',
-            key: 'name',
-        },
-        {
-            title: 'Actions',
-            key: 'actions',
-            render: (_, record) => (
-                <Space size="middle">
-                    <EditOutlined 
-                        style={{ color: '#1890ff', cursor: 'pointer' }}
-                        onClick={() => handleEdit(record)}
-                    />
-                    <DeleteOutlined 
-                        style={{ color: '#ff4d4f', cursor: 'pointer' }}
-                        onClick={() => handleDelete(record._id)}
-                    />
-                </Space>
-            ),
-        },
-    ];
-
-    // Column definitions for Indian locations table
-    const indianColumns = [
-        {
-            title: 'State',
-            dataIndex: 'state',
-            key: 'state',
-        },
-        {
-            title: 'Cities',
-            dataIndex: 'cities',
-            key: 'cities',
-            render: (cities) => cities.join(', ')
-        },
-        {
-            title: 'Actions',
-            key: 'actions',
-            render: (_, record) => (
-                <Space size="middle">
-                    <EditOutlined 
-                        style={{ color: '#1890ff', cursor: 'pointer' }}
-                        onClick={() => handleEdit(record)}
-                    />
-                    <DeleteOutlined 
-                        style={{ color: '#ff4d4f', cursor: 'pointer' }}
-                        onClick={() => handleDelete(record._id)}
-                    />
-                </Space>
-            ),
-        },
-    ];
 
     const handleEdit = (record) => {
         navigate(`/worldwide/edit/${record._id}`);
@@ -96,30 +39,82 @@ const WorldWideBackend = () => {
         });
     };
 
+    const iconClass = 'cursor-pointer text-xl';
+    const internationalColumns = [
+        {
+            title: 'Country Name',
+            dataIndex: 'name',
+            key: 'name',
+        },
+        {
+            title: 'Actions',
+            key: 'actions',
+            render: (_, record) => (
+                <Space size="middle">
+                    <EditOutlined 
+                        className={`${iconClass} text-blue-500`} 
+                        onClick={() => handleEdit(record)} 
+                    />
+                    <DeleteOutlined 
+                        className={`${iconClass} text-red-500`} 
+                        onClick={() => handleDelete(record._id)} 
+                    />
+                </Space>
+            ),
+        },
+    ];
+
+    const indianColumns = [
+        {
+            title: 'State',
+            dataIndex: 'state',
+            key: 'state',
+        },
+        {
+            title: 'Cities',
+            dataIndex: 'cities',
+            key: 'cities',
+            render: (cities) => cities.join(', ')
+        },
+        {
+            title: 'Actions',
+            key: 'actions',
+            render: (_, record) => (
+                <Space size="middle">
+                    <EditOutlined 
+                        className={`${iconClass} text-blue-500`} 
+                        onClick={() => handleEdit(record)} 
+                    />
+                    <DeleteOutlined 
+                        className={`${iconClass} text-red-500`} 
+                        onClick={() => handleDelete(record._id)} 
+                    />
+                </Space>
+            ),
+        },
+    ];
+
     return (
-        <div >
-          <div className='flex justify-between items-center'>
-          <Breadcrumb
-                items={[
-                    { 
-                        title: <span onClick={() => navigate('/dashboard')} className='cursor-pointer'>Dashboard</span>
-                    },
-                    { title: 'Worldwide Locations' }
-                ]}
-                className='mb-4'
-               
-            />
+        <div>
+            <div className="flex justify-between items-center mb-4">
+                <Breadcrumb
+                    items={[
+                        { 
+                            title: <span onClick={() => navigate('/dashboard')} className="cursor-pointer text-blue-600 hover:underline">Dashboard</span>
+                        },
+                        { title: 'Worldwide Locations' }
+                    ]}
+                />
 
-            <Button 
-                type="primary" 
-                onClick={() => navigate('/worldwide/add')}
-               className='mb-4'
-            >
-                Add New Location
-            </Button>
-          </div>
+                <Button 
+                    type="primary" 
+                    onClick={() => navigate('/worldwide/add')}
+                >
+                    Add New Location
+                </Button>
+            </div>
 
-            <h2 className='text-2xl font-semibold mb-3'>International Locations</h2>
+            <h2 className="text-2xl font-semibold mb-3">International Locations</h2>
             <Table 
                 columns={internationalColumns}
                 dataSource={internationalData}
@@ -128,7 +123,7 @@ const WorldWideBackend = () => {
                 pagination={{ pageSize: 10 }}
             />
 
-            <h2 className='text-2xl font-semibold mb-3 mt-8'>Indian Locations</h2>
+            <h2 className="text-2xl font-semibold mb-3 mt-8">Indian Locations</h2>
             <Table 
                 columns={indianColumns}
                 dataSource={indianData}
