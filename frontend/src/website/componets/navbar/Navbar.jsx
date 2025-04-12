@@ -4,7 +4,6 @@ import { Search, UserCircle, LogIn, Menu, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { NavLink } from "./NavLink";
-import image from "../../images/logo.png";
 import { useGetAllCategoriesQuery } from "@/slice/blog/blogCategory";
 import SearchBar from "./SearchBar";
 import Footer from "../home/Footer";
@@ -140,11 +139,22 @@ export default function NavbarComp({ categories }) {
                     <div className="relative bg-[#2d4899] w-full px-4 py-2 space-y-2 overflow-y-auto">
                         <div className="flex items-center justify-between pb-4 bg-white -mx-4 px-4 pt-2">
                             <Link to="/" onClick={() => setMobileMenuOpen(false)}>
-                                <img
-                                    src={logoData?.headerLogo ? `/api/logo/download/${logoData.headerLogo}` : ""}
-                                    alt="Company Logo"
-                                    className="h-auto w-[150px]"
-                                />
+                                <picture>
+                                    {/* WebP source for modern browsers */}
+                                    {logoData?.headerLogo && (
+                                        <source
+                                            srcSet={`/api/logo/download/${logoData.headerLogo}`}
+                                            type="image/webp"
+                                        />
+                                    )}
+
+                                    {/* Fallback image */}
+                                    <img
+                                        src={logoData?.headerLogo ? `/api/logo/download/${logoData.headerLogo}` : ""}
+                                        alt="Company Logo"
+                                        className=" max-h-[50px] min-h-[40px] max-w-[150px] min-w-[100px]"
+                                    />
+                                </picture>
                             </Link>
                             <Button
                                 variant="ghost"
