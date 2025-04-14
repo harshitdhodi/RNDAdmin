@@ -5,26 +5,36 @@ import path from "path";
 import viteCompression from "vite-plugin-compression";
 import svgr from "vite-plugin-svgr";
 import { visualizer } from "rollup-plugin-visualizer";
-import critical from "rollup-plugin-critical"; // Critical CSS
-import { purgeCss } from "vite-plugin-tailwind-purgecss"; // Updated PurgeCSS import
-import cssInjectedByJsPlugin from 'vite-plugin-css-injected-by-js';
+import critical from "rollup-plugin-critical";
+import { purgeCss } from "vite-plugin-tailwind-purgecss";
+
+const deferNonCriticalCSS = () => ({
+  name: "defer-non-critical-css",
+  transformIndexHtml(html, { bundle }) {
+    const cssFile = Object.keys(bundle).find((file) => file.endsWith(".css"));
+    if (cssFile) {
+      return html.replace(
+        "</head>",
+        `<link rel="stylesheet" href="/${cssFile}" media="print" onload="this.media='all'" /></head>`
+      );
+    }
+    return html;
+  },
+});
+
+const timestamp = Date.now(); // Generate a timestamp
+
 export default defineConfig({
   plugins: [
     react(),
-    cssInjectedByJsPlugin(),
-    // SVGR Configuration
     svgr({
       svgrOptions: {
         icon: true,
         ref: true,
       },
     }),
-
-    // Compression - Brotli and Gzip
     viteCompression({ algorithm: "brotliCompress" }),
     viteCompression({ algorithm: "gzip" }),
-
-    // PWA Configuration
     VitePWA({
       registerType: "autoUpdate",
       includeAssets: ["favicon.ico", "apple-touch-icon.png", "mask-icon.svg"],
@@ -63,44 +73,77 @@ export default defineConfig({
         ],
       },
     }),
-
-    // Critical CSS (used with SSR or pre-rendered HTML)
     critical({
-      criticalUrl: "http://localhost:3028", // optional: use your base URL or entry HTML
+      criticalUrl: "http://localhost:3028",
       criticalBase: "dist/",
-      criticalPages: [{ uri: "", template: "index" }],
-     
+      criticalPages: [{ uri: "/", template: "index" }],
+      critical: {
+        inline: true,
+        dimensions: [
+          { width: 375, height: 667 },
+          { width: 1280, height: 720 },
+        ],
+        extract: false,
+        minify: true,
+        penthouse: {
+          timeout: 60000,
+          forceInclude: [
+            ".w-full",
+            ".h-\\[300px\\]",
+            ".md\\:h-\\[600px\\]",
+            ".object-cover",
+            ".relative",
+            ".absolute",
+            ".transition-opacity",
+            ".opacity-100",
+            ".opacity-0",
+          ],
+        },
+      },
     }),
-
-    // Tailwind PurgeCSS Plugin (Updated)
     purgeCss({
-      content: ['./index.html', './src/**/*.{js,jsx,ts,tsx}'],
-      safelist: ['html', 'body'] // optional
+      content: ["./index.html", "./src/**/*.{js,jsx,ts,tsx}"],
+      safelist: ["html", "body", /^h-/, /^md:/, /^opacity-/, /^transition-/, "object-cover", "absolute", "relative"],
     }),
-
-    // Rollup Visualizer Plugin
     visualizer({
       filename: "dist/stats.html",
       open: true,
     }),
+    deferNonCriticalCSS(),
 
     // Append build timestamp
     {
+
       name: "append-build-timestamp",
+
       config: () => {
+
         const timestamp = Date.now();
+
         return {
+
           build: {
+
             rollupOptions: {
+
               output: {
+
                 entryFileNames: `assets/[name]-[hash]-${timestamp}.js`,
+
                 chunkFileNames: `assets/[name]-[hash]-${timestamp}.js`,
+
                 assetFileNames: `assets/[name]-[hash]-${timestamp}[extname]`,
+
               },
+
             },
+
           },
+
         };
+
       },
+
     },
   ],
 
@@ -116,8 +159,8 @@ export default defineConfig({
         manualChunks: () => null, // ❌ disable all chunk splitting
       },
     },
+    cssCodeSplit: true,
   },
-  
 
   server: {
     historyApiFallback: true,
