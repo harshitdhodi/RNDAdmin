@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
+import { FiEdit, FiTrash } from 'react-icons/fi';
 import { useGetAllStatusesQuery, useDeleteStatusMutation } from '@/slice/status/status';
 import { Button } from '@/components/ui/button';
-import { Plus,Edit, Trash } from 'lucide-react';
+import { Plus } from 'lucide-react';
 import { StatusForm } from './AddStatus';
 import {
   Dialog,
@@ -62,12 +63,12 @@ export const StatusTable = () => {
             <tr key={status._id}>
               <td className="border border-gray-300 px-4 py-2">{status.status}</td>
               <td className="border border-gray-300 px-4 py-2">
-                <Edit 
+                <FiEdit 
                   className="inline-block mx-2 cursor-pointer text-blue-500" 
                   title="Edit" 
                   onClick={() => handleEdit(status)}  // Trigger edit when clicked
                 />
-                <Trash 
+                <FiTrash 
                   className="inline-block mx-2 cursor-pointer text-red-500" 
                   title="Delete" 
                   onClick={() => handleDelete(status._id)} // Trigger delete on click

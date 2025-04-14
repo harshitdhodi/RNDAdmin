@@ -1,2 +1,0 @@
-import{j as e}from"./main-BQqr2_19.js";import{B as s,a as r,b as a,c as t,d as l,e as m}from"./breadcrumb-BHS-7goF.js";import{L as n}from"./vendor-router-DoRotgOs.js";function i({items:i}){return e.jsx(s,{children:e.jsx(r,{children:i.map(((s,r)=>e.jsxs(a,{children:[r===i.length-1?e.jsx(t,{className:"text-[#3b1f91] font-medium",children:s.label}):e.jsx(l,{children:e.jsx(n,{className:"text-gray-500 hover:text-black",to:s.href,children:s.label})}),r<i.length-1&&e.jsx(m,{})]},r)))})})}export{i as B};
-//# sourceMappingURL=BreadCrumb-D7K0Zw6I.js.map

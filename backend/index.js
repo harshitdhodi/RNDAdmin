@@ -11,7 +11,7 @@ const app = express();
 require('dotenv').config();
 const cookieParser = require('cookie-parser');
 const { generateAllSitemaps } = require('./route/sitemap');
-
+ 
 app.use(cookieParser());
 app.use(express.json());
 app.use(bodyParser.json({ limit: '10mb' }));
@@ -59,6 +59,7 @@ app.get('/images/:filename', async (req, res) => {
 
   try {
     if (!fs.existsSync(imagePath)) return res.status(404).send('Image not found');
+
     const cacheKey = `image_${filename}_${w}_${q}`;
     const cachedImage = cache.get(cacheKey);
     if (cachedImage) {
@@ -98,7 +99,7 @@ app.use(express.static(path.join(__dirname, 'public'), {
   },
 }));
 
-app.use(express.static(path.join(__dirname, 'dist'), { maxAge: '30d' }));
+app.use(express.static(path.join(__dirname, 'dist'), { maxAge: '365d' }));
 
 // API Routes with caching
 const apiRoutes = [

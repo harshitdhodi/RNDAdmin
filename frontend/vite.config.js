@@ -5,32 +5,43 @@ import path from "path";
 import viteCompression from "vite-plugin-compression";
 import svgr from "vite-plugin-svgr";
 import { visualizer } from "rollup-plugin-visualizer";
+import critical from "rollup-plugin-critical"; // Critical CSS
+import { purgeCss } from "vite-plugin-tailwind-purgecss"; // Updated PurgeCSS import
+import cssInjectedByJsPlugin from 'vite-plugin-css-injected-by-js';
 
+const deferNonCriticalCSS = () => ({
+  name: "defer-non-critical-css",
+  transformIndexHtml(html, { bundle }) {
+    console.log("Bundle:", bundle); // Log the bundle object
+    if (!bundle) {
+      return html;
+    }
+    const cssFile = Object.keys(bundle).find((file) => file.endsWith(".css"));
+    if (cssFile) {
+      return html.replace(
+        "</head>",
+        `<link rel="stylesheet" href="/${cssFile}" media="print" onload="this.media='all'" /></head>`
+      );
+    }
+    return html;
+  },
+});
+
+const timestamp = Date.now(); // Generate a timestamp
 export default defineConfig({
   plugins: [
     react(),
-    visualizer({
-      open: true, 
-      filename: "stats.html",  
-      template: "treemap",  
-      gzipSize: true,
-      brotliSize: true,
-      sourcemap: true,
-      title: "Bundle Analysis",
-      moduleOnly: true,
-    }),
+    cssInjectedByJsPlugin(),
     // SVGR Configuration
     svgr({
       svgrOptions: {
-        icon: true, // This will optimize SVG files for icon usage
+        icon: true,
         ref: true,
       },
     }),
-    
-    // Compression - both Brotli and gzip
-    viteCompression({ algorithm: "brotliCompress" }), // Brotli compression
-    viteCompression({ algorithm: "gzip" }), // Also add gzip for broader compatibility
-    
+    // Compression - Brotli and Gzip
+    viteCompression({ algorithm: "brotliCompress" }),
+    viteCompression({ algorithm: "gzip" }),
     // PWA Configuration
     VitePWA({
       registerType: "autoUpdate",
@@ -47,14 +58,17 @@ export default defineConfig({
         ],
       },
       workbox: {
-        maximumFileSizeToCacheInBytes: 5 * 1024 * 1024, // 5MB
+        maximumFileSizeToCacheInBytes: 5 * 1024 * 1024,
         runtimeCaching: [
           {
             urlPattern: /.*\.(?:png|jpg|jpeg|svg|gif|pdf)$/,
             handler: "CacheFirst",
             options: {
               cacheName: "large-assets",
-              expiration: { maxEntries: 10, maxAgeSeconds: 7 * 24 * 60 * 60 },
+              expiration: {
+                maxEntries: 10,
+                maxAgeSeconds: 7 * 24 * 60 * 60,
+              },
             },
           },
           {
@@ -67,41 +81,82 @@ export default defineConfig({
         ],
       },
     }),
+    // Critical CSS (used with SSR or pre-rendered HTML)
+    critical({
+      criticalUrl: "http://localhost:3028", // optional: use your base URL or entry HTML
+      criticalBase: "dist/",
+      criticalPages: [{ uri: "", template: "index" }],
+      critical: {
+        inline: true,
+        dimensions: [
+          { width: 375, height: 667 },
+          { width: 1280, height: 720 },
+        ],
+        extract: false,
+        minify: true,
+        penthouse: {
+          timeout: 60000,
+          forceInclude: [
+            ".w-full",
+            ".h-\\[300px\\]",
+            ".md\\:h-\\[600px\\]",
+            ".object-cover",
+            ".relative",
+            ".absolute",
+            ".transition-opacity",
+            ".opacity-100",
+            ".opacity-0",
+          ],
+        },
+      },
+    }),
+    // Tailwind PurgeCSS Plugin (Updated)
+    purgeCss({
+      content: ["./index.html", "./src/**/*.{js,jsx,ts,tsx}"],
+      safelist: ["html", "body", /^h-/, /^md:/, /^opacity-/, /^transition-/, "object-cover", "absolute", "relative"],
+    }),
+    // Rollup Visualizer Plugin
+    visualizer({
+      filename: "dist/stats.html",
+      open: true,
+    }),
+    deferNonCriticalCSS(),
+    // Append build timestamp
+    {
+      name: "append-build-timestamp",
+      config: () => ({
+        build: {
+          rollupOptions: {
+            output: {
+              entryFileNames: `assets/[name]-[hash]-${timestamp}.js`,
+              chunkFileNames: `assets/[name]-[hash]-${timestamp}.js`,
+              assetFileNames: (assetInfo) => {
+                if (assetInfo.name && assetInfo.name.endsWith('.css')) {
+                  return `assets/main-DdwcwtZ8-1744602663188.css`; // Force single CSS file name
+                }
+                return `assets/[name]-[hash]-${timestamp}[extname]`;
+              },
+            },
+          },
+        },
+      }),
+    },
   ],
-
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),
     },
   },
-
   build: {
+    cssCodeSplit: true, // Ensure all CSS is bundled into one file
     rollupOptions: {
-      input: { main: "./index.html" },
       output: {
-        // Simpler chunking strategy to avoid initialization order issues
-        manualChunks: {
-          'vendor-react': ['react', 'react-dom'],
-          'vendor-router': ['react-router-dom'],
-          'vendor-utils': ['axios'],
-        },
-        chunkFileNames: "assets/[name]-[hash].js",
-        entryFileNames: "assets/[name]-[hash].js",
+        manualChunks: () => null, // Disable all chunk splitting
       },
     },
-    chunkSizeWarningLimit: 600,
-    target: "esnext",
-    minify: "terser",
-    terserOptions: {
-      compress: {
-        drop_console: true,
-        pure_funcs: ["console.log", "console.info"],
-      },
-    },
-    sourcemap: true,
   },
-
   server: {
+    historyApiFallback: true,
     port: 3000,
     headers: {
       "Service-Worker-Allowed": "/",
@@ -114,6 +169,5 @@ export default defineConfig({
       },
     },
   },
-
   base: "/",
 });

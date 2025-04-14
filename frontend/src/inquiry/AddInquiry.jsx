@@ -17,17 +17,34 @@ import {
     FormLabel,
     FormMessage
 } from "@/components/ui/form";
-import { useAddInquiryMutation } from "@/slice/inquiry/inquiry";
+import { useAddInquiryMutation, } from "@/slice/inquiry/inquiry";
 import { useGetAllSourcesQuery } from "@/slice/source/source";
+import * as z from 'zod';
+import { zodResolver } from '@hookform/resolvers/zod';
 import { useNavigate } from 'react-router-dom';
 import { useGetAllStatusesQuery } from '@/slice/status/status';
 import { BreadcrumbWithCustomSeparator } from '@/breadCrumb/BreadCrumb';
-
 const breadcrumbItems = [
     { label: "Dashboard", href: "/dashboard" },
     { label: "Inquiry Table", href: "/inquiry-list" },
-    { label: "Inquiry Form", href: null },
+    { label: "Inquiry Form", href: null }, // No `href` indicates the current page
 ]
+// Define validation schema
+const inquirySchema = z.object({
+    firstName: z.string().min(2, { message: "First name must be at least 2 characters" }),
+    lastName: z.string().min(2, { message: "Last name must be at least 2 characters" }),
+    organisation: z.string().min(2, { message: "Organisation name must be at least 2 characters" }),
+    department: z.string().optional(),
+    email: z.string().email({ message: "Invalid email address" }),
+    phone: z.string()
+        .regex(/^[0-9]{10}$/, { message: "Phone number must be 10 digits" }),
+    address: z.string().optional(),
+    country: z.string().optional(),
+    message: z.string().min(10, { message: "Message must be at least 10 characters" }),
+    needCallback: z.boolean().default(false),
+    status: z.string().nonempty({ message: "Please select a status" }),
+    source: z.string().nonempty({ message: "Please select a source" })
+});
 
 export default function AddInquiryForm({ onClose }) {
     const [addInquiry, { isLoading: isAdding }] = useAddInquiryMutation();
@@ -35,7 +52,9 @@ export default function AddInquiryForm({ onClose }) {
     const { data: sources, isLoading: sourcesLoading } = useGetAllSourcesQuery();
     const navigate = useNavigate();
 
+    // Initialize form with zod resolver
     const form = useForm({
+        resolver: zodResolver(inquirySchema),
         defaultValues: {
             firstName: "",
             lastName: "",
@@ -47,70 +66,26 @@ export default function AddInquiryForm({ onClose }) {
             country: "",
             message: "",
             needCallback: false,
-            status: "",
-            source: ""
+            status: "", // Default value if statuses are not fetched yet
+            source: "" // Default empty value for source
         }
     });
 
-    // Custom validation function
-    const validateForm = (data) => {
-        const errors = {};
-
-        if (!data.firstName || data.firstName.length < 2) {
-            errors.firstName = "First name must be at least 2 characters";
-        }
-
-        if (!data.lastName || data.lastName.length < 2) {
-            errors.lastName = "Last name must be at least 2 characters";
-        }
-
-        if (!data.organisation || data.organisation.length < 2) {
-            errors.organisation = "Organisation name must be at least 2 characters";
-        }
-
-        if (!data.email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(data.email)) {
-            errors.email = "Invalid email address";
-        }
-
-        if (!data.phone || !/^[0-9]{10}$/.test(data.phone)) {
-            errors.phone = "Phone number must be 10 digits";
-        }
-
-        if (!data.message || data.message.length < 10) {
-            errors.message = "Message must be at least 10 characters";
-        }
-
-        if (!data.status) {
-            errors.status = "Please select a status";
-        }
-
-        if (!data.source) {
-            errors.source = "Please select a source";
-        }
-
-        return errors;
-    };
-
+    // Handle form submission
     const onSubmit = async (data) => {
-        const validationErrors = validateForm(data);
-        
-        if (Object.keys(validationErrors).length > 0) {
-            Object.keys(validationErrors).forEach(field => {
-                form.setError(field, { type: 'manual', message: validationErrors[field] });
-            });
-            return;
-        }
-
         try {
             const inquiryData = {
                 ...data,
-                date: new Date().toISOString().split('T')[0]
+                date: new Date().toISOString().split('T')[0] // Current date
             };
 
             await addInquiry(inquiryData).unwrap();
+
+            // Reset form and navigate
             form.reset();
             navigate('/inquiry-list');
         } catch (error) {
+            // Display error feedback
             alert(error?.data?.message || "Failed to add inquiry.");
         }
     };
@@ -119,6 +94,7 @@ export default function AddInquiryForm({ onClose }) {
         <>
             <div className="ml-1">
                 <BreadcrumbWithCustomSeparator items={breadcrumbItems} />
+
             </div>
             <Form {...form}>
                 <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 p-4">
@@ -264,8 +240,7 @@ export default function AddInquiryForm({ onClose }) {
                                 <FormControl>
                                     <Input
                                         type="checkbox"
-                                        checked={field.value}
-                                        onChange={(e) => field.onChange(e.target.checked)}
+                                        {...field}
                                     />
                                 </FormControl>
                                 <FormMessage />
@@ -336,6 +311,7 @@ export default function AddInquiryForm({ onClose }) {
                             </FormItem>
                         )}
                     />
+
 
                     <div className="flex justify-end space-x-2 pt-4">
                         <Button

@@ -1,51 +1,10 @@
 import React from "react";
-import { useNavigate, Link } from "react-router-dom";
-import { toast } from "react-toastify";
-import { Card } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Table } from "@/components/ui/table";
-import { Plus, Trash, Edit } from "lucide-react";
+import { Table, Button, Popconfirm, Space, Typography, Card } from "antd";
+import { DeleteOutlined, EditOutlined, PlusOutlined } from "@ant-design/icons";
+import { Link, useNavigate } from "react-router-dom";
 import { useGetAllMenuListingsQuery, useDeleteMenuListingMutation } from "@/slice/menuListing/menuList";
-import { useState } from "react";
-import { createPortal } from "react-dom";
 
-const Popconfirm = ({ title, onConfirm, children }) => {
-  const [visible, setVisible] = useState(false);
-
-  const showConfirm = () => setVisible(true);
-  const hideConfirm = () => setVisible(false);
-
-  const handleConfirm = () => {
-    onConfirm();
-    hideConfirm();
-  };
-
-  return (
-    <div className="relative inline-block">
-      <span onClick={showConfirm}>{children}</span>
-
-      {visible &&
-        createPortal(
-          <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
-            <Card className="p-5 w-80 text-center shadow-lg bg-white rounded-lg">
-              <p className="text-lg font-semibold">{title}</p>
-              <div className="mt-4 flex justify-center gap-4">
-                <Button variant="outline" onClick={hideConfirm}>
-                  Cancel
-                </Button>
-                <Button variant="destructive" onClick={handleConfirm}>
-                  Confirm
-                </Button>
-              </div>
-            </Card>
-          </div>,
-          document.body
-        )}
-    </div>
-  );
-};
-
-
+const { Title } = Typography;
 
 const MenuListingTable = () => {
   const { data, error, isLoading, refetch } = useGetAllMenuListingsQuery();
@@ -57,17 +16,12 @@ const MenuListingTable = () => {
   };
 
   const handleDelete = async (id) => {
-    try {
-      await deleteMenuListing(id);
-      toast.success("Menu deleted successfully!");
-      refetch();
-    } catch (err) {
-      toast.error("Failed to delete menu");
-    }
+    await deleteMenuListing(id);
+    refetch(); // Refetch the data after deletion
   };
 
   if (isLoading) return <p>Loading...</p>;
-  if (error) return <p className="text-red-500">Error: {error.message}</p>;
+  if (error) return <p className="text-red-700">Error: {error.message}</p>;
 
   const menuListings = data?.data || [];
 
@@ -75,90 +29,68 @@ const MenuListingTable = () => {
     key: menu._id,
     name: menu.parent.name,
     path: menu.parent.path,
-    isParent: true,
+    isParent: true, // Add this flag
     children: menu.children.length > 0 ? menu.children.map((child) => ({
       key: child._id,
       name: `└── ${child.name}`,
       path: child.path,
-      isParent: false,
+      isParent: false, // Add this flag
       children: child.subChildren?.length > 0 ? child.subChildren.map((sub) => ({
         key: sub._id,
         name: `    └── ${sub.name}`,
         path: sub.path,
-        isParent: false,
+        isParent: false, // Add this flag
       })) : undefined,
     })) : undefined,
   }));
 
   const columns = [
-    { title: "Name", dataIndex: "name", key: "name" },
-    { title: "Path", dataIndex: "path", key: "path" },
+    {
+      title: "Name",
+      dataIndex: "name",
+      key: "name",
+    },
+    {
+      title: "Path",
+      dataIndex: "path",
+      key: "path",
+    },
     {
       title: "Actions",
       key: "actions",
       render: (_, record) => (
-        <div className="flex gap-2">
+        <Space>
           <Popconfirm title="Are you sure?" onConfirm={() => handleDelete(record.key)}>
-            <Button variant="destructive" size="icon">
-              <Trash className="w-4 h-4" />
-            </Button>
+            <Button type="danger" shape="circle" icon={<DeleteOutlined />} />
           </Popconfirm>
 
-          {!record.name.includes("└──") && (
-            <Button variant="outline" size="icon" onClick={() => handleEdit(record.key)}>
-              <Edit className="w-4 h-4" />
-            </Button>
+          {!record.name.includes('└──') && (
+            <Button
+              type="primary"
+              shape="circle"
+              icon={<EditOutlined />}
+              onClick={() => handleEdit(record.key)}
+            />
           )}
-        </div>
+        </Space>
       ),
     },
   ];
 
   return (
-    <Card className="p-6">
+    <Card>
       <div className="flex justify-between items-center mb-4">
-        <h2 className="text-xl font-bold">Menu Listings</h2>
+        <h3 className="text-2xl font-semibold">Menu Listings</h3>
         <Link to="/menu-listing-form">
-          <Button>
-            <Plus className="w-4 h-4 mr-2" /> Add Menu
-          </Button>
+          <button className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 flex items-center gap-2">
+            <PlusOutlined />
+            Add Menu
+          </button>
         </Link>
       </div>
-      <table className="w-full text-left border-collapse">
-  <thead>
-    <tr>
-      {columns.map((col) => (
-        <th key={col.key} className="border-b p-2 font-semibold">
-          {col.title}
-        </th>
-      ))}
-    </tr>
-  </thead>
-  <tbody>
-    {formattedData.map((row) => (
-      <tr key={row.key} className="border-b">
-        <td className="p-2">{row.name}</td>
-        <td className="p-2">{row.path}</td>
-        <td className="p-2">
-          <div className="flex gap-2">
-            <Popconfirm title="Are you sure?" onConfirm={() => handleDelete(row.key)}>
-              <Button variant="destructive" size="icon">
-                <Trash className="w-4 h-4" />
-              </Button>
-            </Popconfirm>
-            {!row.name.includes("└──") && (
-              <Button variant="outline" size="icon" onClick={() => handleEdit(row.key)}>
-                <Edit className="w-4 h-4 text-black" />
-              </Button>
-            )}
-          </div>
-        </td>
-      </tr>
-    ))}
-  </tbody>
-</table>
 
-     </Card>
+      <Table columns={columns} dataSource={formattedData} expandable={{ defaultExpandAllRows: false }} />
+    </Card>
   );
 };
 

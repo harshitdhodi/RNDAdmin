@@ -1,8 +1,9 @@
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogTrigger } from '@/components/ui/dialog';
 import { useGetAllSourcesQuery, useDeleteSourceMutation, useUpdateSourceMutation } from '@/slice/source/source';
-import { Plus, Edit, Trash } from 'lucide-react'; // Importing the Edit and Trash icons from lucide-react
+import { Plus } from 'lucide-react';
 import React, { useState } from 'react';
+import { FiEdit, FiTrash } from 'react-icons/fi'; 
 import { SourceForm } from './AddSource';
 
 export const SourceTable = () => {
@@ -62,12 +63,12 @@ export const SourceTable = () => {
             <tr key={source._id}>
               <td className="border border-gray-300 px-4 py-2">{source.source}</td>
               <td className="border border-gray-300 px-4 py-2">
-                <Edit
+                <FiEdit
                   className="inline-block mx-2 cursor-pointer text-blue-500"
                   title="Edit"
                   onClick={() => handleEdit(source)}
                 />
-                <Trash
+                <FiTrash
                   className="inline-block mx-2 cursor-pointer text-red-500"
                   title="Delete"
                   onClick={() => handleDelete(source._id)}

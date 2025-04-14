@@ -1,16 +1,12 @@
 import React, { useState, useEffect } from 'react';
+import { Form, Button, message, Breadcrumb } from 'antd';
 import { useNavigate, Link } from 'react-router-dom';
-import ReactQuill from 'react-quill';
-import 'react-quill/dist/quill.snow.css';
+import JoditEditor from 'jodit-react';
 import axios from 'axios';
-import { Breadcrumb } from '@/components/ui/breadcrumb';
-import { Button } from '@/components/ui/button';
-import { useToast } from 'react-toastify';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 
 const TermsConditionForm = () => {
   const navigate = useNavigate();
-;
+  const [form] = Form.useForm();
   const [termsCondition, setTermsCondition] = useState('');
   const [isLoading, setIsLoading] = useState(true);
   const [isExistingData, setIsExistingData] = useState(false);
@@ -21,56 +17,62 @@ const TermsConditionForm = () => {
       try {
         const response = await axios.get('/api/terms');
         if (response.data.length > 0) {
-          const termsConditionData = response.data[0];
+          const termsConditionData = response.data[0]; // Assuming the API returns an array with one object
           setTermsCondition(termsConditionData.termsCondition);
           setTermsConditionId(termsConditionData._id);
+          form.setFieldsValue({
+            termsCondition: termsConditionData.termsCondition,
+          });
           setIsExistingData(true);
         }
       } catch (error) {
-        toast({ title: 'Error', description: 'Failed to fetch terms and conditions data', variant: 'destructive' });
+        message.error('Failed to fetch terms and conditions data');
       } finally {
         setIsLoading(false);
       }
     };
 
     fetchTermsConditionData();
-  }, [toast]);
+  }, [form]);
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  const handleFinish = async () => {
     try {
       if (isExistingData) {
         await axios.put(`/api/terms/${termsConditionId}`, { termsCondition });
-        toast({ title: 'Success', description: 'Terms and conditions updated successfully' });
+        message.success('Terms and conditions data updated successfully');
       } else {
         await axios.post('/api/terms/add', { termsCondition });
-        toast({ title: 'Success', description: 'Terms and conditions created successfully' });
+        message.success('Terms and conditions data created successfully');
       }
       navigate('/termscondition');
     } catch (error) {
-      toast({ title: 'Error', description: 'Failed to save terms and conditions data', variant: 'destructive' });
+      message.error('Failed to save terms and conditions data');
     }
   };
 
-  if (isLoading) return <p className="text-center text-gray-500">Loading...</p>;
+  if (isLoading) return <p>Loading...</p>;
 
   return (
     <>
-      <Breadcrumb>
-        <Link to="/dashboard">Dashboard</Link>
-        <span> / Terms and Conditions Form</span>
+      <Breadcrumb className='mb-4'>
+        <Breadcrumb.Item>
+          <Link to="/dashboard">Dashboard</Link>
+        </Breadcrumb.Item>
+        <Breadcrumb.Item>Terms and Conditions Form</Breadcrumb.Item>
       </Breadcrumb>
-      <Card className="max-w-3xl mx-auto mt-6">
-        <CardHeader>
-          <CardTitle>Terms and Conditions</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <ReactQuill theme="snow" value={termsCondition} onChange={setTermsCondition} className="h-48" />
-            <Button type="submit" className="w-full">Save</Button>
-          </form>
-        </CardContent>
-      </Card>
+      <Form form={form} layout="vertical" onFinish={handleFinish}>
+        <Form.Item name="termsCondition" label="Terms and Conditions" rules={[{ required: true, message: 'Please enter the terms and conditions' }]}>
+          <JoditEditor
+            value={termsCondition}
+            onChange={(content) => setTermsCondition(content)}
+          />
+        </Form.Item>
+        <Form.Item>
+          <Button type="primary" htmlType="submit">
+            Save
+          </Button>
+        </Form.Item>
+      </Form>
     </>
   );
 };

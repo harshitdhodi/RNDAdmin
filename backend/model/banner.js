@@ -9,10 +9,6 @@ const bannerSchema = new mongoose.Schema({
         type: String,
         required: true 
     },
-    photo: {    
-        type: String,
-        required: true 
-    },
     imgName: { 
         type: String,
         required: true 

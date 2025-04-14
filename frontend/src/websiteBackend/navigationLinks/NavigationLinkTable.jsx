@@ -1,70 +1,89 @@
-import React from "react";
-import { useNavigate, Link } from "react-router-dom";
-import { useToast } from "react-toastify";
-import { Table } from "@/components/ui/table";
-import { Button } from "@/components/ui/button";
-import { Breadcrumb } from "@/components/ui/breadcrumb";
-import { useGetAllNavigationLinksQuery, useDeleteNavigationLinkMutation } from "@/slice/navigationLink/navigationSlice";
-import { Pencil, Trash, Plus } from "lucide-react";
+import React from 'react';
+import { Table, Button, Space, message, Breadcrumb } from 'antd';
+import { EditOutlined, DeleteOutlined, PlusOutlined } from '@ant-design/icons';
+import { useNavigate, Link } from 'react-router-dom';
+import { useGetAllNavigationLinksQuery, useDeleteNavigationLinkMutation } from '@/slice/navigationLink/navigationSlice';
 
 const NavigationLinkTable = () => {
   const navigate = useNavigate();
-;
   const { data: navigationLinks, isLoading } = useGetAllNavigationLinksQuery();
   const [deleteNavigationLink] = useDeleteNavigationLinkMutation();
 
   const handleDelete = async (id) => {
     try {
       await deleteNavigationLink(id).unwrap();
-      toast({ title: "Success", description: "Navigation link deleted successfully", variant: "success" });
+      message.success('Navigation link deleted successfully');
     } catch (error) {
-      toast({ title: "Error", description: "Failed to delete navigation link", variant: "destructive" });
+      message.error('Failed to delete navigation link');
     }
   };
 
   const columns = [
     {
-      header: "Name",
-      accessorKey: "name",
+      title: 'Name',
+      dataIndex: 'name',
+      key: 'name',
     },
     {
-      header: "Icon",
-      accessorKey: "icon",
-      cell: ({ row }) => (
-        <img src={`/api/logo/download/${row.original.icon}`} alt="Icon" className="w-12 h-12" />
+      title: 'Icon',
+      dataIndex: 'icon',
+      key: 'icon',
+      render: (icon) => (
+        <img
+          src={`/api/logo/download/${icon}`}
+          alt="Icon"
+          className="w-12 h-12 object-contain"
+        />
       ),
     },
     {
-      header: "Actions",
-      cell: ({ row }) => (
-        <div className="flex space-x-2">
-          <Button variant="outline" size="icon" onClick={() => navigate(`/edit-navigation-link/${row.original._id}`)}>
-            <Pencil className="w-4 h-4" />
-          </Button>
-          <Button variant="destructive" size="icon" onClick={() => handleDelete(row.original._id)}>
-            <Trash className="w-4 h-4" />
-          </Button>
+      title: 'Actions',
+      key: 'actions',
+      render: (_, record) => (
+        <div className="flex gap-2">
+          <Button
+            type="primary"
+            icon={<EditOutlined />}
+            onClick={() => navigate(`/edit-navigation-link/${record._id}`)}
+          />
+          <Button
+            danger
+            icon={<DeleteOutlined />}
+            onClick={() => handleDelete(record._id)}
+          />
         </div>
       ),
     },
   ];
+  
 
   if (isLoading) return <p>Loading...</p>;
 
   return (
-    <div className="p-6">
-      <Breadcrumb items={[
-        { label: "Dashboard", link: "/dashboard" },
-        { label: "Navigation Links" },
-      ]} className="mb-4" />
-      <div className="flex justify-between items-center mb-4">
-        <h1 className="font-bold text-2xl">Navigation Links</h1>
-        <Button onClick={() => navigate("/navigationLink-form")}>
-          <Plus className="mr-2 w-4 h-4" /> Add Navigation Link
-        </Button>
-      </div>
-      <Table columns={columns} data={navigationLinks} rowKey="_id" />
-    </div>
+<>
+  <div className="mb-4">
+    <Breadcrumb>
+      <Breadcrumb.Item>
+        <Link to="/dashboard">Dashboard</Link>
+      </Breadcrumb.Item>
+      <Breadcrumb.Item>Navigation Links</Breadcrumb.Item>
+    </Breadcrumb>
+  </div>
+
+  <div className="flex justify-between items-center mb-4">
+    <h1 className="font-bold text-2xl">Navigation Links</h1>
+    <Button
+      type="primary"
+      icon={<PlusOutlined />}
+      onClick={() => navigate('/navigationLink-form')}
+    >
+      Add Navigation Link
+    </Button>
+  </div>
+
+  <Table columns={columns} dataSource={navigationLinks} rowKey="_id" />
+</>
+
   );
 };
 
