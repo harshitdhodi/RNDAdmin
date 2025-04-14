@@ -5,8 +5,9 @@ import path from "path";
 import viteCompression from "vite-plugin-compression";
 import svgr from "vite-plugin-svgr";
 import { visualizer } from "rollup-plugin-visualizer";
-import critical from "rollup-plugin-critical";
-import { purgeCss } from "vite-plugin-tailwind-purgecss";
+import critical from "rollup-plugin-critical"; // Critical CSS
+import { purgeCss } from "vite-plugin-tailwind-purgecss"; // Updated PurgeCSS import
+import cssInjectedByJsPlugin from 'vite-plugin-css-injected-by-js';
 
 const deferNonCriticalCSS = () => ({
   name: "defer-non-critical-css",
@@ -27,14 +28,18 @@ const timestamp = Date.now(); // Generate a timestamp
 export default defineConfig({
   plugins: [
     react(),
+    cssInjectedByJsPlugin(),
+    // SVGR Configuration
     svgr({
       svgrOptions: {
         icon: true,
         ref: true,
       },
     }),
+    // Compression - Brotli and Gzip
     viteCompression({ algorithm: "brotliCompress" }),
     viteCompression({ algorithm: "gzip" }),
+    // PWA Configuration
     VitePWA({
       registerType: "autoUpdate",
       includeAssets: ["favicon.ico", "apple-touch-icon.png", "mask-icon.svg"],
@@ -73,10 +78,11 @@ export default defineConfig({
         ],
       },
     }),
+    // Critical CSS (used with SSR or pre-rendered HTML)
     critical({
-      criticalUrl: "http://localhost:3028",
+      criticalUrl: "http://localhost:3028", // optional: use your base URL or entry HTML
       criticalBase: "dist/",
-      criticalPages: [{ uri: "/", template: "index" }],
+      criticalPages: [{ uri: "", template: "index" }],
       critical: {
         inline: true,
         dimensions: [
@@ -101,67 +107,51 @@ export default defineConfig({
         },
       },
     }),
+    // Tailwind PurgeCSS Plugin (Updated)
     purgeCss({
       content: ["./index.html", "./src/**/*.{js,jsx,ts,tsx}"],
       safelist: ["html", "body", /^h-/, /^md:/, /^opacity-/, /^transition-/, "object-cover", "absolute", "relative"],
     }),
+    // Rollup Visualizer Plugin
     visualizer({
       filename: "dist/stats.html",
       open: true,
     }),
     deferNonCriticalCSS(),
-
     // Append build timestamp
     {
-
       name: "append-build-timestamp",
-
-      config: () => {
-
-        const timestamp = Date.now();
-
-        return {
-
-          build: {
-
-            rollupOptions: {
-
-              output: {
-
-                entryFileNames: `assets/[name]-[hash]-${timestamp}.js`,
-
-                chunkFileNames: `assets/[name]-[hash]-${timestamp}.js`,
-
-                assetFileNames: `assets/[name]-[hash]-${timestamp}[extname]`,
-
+      config: () => ({
+        build: {
+          rollupOptions: {
+            output: {
+              entryFileNames: `assets/[name]-[hash]-${timestamp}.js`,
+              chunkFileNames: `assets/[name]-[hash]-${timestamp}.js`,
+              assetFileNames: (assetInfo) => {
+                if (assetInfo.name && assetInfo.name.endsWith('.css')) {
+                  return `assets/main-DdwcwtZ8-1744602663188.css`; // Force single CSS file name
+                }
+                return `assets/[name]-[hash]-${timestamp}[extname]`;
               },
-
             },
-
           },
-
-        };
-
-      },
-
+        },
+      }),
     },
   ],
-
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),
     },
   },
-
   build: {
+    cssCodeSplit: false, // Ensure all CSS is bundled into one file
     rollupOptions: {
       output: {
-        manualChunks: () => null, // ❌ disable all chunk splitting
+        manualChunks: () => null, // Disable all chunk splitting
       },
     },
-    cssCodeSplit: true,
   },
-
   server: {
     historyApiFallback: true,
     port: 3000,
@@ -176,6 +166,5 @@ export default defineConfig({
       },
     },
   },
-
   base: "/",
 });

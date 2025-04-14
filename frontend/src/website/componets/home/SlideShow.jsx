@@ -65,7 +65,7 @@ const Slideshow = () => {
                 alt={item.altName || `Slide ${index + 1}`}
                 className="w-full h-full object-cover"
                 fetchPriority={index === 0 ? 'high' : 'low'}
-                loading={index === 0 ? 'lazy' : 'eager'}
+                loading={index === 0 ? 'eager' : 'lazy'}
               />
             </div>
           );
