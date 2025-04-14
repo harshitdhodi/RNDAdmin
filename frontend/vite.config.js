@@ -16,7 +16,6 @@ const deferNonCriticalCSS = () => ({
     if (!bundle) {
       return html;
     }
-
     const cssFile = Object.keys(bundle).find((file) => file.endsWith(".css"));
     if (cssFile) {
       return html.replace(

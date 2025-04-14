@@ -72,7 +72,7 @@ const Slideshow = () => {
         })}
       </div>
 
-      <div className="absolute w-full top-1/2 -translate-y-1/2 px-4 sm:px-[15%]">
+      <div className="absolute w-full top-[90%] -translate-y-1/2 px-4 sm:px-[15%]">
         <Link to="/introduction">
           <Button className="bg-orange-500 hover:bg-orange-600 text-xs sm:text-sm md:text-base font-medium sm:font-bold px-3 py-1 sm:px-4 sm:py-2 md:px-5 md:py-2 sm:flex items-center sm:mb-16 hidden gap-1 sm:gap-2">
             <span>Read More</span>
