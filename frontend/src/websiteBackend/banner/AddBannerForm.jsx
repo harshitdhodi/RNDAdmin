@@ -83,16 +83,16 @@ const AddBannerForm = () => {
   const renderMenuOptions = (menu) => {
     return (
       <React.Fragment key={menu._id}>
-        <Option value={menu.parent.path} style={{ fontWeight: "bold" }}>
+        <Option value={menu.parent.path} className="font-bold">
           {menu.parent.name}
         </Option>
         {menu.children.map((child) => (
           <React.Fragment key={child._id}>
-            <Option value={child.path} style={{ paddingLeft: 20 }}>
+            <Option value={child.path} className="pl-5">
               <span> ├── </span>{child.name}
             </Option>
             {child.subChildren.map((subChild) => (
-              <Option key={subChild._id} value={subChild.path} style={{ paddingLeft: 40 }}>
+              <Option key={subChild._id} value={subChild.path} className="pl-10">
                 <span>├────</span> {subChild.name}
               </Option>
             ))}
@@ -104,7 +104,7 @@ const AddBannerForm = () => {
 
   return (
     <div>
-      <Breadcrumb style={{ padding: '16px 24px' }}>
+      <Breadcrumb className='px-4 py-6'>
         <Breadcrumb.Item>
           <Link to="/dashboard">
             <HomeOutlined /> Dashboard
@@ -116,7 +116,7 @@ const AddBannerForm = () => {
         <Breadcrumb.Item>Add New Banner</Breadcrumb.Item>
       </Breadcrumb>
 
-      <div style={{ padding: '24px' }}>
+      <div className='p-6'>
         <h1 className="text-2xl font-bold mb-6">Add New Banner</h1>
         <Form form={form} layout="vertical" onFinish={onFinish}>
           <Form.Item name="pageSlug" label="Page Slug" rules={[{ required: true, message: 'Please select a page slug!' }]}>

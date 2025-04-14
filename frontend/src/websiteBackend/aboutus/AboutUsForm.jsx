@@ -131,7 +131,7 @@ const AboutUsForm = () => {
           { title: 'About Us', onClick: () => navigate('/about-us-table') },
           { title: id ? 'Edit About Us' : 'Create About Us' },
         ]}
-        style={{ marginBottom: '1rem' }}
+       className='mb-[1rem]'
       />
       
       <Form
@@ -181,7 +181,7 @@ const AboutUsForm = () => {
                     form.setFieldsValue({ slug: newSlug });
                   }
                 }}
-                style={{ marginLeft: 8 }}
+               className='ml-2'
               >
                 {isCustomSlug ? 'Use Auto Slug' : 'Customize Slug'}
               </Button>
@@ -221,8 +221,7 @@ const AboutUsForm = () => {
           <ReactQuill 
             modules={modules}
             theme="snow"
-            style={{ height: '150px', marginBottom: '50px' }}
-            className="custom-quill-editor"
+            className="custom-quill-editor h-[150px] mb-[50px]"
           />
         </Form.Item>
 
@@ -234,8 +233,7 @@ const AboutUsForm = () => {
           <ReactQuill 
             modules={modules}
             theme="snow"
-            style={{ height: '600px', marginBottom: '50px' }}
-            className="custom-quill-editor"
+            className="custom-quill-editor h-[600px] mb-[50px]"
           />
         </Form.Item>
 

@@ -55,7 +55,7 @@ export function ChemicalTable({ chemicals, onRemoveChemical }) {
               { value: 20, label: '20' },
               { value: 50, label: '50' },
             ]}
-            style={{ width: 80 }}
+          className='w-20'
           />
         </div>
 

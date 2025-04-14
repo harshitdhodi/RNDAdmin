@@ -103,7 +103,7 @@ const EditBannerForm = () => {
 
     return (
         <div>
-            <Breadcrumb style={{ padding: '16px 24px' }}>
+            <Breadcrumb className='px-4 py-6'>
                 <Breadcrumb.Item>
                     <Link to="/dashboard">
                         <HomeOutlined /> Dashboard
@@ -115,7 +115,7 @@ const EditBannerForm = () => {
                 <Breadcrumb.Item>Edit Banner</Breadcrumb.Item>
             </Breadcrumb>
 
-            <div style={{ padding: '24px' }}>
+            <div className='p-6'>
                 <h1 className="text-2xl font-bold mb-6">Edit Banner</h1>
                 <Form
                     form={form}

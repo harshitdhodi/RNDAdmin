@@ -44,7 +44,7 @@ const AboutUsTable = () => {
         <img 
           src={`/api/image/download/${image}`} 
           alt="About Us" 
-          style={{ width: '100px', height: '50px', objectFit: 'cover' }} 
+          className='w-[100px] h-[50px] object-cover'
         />
       ),
     },
@@ -74,7 +74,7 @@ const AboutUsTable = () => {
 
   return (
     <div>
-      <div style={{ padding: '24px' }} className='flex justify-between items-center'>
+      <div  className='flex justify-between p-6 items-center'>
         <div className='text-2xl font-bold'>
           <h1>About Us</h1>   
         </div>
@@ -83,7 +83,7 @@ const AboutUsTable = () => {
             type="primary" 
             icon={<PlusOutlined />}
             onClick={() => navigate('/about-us-form')}
-            style={{ marginBottom: '16px' }}
+            className='mb-4'
           >
             Add About Us
           </Button>

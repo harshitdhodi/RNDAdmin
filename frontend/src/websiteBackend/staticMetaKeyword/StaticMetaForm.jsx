@@ -87,7 +87,7 @@ const StaticMetaForm = () => {
   return (
     <div>
       {/* Breadcrumb */}
-      <Breadcrumb style={{ marginBottom: 20 }}>
+      <Breadcrumb className="mb-5">
         <Breadcrumb.Item>
           <Link to="/dashboard">Dashboard</Link>
         </Breadcrumb.Item>
@@ -97,75 +97,82 @@ const StaticMetaForm = () => {
         <Breadcrumb.Item>{id ? "Edit Meta" : "Add Meta"}</Breadcrumb.Item>
       </Breadcrumb>
 
-      <Form form={form} layout="vertical" onFinish={onFinish}>
-        <Form.Item
-          name="pageName"
-          label="Page Name"
-          rules={[{ required: true, message: "Please select a page" }]}
-        >
-          <Select placeholder="Select a page" loading={loading} onChange={handlePageChange}>
-            <Option value="Static Page">Static Page</Option>
-            {menuList.map((menu) => (
-              <React.Fragment key={menu._id}>
-                <Option value={menu.parent.name} style={{ fontWeight: "bold" }}>
-                  {menu.parent.name}
+      <Form form={form} layout="vertical" onFinish={onFinish} className="space-y-4">
+  <Form.Item
+    name="pageName"
+    label="Page Name"
+    rules={[{ required: true, message: "Please select a page" }]}
+  >
+    <Select
+      placeholder="Select a page"
+      loading={loading}
+      onChange={handlePageChange}
+      className="w-full"
+    >
+      <Option value="Static Page">Static Page</Option>
+      {menuList.map((menu) => (
+        <React.Fragment key={menu._id}>
+          <Option value={menu.parent.name} className="font-semibold">
+            {menu.parent.name}
+          </Option>
+          {menu.children.map((child) => (
+            <React.Fragment key={child._id}>
+              <Option value={child.name} className="pl-5">
+                ├── {child.name}
+              </Option>
+              {child.subChildren.map((subChild) => (
+                <Option key={subChild._id} value={subChild.name} className="pl-10">
+                  ├──── {subChild.name}
                 </Option>
-                {menu.children.map((child) => (
-                  <React.Fragment key={child._id}>
-                    <Option value={child.name} style={{ paddingLeft: 20 }}>
-                      ├── {child.name}
-                    </Option>
-                    {child.subChildren.map((subChild) => (
-                      <Option key={subChild._id} value={subChild.name} style={{ paddingLeft: 40 }}>
-                        ├──── {subChild.name}
-                      </Option>
-                    ))}
-                  </React.Fragment>
-                ))}
-              </React.Fragment>
-            ))}
-          </Select>
-        </Form.Item>
+              ))}
+            </React.Fragment>
+          ))}
+        </React.Fragment>
+      ))}
+    </Select>
+  </Form.Item>
 
-        {/* Page Slug Field */}
-        <Form.Item
-          name="pageSlug"
-          label="Page Slug"
-          rules={[{ required: true, message: "Slug is required" }]}
-        >
-          <Input placeholder="Auto-generated slug"  />
-        </Form.Item>
+  <Form.Item
+    name="pageSlug"
+    label="Page Slug"
+    rules={[{ required: true, message: "Slug is required" }]}
+  >
+    <Input placeholder="Auto-generated slug" className="w-full" />
+  </Form.Item>
 
-        <Form.Item
-          name="metaTitle"
-          label="Meta Title"
-          rules={[{ required: true, message: "Please enter meta title" }]}
-        >
-          <Input placeholder="Enter Meta Title" />
-        </Form.Item>
+  <Form.Item
+    name="metaTitle"
+    label="Meta Title"
+    rules={[{ required: true, message: "Please enter meta title" }]}
+  >
+    <Input placeholder="Enter Meta Title" className="w-full" />
+  </Form.Item>
 
-        <Form.Item
-          name="metaDescription"
-          label="Meta Description"
-          rules={[{ required: true, message: "Please enter meta description" }]}
-        >
-          <Input.TextArea placeholder="Enter Meta Description" rows={4} />
-        </Form.Item>
+  <Form.Item
+    name="metaDescription"
+    label="Meta Description"
+    rules={[{ required: true, message: "Please enter meta description" }]}
+  >
+    <Input.TextArea placeholder="Enter Meta Description" rows={4} className="w-full" />
+  </Form.Item>
 
-        <Form.Item
-          name="metaKeyword"
-          label="Meta Keywords"
-          rules={[{ required: true, message: "Please enter meta keywords" }]}
-        >
-          <Input placeholder="Enter Meta Keywords" />
-        </Form.Item>
+  <Form.Item
+    name="metaKeyword"
+    label="Meta Keywords"
+    rules={[{ required: true, message: "Please enter meta keywords" }]}
+  >
+    <Input placeholder="Enter Meta Keywords" className="w-full" />
+  </Form.Item>
 
-        <Form.Item>
-          <Button type="primary" htmlType="submit">
-            {id ? "Update Meta" : "Add Meta"}
-          </Button>
-        </Form.Item>
-      </Form>
+  <Form.Item>
+    <div className="flex gap-4">
+      <Button type="primary" htmlType="submit">
+        {id ? "Update Meta" : "Add Meta"}
+      </Button>
+    </div>
+  </Form.Item>
+</Form>
+
     </div>
   );
 };

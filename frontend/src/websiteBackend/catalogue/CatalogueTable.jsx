@@ -34,7 +34,7 @@ const CatalogueTable = () => {
       title: 'Image',
       dataIndex: 'image',
       key: 'image',
-      render: (image) => <img src={`/api/image/view/${image}`} alt="Catalogue Image" style={{ width: '100px' }} />,
+      render: (image) => <img src={`/api/image/view/${image}`} alt="Catalogue Image" className='w-[100px]' />,
     },
     {
       title: 'Actions',
@@ -60,7 +60,7 @@ const CatalogueTable = () => {
 
   return (
     <>
-      <Breadcrumb style={{ marginBottom: '16px' }}>
+      <Breadcrumb className='mb-4'>
         <Breadcrumb.Item>
           <Link to="/dashboard">Dashboard</Link>
         </Breadcrumb.Item>

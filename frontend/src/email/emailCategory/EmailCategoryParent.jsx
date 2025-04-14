@@ -29,7 +29,7 @@ const EmailCategoryParent = () => {
                 type="primary" 
                 icon={<PlusOutlined />} 
                 onClick={handleAddNew}
-                style={{ marginBottom: 16 }}
+                className='mb-4'
             >
                 Add New Category
             </Button>

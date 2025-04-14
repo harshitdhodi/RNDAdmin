@@ -93,22 +93,22 @@ const CareerAdminForm = () => {
     };
 
     return (
-        <div style={{ padding: '20px' }}>
+        <div className='p-5'>
             <Breadcrumb
                 items={[
                     { 
-                        title: <span onClick={() => navigate('/dashboard')} style={{ cursor: 'pointer' }}>
+                        title: <span onClick={() => navigate('/dashboard')} className='cursor-pointer'>
                             Dashboard
                         </span>
                     },
                     { 
-                        title: <span onClick={() => navigate('/career-table')} style={{ cursor: 'pointer' }}>
+                        title: <span onClick={() => navigate('/career-table')} className='cursor-pointer'>
                             Career Applications
                         </span>
                     },
                     { title: isEditMode ? 'Edit Application' : 'Add Application' }
                 ]}
-                style={{ marginBottom: '16px' }}
+               className='mb-4'
             />
 
             <Card title={isEditMode ? 'Edit Application' : 'Add New Application'}>
@@ -192,7 +192,7 @@ const CareerAdminForm = () => {
                             {isEditMode ? 'Update' : 'Submit'}
                         </Button>
                         <Button 
-                            style={{ marginLeft: '10px' }}
+                           className='ml-3'
                             onClick={() => navigate('/career-table')}
                         >
                             Cancel

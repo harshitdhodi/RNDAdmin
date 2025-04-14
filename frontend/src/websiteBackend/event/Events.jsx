@@ -106,7 +106,7 @@ const EventForm = () => {
         </Button>
         <Button 
           onClick={fetchEvent} 
-          style={{ marginLeft: 8 }} 
+         className="ml-2"
           loading={loading}
         >
           Refresh Data

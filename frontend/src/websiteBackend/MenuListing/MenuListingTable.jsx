@@ -21,7 +21,7 @@ const MenuListingTable = () => {
   };
 
   if (isLoading) return <p>Loading...</p>;
-  if (error) return <p style={{ color: "red" }}>Error: {error.message}</p>;
+  if (error) return <p className="text-red-700">Error: {error.message}</p>;
 
   const menuListings = data?.data || [];
 
@@ -79,12 +79,16 @@ const MenuListingTable = () => {
 
   return (
     <Card>
-      <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 16 }}>
-        <Title level={3}>Menu Listings</Title>
+      <div className="flex justify-between items-center mb-4">
+        <h3 className="text-2xl font-semibold">Menu Listings</h3>
         <Link to="/menu-listing-form">
-          <Button type="primary" icon={<PlusOutlined />}>Add Menu</Button>
+          <button className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 flex items-center gap-2">
+            <PlusOutlined />
+            Add Menu
+          </button>
         </Link>
       </div>
+
       <Table columns={columns} dataSource={formattedData} expandable={{ defaultExpandAllRows: false }} />
     </Card>
   );

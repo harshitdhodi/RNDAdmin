@@ -101,26 +101,26 @@ const BigCalendarView = () => {
         <div>Loading follow-ups...</div>
       ) : (
         <Calendar
-          localizer={localizer}
-          events={filteredEvents}
-          startAccessor="start"
-          endAccessor="end"
-          style={{ height: 'calc(100vh - 100px)' }}
-          view={view}
-          onView={setView}
-          date={date}
-          onNavigate={handleNavigate}
-          onSelectSlot={handleSelectSlot}
-          onSelectEvent={handleSelectEvent}
-          selectable
-          // Optional: Add custom event rendering
-          eventPropGetter={(event) => ({
-            className: 'custom-event',
-            style: {
-              backgroundColor: event.inquiryDetails?.status === 'completed' ? '#4CAF50' : '#2196F3',
-            },
-          })}
-        />
+        localizer={localizer}
+        events={filteredEvents}
+        startAccessor="start"
+        endAccessor="end"
+        className="h-[calc(100vh-100px)]" // Using Tailwind's arbitrary value feature
+        view={view}
+        onView={setView}
+        date={date}
+        onNavigate={handleNavigate}
+        onSelectSlot={handleSelectSlot}
+        onSelectEvent={handleSelectEvent}
+        selectable
+        eventPropGetter={(event) => ({
+          className: 'custom-event',
+          style: {
+            backgroundColor: event.inquiryDetails?.status === 'completed' ? '#4CAF50' : '#2196F3',
+          },
+        })}
+      />
+      
       )}
       <EventModal
         isOpen={isModalOpen}

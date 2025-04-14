@@ -78,7 +78,7 @@ const CareerInfoForm = () => {
        
         <Breadcrumb.Item>Career Info</Breadcrumb.Item>
       </Breadcrumb>
-      <Title level={2} style={{ margin: '16px 0' }}>Career Info</Title>
+      <Title level={2} className='mx-4'>Career Info</Title>
       <Form form={form} onFinish={handleSubmit} layout="vertical">
         <Form.Item label="Info" name="info" rules={[{ required: true, message: 'Please enter the info' }]}>
           <JoditEditor

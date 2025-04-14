@@ -54,7 +54,7 @@ const PrivacyForm = () => {
 
   return (
     <>
-      <Breadcrumb style={{ marginBottom: '16px' }}>
+      <Breadcrumb className='mb-4'>
         <Breadcrumb.Item>
           <Link to="/dashboard">Dashboard</Link>
         </Breadcrumb.Item>

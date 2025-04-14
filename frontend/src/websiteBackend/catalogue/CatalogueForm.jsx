@@ -52,7 +52,7 @@ const CatalogueForm = () => {
 
   return (
     <>
-      <Breadcrumb style={{ marginBottom: '16px' }}>
+      <Breadcrumb mb-4>
         <Breadcrumb.Item>
           <Link to="/dashboard">Dashboard</Link>
         </Breadcrumb.Item>
