@@ -12,6 +12,11 @@ import cssInjectedByJsPlugin from 'vite-plugin-css-injected-by-js';
 const deferNonCriticalCSS = () => ({
   name: "defer-non-critical-css",
   transformIndexHtml(html, { bundle }) {
+    console.log("Bundle:", bundle); // Log the bundle object
+    if (!bundle) {
+      return html;
+    }
+
     const cssFile = Object.keys(bundle).find((file) => file.endsWith(".css"));
     if (cssFile) {
       return html.replace(
@@ -24,7 +29,6 @@ const deferNonCriticalCSS = () => ({
 });
 
 const timestamp = Date.now(); // Generate a timestamp
-
 export default defineConfig({
   plugins: [
     react(),
@@ -145,7 +149,7 @@ export default defineConfig({
     },
   },
   build: {
-    cssCodeSplit: false, // Ensure all CSS is bundled into one file
+    cssCodeSplit: true, // Ensure all CSS is bundled into one file
     rollupOptions: {
       output: {
         manualChunks: () => null, // Disable all chunk splitting
