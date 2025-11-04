@@ -140,7 +140,7 @@ app.listen(PORT, () => {
     EMAIL_PASS: process.env.EMAIL_PASS ? 'Set' : 'Not Set',
   });
   console.log(`Server running on port ${PORT}`);
-  generateAllSitemaps(); // Generate sitemaps on startup
+  // generateAllSitemaps(); // Generate sitemaps on startup
 });
 
 // SMTP Connection Test (assuming you have nodemailer setup)

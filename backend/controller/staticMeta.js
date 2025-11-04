@@ -22,6 +22,19 @@ exports.getAllMetas = async (req, res) => {
     }
 };
 
+// Get meta by pageSlug
+exports.getMetaBySlug = async (req, res) => {
+    try {
+        const meta = await Meta.findOne({ pageSlug: req.params.slug });
+        if (!meta) {
+            return res.status(404).json({ success: false, message: 'Meta not found for this slug' });
+        }
+        res.status(200).json({ success: true, data: meta });
+    } catch (error) {
+        res.status(500).json({ success: false, message: error.message });
+    }
+};
+
 // Get a single meta by ID
 exports.getMetaById = async (req, res) => {
     try {
