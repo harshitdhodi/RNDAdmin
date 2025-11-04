@@ -49,7 +49,7 @@ app.get('/images/:filename', async (req, res) => {
       .webp({ quality: parseInt(q, 10) })
       .toBuffer();
 
-    res.setHeader('Cache-Control', 'public, max-age=31536000');
+    res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
     res.type('image/webp').send(optimizedImage);
   } catch (err) {
     console.error('Image processing error:', err);
@@ -58,18 +58,14 @@ app.get('/images/:filename', async (req, res) => {
 });
 
 // Static file serving
-app.use(express.static(path.join(__dirname, 'public'), {
-  maxAge: '30d',
-  setHeaders: (res, filepath) => {
-    if (filepath.match(/\.(jpg|jpeg|png|webp)$/)) {
-      res.setHeader('Cache-Control', 'public, max-age=31536000');
-    } else if (filepath.endsWith('.xml')) {
-      res.setHeader('Content-Type', 'application/xml');
-    }
+app.use(express.static(path.join(__dirname, 'public'), { maxAge: 0 }));
+
+app.use(express.static(path.join(__dirname, 'dist'), {
+  maxAge: 0,
+  setHeaders: (res) => {
+    res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
   },
 }));
-
-app.use(express.static(path.join(__dirname, 'dist'), { maxAge: '365d' }));
 
 // API Routes with caching
 const apiRoutes = [
