@@ -8,18 +8,7 @@ const sharp = require('sharp');
 const compression = require('compression');
 const app = express();
 require('dotenv').config();
-const cors = require('cors');
 
-// CORS configuration
-const corsOptions = {
-  origin: ['http://localhost:3028', 'http://127.0.0.1:3028'],
-  methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
-  credentials: true,
-  optionsSuccessStatus: 204
-};
-
-// Enable CORS with the specified options
-app.use(cors(corsOptions));
 const cookieParser = require('cookie-parser');
 const { generateAllSitemaps } = require('./route/sitemap');
  

@@ -42,7 +42,7 @@ exports.createInquiry = async (req, res) => {
         console.log("Owner Email:", inquiryData.ownerEmail || "Not provided");
 
         // Fetch SMTP Configuration
-        const { data: smtpResponse } = await axios.get("http://localhost:3028/api/smtp/get");
+        const { data: smtpResponse } = await axios.get("/api/smtp/get");
         const smtpConfig = smtpResponse.data?.[0];
 
         if (!smtpConfig || !smtpConfig.host) {
@@ -50,7 +50,7 @@ exports.createInquiry = async (req, res) => {
         }
 
         // Fetch Email Templates
-        const { data: emailTemplateResponse } = await axios.get("http://localhost:3028/api/template/get");
+        const { data: emailTemplateResponse } = await axios.get("/api/template/get");
         const emailTemplates = emailTemplateResponse.data;
 
         if (!emailTemplates || emailTemplates.length === 0) {
