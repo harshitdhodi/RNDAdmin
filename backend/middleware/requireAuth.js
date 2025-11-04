@@ -27,8 +27,7 @@ const requireAuth = async (req, res, next) => {
 
     // Attach the user ID to the request object
     req.newAdmin = decodedToken.id;
-    console.log("User ID from token:", req.newAdmin);
-
+ 
     next();
   } catch (err) {
     console.log("Error verifying token:", err.message);
