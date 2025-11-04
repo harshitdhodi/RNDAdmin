@@ -159,9 +159,9 @@ const StaticMetaForm = () => {
   <Form.Item
     name="metaKeyword"
     label="Meta Keywords"
-    rules={[{ required: true, message: "Please enter meta keywords" }]}
+    
   >
-    <Input placeholder="Enter Meta Keywords" className="w-full" />
+  <Input placeholder="Enter Meta Keywords" className="w-full" />
   </Form.Item>
 
   <Form.Item>
