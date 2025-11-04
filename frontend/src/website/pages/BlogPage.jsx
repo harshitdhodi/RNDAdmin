@@ -2,7 +2,6 @@ import { CalendarIcon, ClockIcon, MailIcon, PhoneIcon } from 'lucide-react';
 import { Link, useParams } from 'react-router-dom';
 import { useGetAllBlogsExceptLatestQuery, useGetBlogsByCategoryQuery, useGetLatestBlogQuery } from '@/slice/blog/blog';
 import React, { useEffect, useState } from 'react';
-import Footer from '../componets/home/Footer';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 

@@ -7,7 +7,6 @@ import MSDSSection from "./MSDSSection";
 import MadeInIndia from "./MadeInIndia";
 import { useParams } from "react-router-dom";
 import InquiryForm from "./InquiryForm";
-import Footer from "../home/Footer";
 import RecentProduct from "./RecentProduct";
 
 export default function ProductDetailPage() {

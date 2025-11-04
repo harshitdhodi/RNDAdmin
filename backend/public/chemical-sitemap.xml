@@ -2,7 +2,7 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>http://localhost:3028/5-sulphosalicylic-acid</loc>
-    <lastmod>2025-04-12T07:12:13.581Z</lastmod>
+    <lastmod>2025-11-03T10:37:14.284Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
@@ -21,6 +21,12 @@
   <url>
     <loc>http://localhost:3028/chloro-sulphonic-acid-pract</loc>
     <lastmod>2025-04-12T07:22:05.645Z</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>http://localhost:3028/6-sulphosalicylic-acid</loc>
+    <lastmod>2025-04-17T06:45:58.575Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>

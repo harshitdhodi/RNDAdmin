@@ -12,8 +12,7 @@ import cssInjectedByJsPlugin from 'vite-plugin-css-injected-by-js';
 const deferNonCriticalCSS = () => ({
   name: "defer-non-critical-css",
   transformIndexHtml(html, { bundle }) {
-    console.log("Bundle:", bundle); // Log the bundle object
-    if (!bundle) {
+     if (!bundle) {
       return html;
     }
     const cssFile = Object.keys(bundle).find((file) => file.endsWith(".css"));
@@ -157,7 +156,7 @@ export default defineConfig({
   },
   server: {
     historyApiFallback: true,
-    port: 3000,
+    port: 3001,
     headers: {
       "Service-Worker-Allowed": "/",
     },

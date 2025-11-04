@@ -3,10 +3,8 @@ import { useLocation, useParams } from 'react-router-dom';
 import { Breadcrumb } from '../componets/category_subcategory/BreadCrumb';
 import { Sidebar } from '../componets/category_subcategory/Sidebar';
 import ProductTable from '../componets/category_subcategory/ProductTable';
-import { Pagination } from '../componets/category_subcategory/Pegination';
 import SubCategoryInfo from '../componets/category_subcategory/SubcategoryInfo';
 import axios from 'axios';
-import Footer from '../componets/home/Footer';
 
 export default function ChemicalSubcategoryPage() {
   const { chemicals, slug, subsubCategorySlug } = useParams();
