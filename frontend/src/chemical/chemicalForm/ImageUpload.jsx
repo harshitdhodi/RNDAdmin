@@ -199,7 +199,8 @@ const ImageUploadForm = ({ control, setValue }) => {
         />
       </div>
 
-      <Label>Images</Label>
+      <Label>Images</Label> <br />
+      <span className="text-xs font-semibold text-red-500">(If you  want to update image then upload new image and remove already uploaded image)</span>
       {fields.map((field, index) => (
         <div key={field.id} className="space-y-2 border p-4 rounded-lg">
           {/* Image Preview */}

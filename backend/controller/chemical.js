@@ -110,14 +110,15 @@ exports.createChemical = async (req, res) => {
 exports.updateChemical = async (req, res) => {
   try {
     const { id } = req.query;
+    console.log("ID:", id);
     const existingChemical = await Chemical.findById(id);
     if (!existingChemical) {
       return res.status(404).json({ message: 'Chemical not found' });
     }
-
+console.log("Existing Chemical:", existingChemical);
     // Initialize updateData with the request body
     const updateData = { ...req.body };
-
+console.log("Update Data:", updateData);
     // Handle specs file - fix the logic
     if (req.files?.specs?.[0]) {
       // New file uploaded - use the new filename
@@ -172,7 +173,63 @@ exports.updateChemical = async (req, res) => {
 
     // Handle images
     let images = existingChemical.images || [];
+// Update the existingImages handling code
+if (req.body.existingImages) {
+  let existingImages = [];
+  
+  // Handle array format: existingImages[0][altText], existingImages[0][title]
+  if (typeof req.body.existingImages === 'object' && !Array.isArray(req.body.existingImages)) {
+    // Convert the object to an array of images
+    existingImages = Object.keys(req.body.existingImages).map((key) => {
+      const img = req.body.existingImages[key];
+      return {
+        _id: img._id,  // Get _id from the image object itself
+        altText: img.altText,
+        title: img.title
+      };
+    });
+  } 
+  // Handle JSON string format
+  else if (typeof req.body.existingImages === 'string') {
+    try {
+      existingImages = JSON.parse(req.body.existingImages);
+      if (!Array.isArray(existingImages)) {
+        existingImages = [existingImages];
+      }
+    } catch (e) {
+      console.error('Error parsing existingImages:', e);
+      return res.status(400).json({ error: 'Invalid existingImages format' });
+    }
+  }
+  // Handle if it's already an array
+  else if (Array.isArray(req.body.existingImages)) {
+    existingImages = req.body.existingImages;
+  }
 
+  console.log('Processed existingImages:', JSON.stringify(existingImages, null, 2));
+
+  images = images.map(img => {
+    const existingImg = existingImages.find(ei => 
+      ei._id && img._id && ei._id.toString() === img._id.toString()
+    );
+
+    if (existingImg) {
+      console.log('Updating image:', {
+        imageId: img._id,
+        existingImg,
+        newAltText: existingImg.altText,
+        newTitle: existingImg.title
+      });
+      
+      return {
+        ...img.toObject ? img.toObject() : img,  // Convert mongoose document to plain object if needed
+        altText: existingImg.altText || img.altText,
+        title: existingImg.title || img.title
+      };
+    }
+    return img;
+  });
+}
     if (req.files?.images) {
       req.files.images.forEach((file, index) => {
         images.push({
@@ -532,21 +589,39 @@ exports.deleteChemical = async (req, res) => {
 exports.updateChemical = async (req, res) => {
   try {
     const { id } = req.query;
+    console.log("ID:", id);
     const existingChemical = await Chemical.findById(id);
     if (!existingChemical) {
       return res.status(404).json({ message: 'Chemical not found' });
     }
-
-    // Handle specs file
-    let specs = existingChemical.specs;
+console.log("Existing Chemical:", existingChemical);
+    // Initialize updateData with the request body
+    const updateData = { ...req.body };
+console.log("Update Data:", updateData);
+    // Handle specs file - fix the logic
     if (req.files?.specs?.[0]) {
-      specs = req.files.specs[0].filename;
+      // New file uploaded - use the new filename
+      updateData.specs = req.files.specs[0].filename;
+    } else if (req.body.specs === '') {
+      // Explicitly set to empty - clear the specs file
+      updateData.specs = '';
+    } else {
+      // No new file and no explicit empty string - keep existing value
+      // Don't add to updateData so it won't get overwritten
+      delete updateData.specs;
     }
 
-    // Handle msds file
-    let msds = existingChemical.msds;
+    // Handle msds file - fix the logic
     if (req.files?.msds?.[0]) {
-      msds = req.files.msds[0].filename;
+      // New file uploaded - use the new filename
+      updateData.msds = req.files.msds[0].filename;
+    } else if (req.body.msds === '') {
+      // Explicitly set to empty - clear the msds file
+      updateData.msds = '';
+    } else {
+      // No new file and no explicit empty string - keep existing value
+      // Don't add to updateData so it won't get overwritten
+      delete updateData.msds;
     }
 
     // Safe parsing function for arrays
@@ -559,13 +634,6 @@ exports.updateChemical = async (req, res) => {
         console.warn('Failed to parse array:', e);
         return undefined;
       }
-    };
-
-    // Only include fields that are actually present in the request
-    const updateData = {
-      ...req.body,
-      specs,
-      msds
     };
 
     // Only add array fields if they exist in the request
@@ -584,7 +652,63 @@ exports.updateChemical = async (req, res) => {
 
     // Handle images
     let images = existingChemical.images || [];
+// Update the existingImages handling code
+if (req.body.existingImages) {
+  let existingImages = [];
+  
+  // Handle array format: existingImages[0][altText], existingImages[0][title]
+  if (typeof req.body.existingImages === 'object' && !Array.isArray(req.body.existingImages)) {
+    // Convert the object to an array of images
+    existingImages = Object.keys(req.body.existingImages).map((key) => {
+      const img = req.body.existingImages[key];
+      return {
+        _id: img._id,  // Get _id from the image object itself
+        altText: img.altText,
+        title: img.title
+      };
+    });
+  } 
+  // Handle JSON string format
+  else if (typeof req.body.existingImages === 'string') {
+    try {
+      existingImages = JSON.parse(req.body.existingImages);
+      if (!Array.isArray(existingImages)) {
+        existingImages = [existingImages];
+      }
+    } catch (e) {
+      console.error('Error parsing existingImages:', e);
+      return res.status(400).json({ error: 'Invalid existingImages format' });
+    }
+  }
+  // Handle if it's already an array
+  else if (Array.isArray(req.body.existingImages)) {
+    existingImages = req.body.existingImages;
+  }
 
+  console.log('Processed existingImages:', JSON.stringify(existingImages, null, 2));
+
+  images = images.map(img => {
+    const existingImg = existingImages.find(ei => 
+      ei._id && img._id && ei._id.toString() === img._id.toString()
+    );
+
+    if (existingImg) {
+      console.log('Updating image:', {
+        imageId: img._id,
+        existingImg,
+        newAltText: existingImg.altText,
+        newTitle: existingImg.title
+      });
+      
+      return {
+        ...img.toObject ? img.toObject() : img,  // Convert mongoose document to plain object if needed
+        altText: existingImg.altText || img.altText,
+        title: existingImg.title || img.title
+      };
+    }
+    return img;
+  });
+}
     if (req.files?.images) {
       req.files.images.forEach((file, index) => {
         images.push({

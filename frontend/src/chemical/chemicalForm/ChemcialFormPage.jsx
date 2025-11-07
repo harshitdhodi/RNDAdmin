@@ -113,13 +113,16 @@ export const ChemicalFormPage = () => {
       const formData = new FormData();
 
       // Handle images
+      // In your onSubmitForm function, update the image handling part:
       data.images.forEach((image, index) => {
         if (image.file instanceof File) {
+          // For new images
           formData.append("images", image.file);
           formData.append(`altText-${index}`, image.altText || "");
           formData.append(`title-${index}`, image.title || "");
-        } else if (image.url) {
-          formData.append(`existingImages[${index}][url]`, image.url);
+        } else if (image._id) {
+          // For existing images, include the _id
+          formData.append(`existingImages[${index}][_id]`, image._id);
           formData.append(`existingImages[${index}][altText]`, image.altText || "");
           formData.append(`existingImages[${index}][title]`, image.title || "");
         }

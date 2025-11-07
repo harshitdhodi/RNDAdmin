@@ -15,6 +15,7 @@ const EditBannerForm = () => {
     const [form] = Form.useForm();
     const [imageChanged, setImageChanged] = useState(false);
     const [menuList, setMenuList] = useState([]);
+    const [menuLoading, setMenuLoading] = useState(true);
     const { data: banner, isLoading } = useGetBannerByIdQuery(id);
     const [updateBanner] = useUpdateBannerMutation();
 
@@ -25,10 +26,14 @@ const EditBannerForm = () => {
                 const response = await axios.get('/api/menulist/get-menu');
                 if (response.data.success) {
                     setMenuList(response.data.data);
+                } else {
+                    message.error('Failed to load menu list');
                 }
             } catch (error) {
                 console.error('Error fetching menu list:', error);
-                message.error('Failed to fetch menu list');
+                message.error('Error fetching menu list');
+            } finally {
+                setMenuLoading(false);
             }
         };
         fetchMenuList();
@@ -136,14 +141,32 @@ const EditBannerForm = () => {
                     <Form.Item
                         name="pageSlug"
                         label="Page Slug"
-                        rules={[{ required: true, message: 'Please select a Page Slug!' }]}
+                        rules={[{ required: true, message: 'Please select a page slug!' }]}
                     >
-                        <Select placeholder="Select Page Slug">
-                            {menuList.map((menu) => (
-                                <Option key={menu._id} value={menu.parent.path}>
+                        <Select placeholder="Select a menu item" loading={menuLoading}>
+                            {menuList.flatMap((menu, menuIndex) => [
+                                <Option key={`menu-${menu._id}`} value={menu.parent.path} className="font-bold">
                                     {menu.parent.name}
-                                </Option>
-                            ))}
+                                </Option>,
+                                ...menu.children.flatMap((child, childIndex) => [
+                                    <Option 
+                                        key={`child-${menu._id}-${child._id}`} 
+                                        value={child.path} 
+                                        className="pl-5"
+                                    >
+                                        <span> ├── </span>{child.name}
+                                    </Option>,
+                                    ...child.subChildren.map((subChild, subChildIndex) => (
+                                        <Option 
+                                            key={`subchild-${menu._id}-${child._id}-${subChild._id}`} 
+                                            value={subChild.path} 
+                                            className="pl-10"
+                                        >
+                                            <span>├────</span> {subChild.name}
+                                        </Option>
+                                    ))
+                                ])
+                            ])}
                         </Select>
                     </Form.Item>
 
