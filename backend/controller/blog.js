@@ -3,37 +3,14 @@ const BlogCategory = require('../model/blogCategory'); // Import the BlogCategor
 
 // Create a new blog
 const createBlog = async (req, res) => {
-    console.log(req.body)
+  console.log("Request Body:", req.body);
+  console.log("Uploaded Files:", req.files);
+
   const {
-    title,
-    date,
-    details,
-    alt,imageTitle,
-    postedBy,
-    slug,
-    metatitle,
-    metadescription,
-    metakeywords,
-    metacanonical,
-    metalanguage,
-    metaschema,
-    otherMeta,
-    url,
-    priority,
-    changeFreq,
-    status,
-    category,
-  } = req.body;
-  const imagePaths = req.files.map(file => file.filename);
-        
-  try {
-    // Create a new blog
-    const newBlog = new Blog({
       title,
       date,
       details,
-      image:imagePaths,
-      alt,imageTitle,
+      alt, imageTitle,
       postedBy,
       slug,
       metatitle,
@@ -48,16 +25,47 @@ const createBlog = async (req, res) => {
       changeFreq,
       status,
       category,
-    });
+  } = req.body;
 
-    // Save the new blog
-    const savedBlog = await newBlog.save();
-    res.status(201).json(savedBlog);
+  // Handle file uploads2 correctly
+  let imagePaths = [];
+  if (req.files && Array.isArray(req.files)) {
+      imagePaths = req.files.map(file => file.filename);
+  } else if (req.file) {
+      imagePaths = [req.file.filename]; // Single file upload
+  }
+
+  try {
+      const newBlog = new Blog({
+          title,
+          date,
+          details,
+          image: imagePaths,
+          alt, imageTitle,
+          postedBy,
+          slug,
+          metatitle,
+          metadescription,
+          metakeywords,
+          metacanonical,
+          metalanguage,
+          metaschema,
+          otherMeta,
+          url,
+          priority,
+          changeFreq,
+          status,
+          category,
+      });
+
+      const savedBlog = await newBlog.save();
+      res.status(201).json(savedBlog);
   } catch (error) {
-    console.log(error)
-    res.status(500).json({ message: 'Server error', error });
+      console.error("Error:", error);
+      res.status(500).json({ message: 'Server error', error });
   }
 };
+
 
 // Get all blogs with populated category
 const getAllBlogs = async (req, res) => {
@@ -242,6 +250,34 @@ const getBlogBySlug = async (req, res) => {
       res.status(500).json({ message: 'Server error', error });
     }
   };
+
+
+  const incrementBlogVisits = async (req, res) => {
+  const { id, clientIP } = req.query; // or req.body if you're using body data
+
+  try {
+    if (!id || !clientIP) {
+      return res.status(400).json({ message: 'Blog ID and client IP are required' });
+    }
+
+    const blog = await Blog.findById(id);
+    if (!blog) {
+      return res.status(404).json({ message: 'Blog not found' });
+    }
+
+    if (!blog.viewedIPs.includes(clientIP)) {
+      blog.visits += 1;
+      blog.viewedIPs.push(clientIP);
+      await blog.save();
+    }
+
+    res.status(200).json(blog);
+  } catch (error) {
+    console.error('Error incrementing blog visits:', error);
+    res.status(500).json({ message: 'Server error', error });
+  }
+};
+
   
 
 module.exports = {
@@ -253,6 +289,7 @@ module.exports = {
   getBlogsByCategory,
   getLatestBlog ,
   getAllBlogsExceptLatest,
-  getBlogBySlug
+  getBlogBySlug,
+  incrementBlogVisits
 
 };

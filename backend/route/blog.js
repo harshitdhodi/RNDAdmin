@@ -11,6 +11,7 @@ router.put('/update',image,blogController.updateBlog); // Update blog by ID
 router.delete('/delete', blogController.deleteBlog); // Delete blog by ID
 router.get('/category', blogController.getBlogsByCategory); // Get blogs by category ID
 router.get('/getLatestBlog',blogController.getLatestBlog);
+router.put('/incrementBlogVisits',blogController.incrementBlogVisits);
 router.get('/getAllBlogsExceptLatest',blogController.getAllBlogsExceptLatest);
 router.get('/getBlogBySlug',blogController.getBlogBySlug)
 module.exports = router;
