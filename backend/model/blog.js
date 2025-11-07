@@ -24,7 +24,7 @@ const BlogSchema = new Schema({
     changeFreq: { type: String },
     lastmod: { type: Date, default: Date.now },
     status: { type: String, required: true },
-    categories: { type: Schema.Types.ObjectId, ref: 'BlogCategory' },
+    category: { type: Schema.Types.ObjectId, ref: 'BlogCategory' },
     createdAt: { type: Date, default: Date.now },
     updatedAt: { type: Date, default: Date.now },
 });
