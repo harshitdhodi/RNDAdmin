@@ -5,7 +5,8 @@ const {
   getAllCategories,
   getCategoryById,
   updateCategory,
-  deleteCategory
+  deleteCategory,
+  getCategoryBySlug
 } = require('../controller/blogCategory'); // Path to the controller file
 
 // Route to create a new category
@@ -22,5 +23,8 @@ router.put('/update', updateCategory);
 
 // Route to delete a category by ID
 router.delete('/delete', deleteCategory);
+
+// Route to get a category by slug
+router.get('/getBySlug', getCategoryBySlug);
 
 module.exports = router;
