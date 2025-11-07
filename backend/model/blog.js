@@ -10,7 +10,7 @@ const BlogSchema = new Schema({
     alt: [{ type: String, default: '' }],
     imageTitle: [{ type: String, default: '' }],
     slug: { type: String, unique: true },
-    postedBy: { type: String, required: true },
+    postedBy: { type: String,  },
     visits: { type: Number, default: 0 },
     
     metatitle: { type: String },
