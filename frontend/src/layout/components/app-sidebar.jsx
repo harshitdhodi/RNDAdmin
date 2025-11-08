@@ -1,12 +1,12 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Sidebar, SidebarContent, SidebarGroup, SidebarGroupLabel, SidebarMenu, SidebarMenuItem, SidebarMenuButton } from "@/components/ui/sidebar";
 import { Collapsible, CollapsibleTrigger, CollapsibleContent } from "@/components/ui/collapsible";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { Separator } from "@/components/ui/separator";
-import { ChevronDown, LayoutDashboard, PlusSquare, List, TruckIcon, Settings, ArrowLeftRightIcon, UsersRoundIcon, Truck, Flower, MailQuestion, FileQuestion, ChartNoAxesGanttIcon } from "lucide-react";
+import logoimage from "../../../public/headerLogo.webp";
+import { ChevronDown, LayoutDashboard, PlusSquare, List, Settings, ArrowLeftRightIcon, UsersRoundIcon, Truck, Mail, FileQuestion, GanttChart, FlaskConical, Globe, Image, Menu, Newspaper, Contact, Briefcase, Info, Search, FileText, Send, SlidersHorizontal, FileType, Building, Handshake, ShoppingCart, ShieldQuestion, FileCheck, KeyRound, Link as LinkIcon, BookCopy, Lock, FileLock, MessageSquareQuote } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Link, useLocation } from "react-router-dom";
+import axios from "axios";
 
 // Updated JSON structure with parent-child relationships
 const menuData = [
@@ -18,25 +18,25 @@ const menuData = [
   },
   {
     title: "Chemical",
-    icon: LayoutDashboard,
+    icon: FlaskConical,
     children: [
       { title: "List", icon: List, url: "/chemical-table" },
       { title: "Add New", icon: PlusSquare, url: "/chemical-form" },
-      { title: "Chemical Types", icon: ArrowLeftRightIcon, url: "/chemical-types" },
+      { title: "Chemical Types", icon: FileType, url: "/chemical-types" },
       { title: "Search Suppliers", icon: Truck, url: "/search-suppliers" },
       { title: "Unit", icon: PlusSquare, url: "/unit" },
       { title: "Tax", icon: PlusSquare, url: "#types" },
-      { title: "Category", icon: ChartNoAxesGanttIcon, url: "/chemical-category" }
+      { title: "Category", icon: GanttChart, url: "/chemical-category" }
     ]
   },
   {
     title: "Supplier",
-    icon: TruckIcon,
+    icon: Truck,
     children: [
       { title: "List", icon: List, url: "/supplier-table" },
       { title: "Add New", icon: PlusSquare, url: "/supplier-form" },
-      { title: "Chemical Mapping ", icon: ArrowLeftRightIcon, url: "/chemical-mapping" },
-      { title: "Search Chemicals", icon: Flower, url: "/chemical-search" }
+      { title: "Chemical Mapping", icon: ArrowLeftRightIcon, url: "/chemical-mapping" },
+      { title: "Search Chemicals", icon: Search, url: "/chemical-search" }
     ]
   },
   {
@@ -45,13 +45,13 @@ const menuData = [
     children: [
       { title: "List", icon: List, url: "/customer-table" },
       { title: "Add New", icon: PlusSquare, url: "/customer-form" },
-      { title: "Chemical Mapping ", icon: ArrowLeftRightIcon, url: "/customer-chemical-mapping" },
+      { title: "Chemical Mapping", icon: ArrowLeftRightIcon, url: "/customer-chemical-mapping" },
 
     ]
   },
   {
     title: "Email",
-    icon: UsersRoundIcon,
+    icon: Mail,
     children: [
       { title: "SMTP Setting", icon: List, url: "/smtp-table" },
       { title: "Email Template", icon: PlusSquare, url: "/email-template-table" },
@@ -65,17 +65,17 @@ const menuData = [
     children: [
       { title: "List", icon: List, url: "/inquiry-list" },
       { title: "Add New", icon: PlusSquare, url: "/add-inquiry" },
-      { title: "Inquiry Sources ", icon: List, url: "source-table" },
-      { title: "Inquiry Status ", icon: List, url: "status-table" },
+      { title: "Inquiry Sources", icon: List, url: "source-table" },
+      { title: "Inquiry Status", icon: List, url: "status-table" },
 
     ]
   },
   {
     title: "Website",
-    icon: LayoutDashboard,
+    icon: Globe,
     children: [
       {
-        title: "Logo", icon: List,
+        title: "Logo", icon: Image,
         children: [
 
           { title: "Logo Form", icon: PlusSquare, url: "/add-logo" },
@@ -83,7 +83,7 @@ const menuData = [
       },
       {
         title: "Menu",
-        icon: List,
+        icon: Menu,
         children: [
           { title: "Menu List", icon: List, url: "/menu-listing-table" },
           { title: "Add New", icon: PlusSquare, url: "/menu-listing-form" },
@@ -91,7 +91,7 @@ const menuData = [
       },
       {
         title: "Blog",
-        icon: List,
+        icon: Newspaper,
         children: [
           { title: "Blog Categories", icon: List, url: "/blog-category-table" },
           { title: "Blog", icon: PlusSquare, url: "/blog-table" },
@@ -107,7 +107,7 @@ const menuData = [
       // },
       {
         title: "Corporate",
-        icon: FileQuestion,
+        icon: Building,
         children: [
           { title: "List", icon: List, url: "/about-us-table" },
           // { title: "Add New", icon: PlusSquare, url: "/about-us-form" },
@@ -115,7 +115,7 @@ const menuData = [
       },
       {
         title: "Banner",
-        icon: FileQuestion,
+        icon: Image,
         children: [
           {
             title: "List", icon: List, url:
@@ -127,14 +127,14 @@ const menuData = [
       },
       {
         title: "Worldwide",
-        icon: FileQuestion,
+        icon: Globe,
         children: [
           { title: "List", icon: List, url: "/worldwide-table" },
         ]
       },
       {
         title: "Career",
-        icon: FileQuestion,
+        icon: Briefcase,
         children: [
           { title: "List", icon: List, url: "/career-table" },
           { title: "Career Info", icon: PlusSquare, url: "/career-info-form" },
@@ -142,7 +142,7 @@ const menuData = [
       },
       {
         title: "Contact Info",
-        icon: FileQuestion,
+        icon: Contact,
         children: [
           { title: "List", icon: List, url: "/contact-info-table" },
           // { title: "Add New", icon: PlusSquare, url: "/contact-info/add" },
@@ -150,7 +150,7 @@ const menuData = [
       },
       {
         title: "Slide Show",
-        icon: FileQuestion,
+        icon: SlidersHorizontal,
         children: [
           { title: "slideshow Table", icon: PlusSquare, url: "/slideShow-table" },
           { title: "slide show", icon: List, url: "/slideShow-form" },
@@ -158,22 +158,22 @@ const menuData = [
       },
       {
         title: "WhatsUp Info",
-        icon: FileQuestion,
+        icon: MessageSquareQuote,
         children: [
           // {title:"List",icon:List,url:"/whatsUpInfo-table"},
           { title: "Add New", icon: PlusSquare, url: "/whatsUpInfo-form" }
         ]
       },
-      {
-        title: "Events",
-        icon: FileQuestion,
-        children: [
-          { title: "List", icon: List, url: "/events" },
-        ]
-      },
+      // {
+      //   title: "Events",
+      //   icon: Handshake,
+      //   children: [
+      //     { title: "List", icon: List, url: "/events" },
+      //   ]
+      // },
       {
         title: "Meta Info",
-        icon: FileQuestion,
+        icon: KeyRound,
         children: [
           { title: "Meta List", icon: List, url: "/meta-table" },
           { title: "Meta Form", icon: List, url: "/meta-form" },
@@ -182,7 +182,7 @@ const menuData = [
       },
       {
         title: "Navigation Link",
-        icon: FileQuestion,
+        icon: LinkIcon,
         children: [
           { title: "List", icon: List, url: "/navigationLink" },
           { title: "Add New", icon: PlusSquare, url: "/navigationLink-form" },
@@ -190,7 +190,7 @@ const menuData = [
       }, 
       {
         title:"catalogue Management",
-        icon: FileQuestion,
+        icon: BookCopy,
         children:[
           {title:"Catalogue List",icon:List,url:"/catalogue-table"},
           // {title:"Add New",icon:PlusSquare,url:"/catalogue-form"}
@@ -198,7 +198,7 @@ const menuData = [
       } ,
       {
         title: "PrivacyPolicy and Terms",
-        icon: FileQuestion,
+        icon: ShieldQuestion,
         children: [
           { title: "Privacy Policy", icon: List, url: "/privacypolicy-terms" },
           { title: "Terms and Condition", icon: PlusSquare, url: "/terms-and-conditions-form" },
@@ -209,8 +209,9 @@ const menuData = [
 ];
 
 export default function AppSidebar() {
-  const [openSections, setOpenSections] = useState({});
+  const [openSections, setOpenSections] = useState({ Website: true });
   const [userMenuOpen, setUserMenuOpen] = useState(false);
+
 
   const toggleUserMenu = () => {
     setUserMenuOpen((prev) => !prev);
@@ -259,6 +260,11 @@ export default function AppSidebar() {
   return (
     <Sidebar >
       <SidebarContent>
+
+        <div className="p-4 border-b">
+          <img src={logoimage} alt="Company Logo" className="h-16 mx-auto" />
+        </div>
+    
         <SidebarGroup>
           <SidebarGroupLabel>Application</SidebarGroupLabel>
           <SidebarMenu>{renderMenuItems(menuData)}</SidebarMenu>

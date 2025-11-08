@@ -85,11 +85,11 @@ export default function SuppliersTable({ chemicalName, supplier,fetchChemicals, 
     <div className="p-4 space-y-4">
       {/* Table Header and Add Supplier Modal */}
       <div className="flex items-center justify-between">
-        <h1 className="text-xl font-semibold text-[#3b1f91]">
+        <h1 className="text-xl font-semibold text-[#304a8a]">
           {supplier} for {selectedItem?.name || "Chemical"}
         </h1>
         <Button
-          className="bg-[#3b1f91] hover:bg-purple-700"
+          className="bg-[#304a8a] hover:bg-purple-700"
           onClick={() => setShowAddSupplierModal(true)}
         >
           <Plus className="w-4 h-4 mr-2" />

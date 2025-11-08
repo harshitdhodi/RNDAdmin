@@ -68,7 +68,7 @@ const AddSupplierModal = ({ refetch, open, onClose, chemicalName,fetchChemicals,
     <Dialog open={open} onOpenChange={(isOpen) => !isOpen && onClose()}>
       <DialogContent className="max-w-lg p-6">
         <DialogHeader>
-          <DialogTitle className="text-lg font-semibold text-[#3b1f91]">
+          <DialogTitle className="text-lg font-semibold text-[#304a8a]">
             Add {supplier} for {chemicalName.name}
           </DialogTitle>
         </DialogHeader>
@@ -99,7 +99,7 @@ const AddSupplierModal = ({ refetch, open, onClose, chemicalName,fetchChemicals,
           <div className="flex justify-between mt-4">
             <Button
               onClick={handleAddSupplier}
-              className="bg-[#3b1f91] hover:bg-purple-700"
+              className="bg-[#304a8a] hover:bg-purple-700"
               disabled={isLoading || !selectedSupplier}
             >
               {isLoading ? "Adding..." : "+ Add"}

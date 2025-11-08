@@ -135,7 +135,7 @@ const EmailForm = ({ selectedSupplier, supplier, email, name,type, chemicalName 
               />
             </div>
             <Button
-              className="bg-[#3b1f91] hover:bg-purple-700"
+              className="bg-[#304a8a] hover:bg-purple-700"
               onClick={handleSendEmail}
               disabled={isLoading}
             >

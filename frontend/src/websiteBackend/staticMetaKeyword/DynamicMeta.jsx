@@ -7,19 +7,27 @@ const useDocumentTitle = () => {
   const [metaTitle, setMetaTitle] = useState("Loading...");
   const [metaDescription, setMetaDescription] = useState("");
   const [metaKeyword, setMetaKeyword] = useState("");
+  const [favicon, setFavicon] = useState("/favIcon.webp"); // Default favicon
 
   useEffect(() => {
     const fetchMetaData = async () => {
       try {
+        // Fetch logo data to get the favicon
+        const logoResponse = await axios.get("/api/logo/get-logo");
+        if (logoResponse.data && logoResponse.data.data && logoResponse.data.data.favIcon) {
+          // Assuming the API returns the path like '/uploads/favicon.webp'
+          // If it's a full URL, this will also work.
+          setFavicon(logoResponse.data.data.favIcon);
+        }
+
         const currentPath = location.pathname.toLowerCase();
         const categoryResponse = await axios.get("/api/chemicalCategory/getAll");
-console.log(categoryResponse.data)
+
         if (categoryResponse.data && Array.isArray(categoryResponse.data)) {
           const categoryList = categoryResponse.data;
 
           // Function to find match in nested structure
           const findMatchingCategory = (categories) => {
-            console.log(categories)
             for (const category of categories) {
               // Check top-level category
               if (`/${category.slug.toLowerCase()}` === currentPath) {
@@ -97,9 +105,20 @@ console.log(categoryResponse.data)
       tag.setAttribute("content", content);
     };
 
+    const updateFavicon = (href) => {
+      let link = document.querySelector("link[rel*='icon']");
+      if (!link) {
+        link = document.createElement("link");
+        link.setAttribute("rel", "icon");
+        document.head.appendChild(link);
+      }
+      link.setAttribute("href", href);
+    };
+
     updateMetaTag("description", metaDescription);
     updateMetaTag("keywords", metaKeyword);
-  }, [metaTitle, metaDescription, metaKeyword]);
+    updateFavicon(favicon);
+  }, [metaTitle, metaDescription, metaKeyword, favicon]);
 };
 
 export default useDocumentTitle;
