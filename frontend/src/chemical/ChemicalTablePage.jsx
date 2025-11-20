@@ -38,6 +38,7 @@ import { useGetSupplierCountByChemicalIdQuery, useGetSuppliersQuery } from "@/sl
 import { useGetCustomersQuery } from "@/slice/customerSlice/customerApiSlice";
 import { Link, useNavigate } from "react-router-dom";
 import Swal from 'sweetalert2';
+import ImportExcel from "./ImportExcel";
 
 
 export default function ChemicalTable() {
@@ -197,6 +198,7 @@ const navigate = useNavigate();
           <h2 className="text-lg font-bold text-[#304a8a]">Chemical List</h2>
         </div>
         <div>
+          <ImportExcel />
           <Link to="/chemical-form">
           <Button className="bg-[#304a8a] hover:bg-[#2a1664]">
             <PlusCircle /> Add Chemical

@@ -12,6 +12,7 @@ const SkeletonCard = () => (
 
 // Capitalize utility
 function capitalizeWords(str) {
+  if (!str) return '';
   return str.replace(/\b\w/g, char => char.toUpperCase());
 }
 
