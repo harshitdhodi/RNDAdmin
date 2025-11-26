@@ -1,0 +1,1 @@
+import{r as u}from"./index-CoKL1xyR-1744632447889.js";function o(r){const e=u.useRef({value:r,previous:r});return u.useMemo(()=>(e.current.value!==r&&(e.current.previous=e.current.value,e.current.value=r),e.current.previous),[r])}export{o as u};
