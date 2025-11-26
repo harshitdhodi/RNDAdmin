@@ -510,13 +510,14 @@ exports.getChemicalByCategorySubCategorySlug = async (req, res) => {
   try {
     // Destructure category and subCategory from query parameters
     const { categoryslug, subcategoryslug } = req.query;
-    
+    console.log("Category Slug:", categoryslug);
+    console.log("Sub Category Slug:", subcategoryslug);
     // Step 1: Query for chemicals by category and subCategory
     const chemicals = await Chemical.find({
       'categorySlug': categoryslug, // Query based on category
       'subCategorySlug': subcategoryslug, // Query based on subCategory slug within the subCategories array
     });
-
+console.log("Chemicals Found:", chemicals);
     // Step 2: Return the fetched chemicals
     res.status(200).json(chemicals);
   } catch (err) {

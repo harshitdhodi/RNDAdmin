@@ -26,7 +26,8 @@ const menuData = [
       { title: "Search Suppliers", icon: Truck, url: "/search-suppliers" },
       { title: "Unit", icon: PlusSquare, url: "/unit" },
       { title: "Tax", icon: PlusSquare, url: "#types" },
-      { title: "Category", icon: GanttChart, url: "/chemical-category" }
+      { title: "Category", icon: GanttChart, url: "/chemical-category" },
+      { title: "Import Excel", icon: FileText, url: "/import-excel" }
     ]
   },
   {

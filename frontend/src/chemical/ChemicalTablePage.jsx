@@ -198,7 +198,7 @@ const navigate = useNavigate();
           <h2 className="text-lg font-bold text-[#304a8a]">Chemical List</h2>
         </div>
         <div>
-          <ImportExcel />
+         
           <Link to="/chemical-form">
           <Button className="bg-[#304a8a] hover:bg-[#2a1664]">
             <PlusCircle /> Add Chemical

@@ -192,8 +192,8 @@ router.get('/download-demo-excel', (req, res) => {
   }
 });
 
-// Route to import Excel file
-router.post('/import-excel', upload.single('file'), async (req, res) => {
+// POST /import-categories
+router.post('/import-categories', upload.single('file'), async (req, res) => {
   const session = await mongoose.startSession();
   session.startTransaction();
 
@@ -202,41 +202,38 @@ router.post('/import-excel', upload.single('file'), async (req, res) => {
       return res.status(400).json({ error: 'No file uploaded' });
     }
 
-    // Parse Excel file
     const workbook = XLSX.read(req.file.buffer, { type: 'buffer' });
-    
+
     const categoriesSheet = workbook.Sheets['Categories'];
     const subCategoriesSheet = workbook.Sheets['Sub Categories'];
     const subSubCategoriesSheet = workbook.Sheets['Sub-Sub Categories'];
-    const productsSheet = workbook.Sheets['Products'];
 
-    if (!categoriesSheet || !productsSheet) {
-      throw new Error('Required sheets (Categories, Products) not found in Excel file');
+    if (!categoriesSheet) {
+      throw new Error('Required sheet "Categories" not found');
     }
 
-    // Convert sheets to JSON
     const categories = XLSX.utils.sheet_to_json(categoriesSheet);
     const subCategories = subCategoriesSheet ? XLSX.utils.sheet_to_json(subCategoriesSheet) : [];
     const subSubCategories = subSubCategoriesSheet ? XLSX.utils.sheet_to_json(subSubCategoriesSheet) : [];
-    const products = XLSX.utils.sheet_to_json(productsSheet);
 
-    const categoryMap = new Map();
-    const importStats = {
+    const categoryMap = new Map(); // categoryName → document
+    const stats = {
       categories: { created: 0, updated: 0, errors: [] },
-      products: { created: 0, updated: 0, errors: [] }
+      subCategories: { created: 0, errors: [] },
+      subSubCategories: { created: 0, errors: [] }
     };
 
-    // Process Categories
+    // ── 1. Process Main Categories ─────────────────────
     for (const cat of categories) {
       try {
         const slug = createSlug(cat['Category Name'] || '');
         const categoryData = {
-          category: cat['Category Name'] || 'Unnamed Category',
+          category: cat['Category Name']?.trim() || 'Unnamed Category',
           photo: cat['Photo URL'] || '',
           alt: cat['Alt Text'] || '',
           imgtitle: cat['Image Title'] || '',
           details: cat['Details'] || '',
-          slug: slug,
+          slug,
           metatitle: cat['Meta Title'] || '',
           metadescription: cat['Meta Description'] || '',
           metakeywords: cat['Meta Keywords'] || '',
@@ -245,139 +242,175 @@ router.post('/import-excel', upload.single('file'), async (req, res) => {
           metaschema: cat['Meta Schema'] || '',
           otherMeta: cat['Other Meta'] || '',
           url: `/${slug}`,
-          priority: cat['Priority'] || 0.5,
+          priority: Number(cat['Priority']) || 0.5,
           changeFreq: cat['Change Frequency'] || 'monthly',
           subCategories: []
         };
 
-        const existing = await ChemicalCategory.findOne({ category: cat['Category Name'] }).session(session);
-        let savedCategory;
-        
-        if (existing) {
-          Object.assign(existing, categoryData);
-          existing.updatedAt = new Date();
-          savedCategory = await existing.save({ session });
-          importStats.categories.updated++;
+        let doc = await ChemicalCategory.findOne({ category: categoryData.category }).session(session);
+
+        if (doc) {
+          Object.assign(doc, categoryData);
+          doc.updatedAt = new Date();
+          await doc.save({ session });
+          stats.categories.updated++;
         } else {
-          savedCategory = await ChemicalCategory.create([categoryData], { session });
-          savedCategory = savedCategory[0];
-          importStats.categories.created++;
+          doc = await ChemicalCategory.create([categoryData], { session: session });
+          doc = doc[0];
+          stats.categories.created++;
         }
 
-        categoryMap.set(cat['Category Name'], savedCategory);
-      } catch (error) {
-        importStats.categories.errors.push({
-          category: cat['Category Name'],
-          error: error.message
-        });
+        categoryMap.set(categoryData.category, doc);
+      } catch (err) {
+        stats.categories.errors.push({ name: cat['Category Name'], error: err.message });
       }
     }
 
-    // Process Sub Categories
-    for (const subCat of subCategories) {
+    // ── 2. Process Sub-Categories ───────────────────────
+    for (const sub of subCategories) {
       try {
-        const parentCategory = categoryMap.get(subCat['Parent Category']);
-        if (!parentCategory) continue;
+        const parentDoc = categoryMap.get(sub['Parent Category']?.trim());
+        if (!parentDoc) {
+          stats.subCategories.errors.push({ name: sub['Sub Category Name'], error: 'Parent category not found' });
+          continue;
+        }
 
-        const slug = createSlug(subCat['Sub Category Name'] || '');
-        const subCategoryData = {
-          category: subCat['Sub Category Name'] || 'Unnamed Sub-Category',
-          photo: subCat['Photo URL'] || '',
-          alt: subCat['Alt Text'] || '',
-          slug: slug,
-          details: subCat['Details'] || '',
-          metatitle: subCat['Meta Title'] || '',
-          metadescription: subCat['Meta Description'] || '',
-          metakeywords: subCat['Meta Keywords'] || '',
-          url: `/${parentCategory.slug}/${slug}`,
-          priority: subCat['Priority'] || 0.5,
-          changeFreq: subCat['Change Frequency'] || 'monthly',
+        const slug = createSlug(sub['Sub Category Name'] || '');
+        const subData = {
+          category: sub['Sub Category Name']?.trim() || 'Unnamed Sub-Category',
+          photo: sub['Photo URL'] || '',
+          alt: sub['Alt Text'] || '',
+          slug,
+          details: sub['Details'] || '',
+          metatitle: sub['Meta Title'] || '',
+          metadescription: sub['Meta Description'] || '',
+          metakeywords: sub['Meta Keywords'] || '',
+          url: `/${parentDoc.slug}/${slug}`,
+          priority: Number(sub['Priority']) || 0.5,
+          changeFreq: sub['Change Frequency'] || 'monthly',
           subSubCategory: []
         };
 
-        parentCategory.subCategories.push(subCategoryData);
-        await parentCategory.save({ session });
-      } catch (error) {
-        importStats.categories.errors.push({
-          subCategory: subCat['Sub Category Name'],
-          error: error.message
-        });
-      }
-    }
-
-    // Process Sub-Sub Categories
-    for (const subSubCat of subSubCategories) {
-      try {
-        const parentCategory = categoryMap.get(subSubCat['Parent Category']);
-        if (!parentCategory) continue;
-
-        const subCategory = parentCategory.subCategories.find(
-          sc => sc.category === subSubCat['Sub Category']
-        );
-        if (!subCategory) continue;
-
-        const slug = createSlug(subSubCat['Sub-Sub Category Name'] || '');
-        const subSubCategoryData = {
-          category: subSubCat['Sub-Sub Category Name'] || 'Unnamed Sub-Sub-Category',
-          photo: subSubCat['Photo URL'] || '',
-          alt: subSubCat['Alt Text'] || '',
-          slug: slug,
-          details: subSubCat['Details'] || '',
-          metatitle: subSubCat['Meta Title'] || '',
-          metadescription: subSubCat['Meta Description'] || '',
-          url: `/${parentCategory.slug}/${subCategory.slug}/${slug}`,
-          priority: subSubCat['Priority'] || 0.5,
-          changeFreq: subSubCat['Change Frequency'] || 'monthly'
-        };
-
-        subCategory.subSubCategory.push(subSubCategoryData);
-        await parentCategory.save({ session });
-      } catch (error) {
-        importStats.categories.errors.push({
-          subSubCategory: subSubCat['Sub-Sub Category Name'],
-          error: error.message
-        });
-      }
-    }
-
-    // Process Products
-    for (const prod of products) {
-      try {
-        const category = categoryMap.get(prod['Category']);
-        if (!category) {
-          throw new Error(`Category "${prod['Category']}" not found`);
+        // Avoid duplicates
+        const exists = parentDoc.subCategories.some(sc => sc.category === subData.category);
+        if (!exists) {
+          parentDoc.subCategories.push(subData);
+          stats.subCategories.created++;
         }
 
-        let subCategoryId = undefined;
-        let subCategorySlug = '';
-        let subSubCategoryId = undefined;
-        let subSubCategorySlug = '';
+        await parentDoc.save({ session });
+      } catch (err) {
+        stats.subCategories.errors.push({ name: sub['Sub Category Name'], error: err.message });
+      }
+    }
+
+    // ── 3. Process Sub-Sub-Categories ───────────────────
+    for (const ssc of subSubCategories) {
+      try {
+        const parentDoc = categoryMap.get(ssc['Parent Category']?.trim());
+        if (!parentDoc) continue;
+
+        const subCat = parentDoc.subCategories.find(sc => sc.category === ssc['Sub Category']?.trim());
+        if (!subCat) {
+          stats.subSubCategories.errors.push({ name: ssc['Sub-Sub Category Name'], error: 'Sub-category not found' });
+          continue;
+        }
+
+        const slug = createSlug(ssc['Sub-Sub Category Name'] || '');
+        const subSubData = {
+          category: ssc['Sub-Sub Category Name']?.trim() || 'Unnamed Sub-Sub-Category',
+          photo: ssc['Photo URL'] || '',
+          alt: ssc['Alt Text'] || '',
+          slug,
+          details: ssc['Details'] || '',
+          metatitle: ssc['Meta Title'] || '',
+          metadescription: ssc['Meta Description'] || '',
+          url: `/${parentDoc.slug}/${subCat.slug}/${slug}`,
+          priority: Number(ssc['Priority']) || 0.5,
+          changeFreq: ssc['Change Frequency'] || 'monthly'
+        };
+
+        if (!subCat.subSubCategory.some(x => x.category === subSubData.category)) {
+          subCat.subSubCategory.push(subSubData);
+          stats.subSubCategories.created++;
+          await parentDoc.save({ session });
+        }
+      } catch (err) {
+        stats.subSubCategories.errors.push({ name: ssc['Sub-Sub Category Name'], error: err.message });
+      }
+    }
+
+    await session.commitTransaction();
+
+    res.json({
+      success: true,
+      message: 'Categories hierarchy imported successfully',
+      stats
+    });
+
+  } catch (error) {
+    await session.abortTransaction();
+    console.error('Category import error:', error);
+    res.status(500).json({ success: false, error: error.message });
+  } finally {
+    session.endSession();
+  }
+});
+
+
+// POST /import-products
+router.post('/import-products', upload.single('file'), async (req, res) => {
+  const session = await mongoose.startSession();
+  session.startTransaction();
+
+  try {
+    if (!req.file) return res.status(400).json({ error: 'No file uploaded' });
+
+    const workbook = XLSX.read(req.file.buffer, { type: 'buffer' });
+    const productsSheet = workbook.Sheets['Products'];
+    if (!productsSheet) throw new Error('Sheet "Products" not found');
+
+    const products = XLSX.utils.sheet_to_json(productsSheet);
+    const stats = { created: 0, updated: 0, errors: [] };
+
+    for (const prod of products) {
+      try {
+        const catName = prod['Category']?.trim();
+        if (!catName) throw new Error('Category missing');
+
+        const categoryDoc = await ChemicalCategory.findOne({ category: catName }).session(session);
+        if (!categoryDoc) throw new Error(`Category "${catName}" not found`);
+
+        // Resolve sub & sub-sub
+        let subCategoryId = null, subCategorySlug = '';
+        let subSubCategoryId = null, subSubCategorySlug = '';
 
         if (prod['Sub Category']) {
-          const subCat = category.subCategories.find(sc => sc.category === prod['Sub Category']);
-          if (subCat) {
-            subCategoryId = subCat._id;
-            subCategorySlug = subCat.slug;
+          const sub = categoryDoc.subCategories.find(sc => sc.category === prod['Sub Category']?.trim());
+          if (sub) {
+            subCategoryId = sub._id;
+            subCategorySlug = sub.slug;
 
             if (prod['Sub-Sub Category']) {
-              const subSubCat = subCat.subSubCategory.find(ssc => ssc.category === prod['Sub-Sub Category']);
-              if (subSubCat) {
-                subSubCategoryId = subSubCat._id;
-                subSubCategorySlug = subSubCat.slug;
+              const subSub = sub.subSubCategory.find(ssc => ssc.category === prod['Sub-Sub Category']?.trim());
+              if (subSub) {
+                subSubCategoryId = subSub._id;
+                subSubCategorySlug = subSub.slug;
               }
             }
           }
         }
 
-        const productSlug = createSlug(prod['Product Name'] || '');
+        const productSlug = createSlug(prod['Product Name'] || 'Unnamed Product');
+
         const productData = {
-          category: category._id,
-          categorySlug: category.slug,
+          category: categoryDoc._id,
+          categorySlug: categoryDoc.slug,
           sub_category: subCategoryId,
-          subCategorySlug: subCategorySlug,
+          subCategorySlug,
           subsub_category_id: subSubCategoryId,
-          subSubCategorySlug: subSubCategorySlug,
-          name: prod['Product Name'] || 'Unnamed Product',
+          subSubCategorySlug,
+          name: prod['Product Name']?.trim() || 'Unnamed Product',
           slug: productSlug,
           cas_number: prod['CAS Number'] || '',
           chemical_type: prod['Chemical Type'] || '',
@@ -386,7 +419,7 @@ router.post('/import-excel', upload.single('file'), async (req, res) => {
           iupac: prod['IUPAC Name'] || '',
           h_s_code: prod['HS Code'] || '',
           molecular_formula: prod['Molecular Formula'] || '',
-          molecular_weight: prod['Molecular Weight'] || null,
+          molecular_weight: prod['Molecular Weight'] ? Number(prod['Molecular Weight']) : null,
           description: prod['Description'] || '',
           global_tagline: prod['Global Tagline'] || '',
           synonyms: prod['Synonyms'] ? prod['Synonyms'].split(',').map(s => s.trim()) : [],
@@ -400,43 +433,36 @@ router.post('/import-excel', upload.single('file'), async (req, res) => {
           metakeywords: prod['Meta Keywords'] || ''
         };
 
-        const existingProduct = await Chemical.findOne({ 
-          name: prod['Product Name'],
-          category: category._id 
+        const existing = await Chemical.findOne({
+          name: productData.name,
+          category: categoryDoc._id
         }).session(session);
 
-        if (existingProduct) {
-          Object.assign(existingProduct, productData);
-          await existingProduct.save({ session });
-          importStats.products.updated++;
+        if (existing) {
+          Object.assign(existing, productData);
+          await existing.save({ session });
+          stats.updated++;
         } else {
           await Chemical.create([productData], { session });
-          importStats.products.created++;
+          stats.created++;
         }
-      } catch (error) {
-        importStats.products.errors.push({
-          product: prod['Product Name'],
-          error: error.message
-        });
+      } catch (err) {
+        stats.errors.push({ product: prod['Product Name'], error: err.message });
       }
     }
 
     await session.commitTransaction();
-    
+
     res.json({
       success: true,
-      message: 'Import completed',
-      stats: importStats
+      message: 'Products imported successfully',
+      stats
     });
 
   } catch (error) {
     await session.abortTransaction();
-    console.error('Import error:', error);
-    res.status(500).json({ 
-      success: false, 
-      error: 'Import failed', 
-      details: error.message 
-    });
+    console.error('Product import error:', error);
+    res.status(500).json({ success: false, error: error.message });
   } finally {
     session.endSession();
   }
