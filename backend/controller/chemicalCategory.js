@@ -885,19 +885,55 @@ const getSpecificCategoryById = async (req, res) => {
 
 const getTopCategories = async (req, res) => {
   try {
-    // Find the top 5 categories, sorted by creation date in descending order
-    const categories = await ProductCategory.find({})
-      .sort({ createdAt: -1 })
-      .limit(5);
-console.log(categories)
+    const categories = await ProductCategory.aggregate([
+      // 1. Sort categories to get the latest ones
+      { $sort: { createdAt: -1 } },
+      // 2. Limit to the top 5 categories
+      { $limit: 5 },
+      // 3. Deconstruct the subCategories array to process each subcategory
+      { $unwind: { path: "$subCategories", preserveNullAndEmptyArrays: true } },
+      // 4. Look up products for each subcategory
+      {
+        $lookup: {
+          from: "chemicals", // The collection name for the 'Product' model
+          let: { subCategoryId: "$subCategories._id" },
+          pipeline: [
+            { $match: { $expr: { $eq: ["$sub_category", "$$subCategoryId"] } } },
+            { $limit: 5 }, // Limit to 5 products per subcategory
+            { $project: { _id: 1, name: 1, slug: 1 } } // Return only the chemical's name, ID, and slug
+          ],
+          as: "subCategories.products"
+        }
+      },
+      // 5. Group back by category to reconstruct the document
+      {
+        $group: {
+          _id: "$_id",
+          categoryName: { $first: "$category" },
+          categorySlug: { $first: "$slug" },
+          createdAt: { $first: "$createdAt" },
+          subCategories: { $push: {
+            _id: "$subCategories._id",
+            category: "$subCategories.category",
+            slug: "$subCategories.slug",
+            products: "$subCategories.products"
+          } }
+        }
+      },
+      // 6. Sort the final categories again by creation date
+      { $sort: { createdAt: -1 } },
+      // 7. Final projection to shape the output
+      { $project: { _id: 1, category: "$categoryName", slug: "$categorySlug", subCategories: 1 } }
+    ]);
+
     if (!categories || categories.length === 0) {
       return res.status(404).json({ message: 'No categories found' });
     }
 
     res.status(200).json(categories);
   } catch (error) {
+    console.error("Error in getTopCategories:", error);
     res.status(500).json({ message: 'Server error', error });
   }
 };
-module.exports = { uploadPhoto, insertCategory, insertSubCategory, insertSubSubCategory, updateCategory, updateSubCategory, updatesubsubcategory, deletecategory, deletesubcategory, deletesubsubcategory, getAll, getSpecificCategory, getSpecificSubcategory, getSpecificSubSubcategory,fetchCategoryUrlPriorityFreq, editCategoryUrlPriorityFreq, fetchCategoryUrlPriorityFreqById,fetchCategoryUrlmeta, editCategoryUrlmeta ,getSpecificSubcategoryBySlug, getTopCategories
-  , fetchCategoryUrlmetaById, getSpecificCategoryById };
+module.exports = { uploadPhoto, insertCategory, insertSubCategory, insertSubSubCategory, updateCategory, updateSubCategory, updatesubsubcategory, deletecategory, deletesubcategory, deletesubsubcategory, getAll, getSpecificCategory, getSpecificSubcategory, getSpecificSubSubcategory,fetchCategoryUrlPriorityFreq, editCategoryUrlPriorityFreq, fetchCategoryUrlPriorityFreqById,fetchCategoryUrlmeta, editCategoryUrlmeta ,getSpecificSubcategoryBySlug, getTopCategories, fetchCategoryUrlmetaById, getSpecificCategoryById };

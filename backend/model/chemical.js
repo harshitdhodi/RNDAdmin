@@ -58,6 +58,13 @@ const chemicalSchema = new mongoose.Schema({
     metalanguage: { type: String, default: "" },
     metaschema: { type: String, default: "" },
     otherMeta: { type: String, default: "" },
+    form: { type: String, default: "" },
+    meltingPoint: { type: String, default: "" },
+    boilingPoint: { type: String, default: "" },
+    solubility: { type: String, default: "" },
+    flashPoint: { type: String, default: "" },
+    class: { type: String, default: "" },
+    olfactory: { type: String, default: "" },
 }, { timestamps: true });
 
 // Pre-save middleware to generate unique Auto_p_code

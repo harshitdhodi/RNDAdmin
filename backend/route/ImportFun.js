@@ -103,7 +103,19 @@ router.get('/download-demo-excel', (req, res) => {
         'Meta Title': 'Methanol | Alcohols',
         'Priority': 0.7,
         'Change Frequency': 'monthly'
+      },
+      {
+        'Parent Category': 'Organic Chemicals',
+        'Sub Category': 'Acids',
+        'Sub-Sub Category Name': 'Acetic Acid',
+        'Photo URL': 'https://example.com/acetic_acid.jpg',
+        'Alt Text': 'Acetic Acid',
+        'Details': 'Glacial acetic acid products',
+        'Meta Title': 'Acetic Acid | Organic Acids',
+        'Priority': 0.7,
+        'Change Frequency': 'monthly'
       }
+
     ];
 
     // Products Sheet
@@ -131,7 +143,14 @@ router.get('/download-demo-excel', (req, res) => {
         'Assay': '99.9%',
         'Meta Title': 'Methanol 99.9% Pure | Chemical Supplier',
         'Meta Description': 'Buy high-purity methanol for industrial use',
-        'Meta Keywords': 'methanol, methyl alcohol, solvent'
+        'Meta Keywords': 'methanol, methyl alcohol, solvent',
+        'Form': 'Liquid',
+        'Melting Point (°C)': '-97.6',
+        'Boiling Point (°C)': '64.7',
+        'Solubility': 'Miscible with water',
+        'Flash Point (°C)': '11',
+        'Class': 'Flammable Liquid',
+        'Olfactory': 'Pungent, alcoholic odor'
       },
       {
         'Category': 'Inorganic Chemicals',
@@ -156,7 +175,14 @@ router.get('/download-demo-excel', (req, res) => {
         'Assay': '99.5%',
         'Meta Title': 'Sodium Chloride | Industrial Grade',
         'Meta Description': 'Premium industrial sodium chloride',
-        'Meta Keywords': 'sodium chloride, salt, NaCl'
+        'Meta Keywords': 'sodium chloride, salt, NaCl',
+        'Form': 'Solid',
+        'Melting Point (°C)': '801',
+        'Boiling Point (°C)': '1413',
+        'Solubility': 'Soluble in water',
+        'Flash Point (°C)': 'N/A',
+        'Class': 'Non-hazardous',
+        'Olfactory': 'Odorless'
       }
     ];
 
@@ -430,7 +456,14 @@ router.post('/import-products', upload.single('file'), async (req, res) => {
           assay: prod['Assay'] || '',
           metatitle: prod['Meta Title'] || '',
           metadescription: prod['Meta Description'] || '',
-          metakeywords: prod['Meta Keywords'] || ''
+          metakeywords: prod['Meta Keywords'] || '',
+          form: prod['Form'] || '',
+          meltingPoint: prod['Melting Point (°C)'] || '',
+          boilingPoint: prod['Boiling Point (°C)'] || '',
+          solubility: prod['Solubility'] || '',
+          flashPoint: prod['Flash Point (°C)'] || '',
+          class: prod['Class'] || '',
+          olfactory: prod['Olfactory'] || ''
         };
 
         const existing = await Chemical.findOne({

@@ -241,7 +241,8 @@ const getBlogBySlug = async (req, res) => {
     const { slug } = req.query;  // Extract the slug from the query parameters
   
     try {
-      const blog = await Blog.findOne({ slug });  // Find the blog by slug and populate category
+      const blog = await Blog.findOne({ slug }).populate('category');  // Find the blog by slug and populate category
+      console.log(blog)
       if (!blog) {
         return res.status(404).json({ message: 'Blog not found' });
       }
