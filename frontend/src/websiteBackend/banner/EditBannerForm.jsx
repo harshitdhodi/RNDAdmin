@@ -144,29 +144,23 @@ const EditBannerForm = () => {
                         rules={[{ required: true, message: 'Please select a page slug!' }]}
                     >
                         <Select placeholder="Select a menu item" loading={menuLoading}>
-                            {menuList.flatMap((menu, menuIndex) => [
-                                <Option key={`menu-${menu._id}`} value={menu.parent.path} className="font-bold">
-                                    {menu.parent.name}
-                                </Option>,
-                                ...menu.children.flatMap((child, childIndex) => [
-                                    <Option 
-                                        key={`child-${menu._id}-${child._id}`} 
-                                        value={child.path} 
-                                        className="pl-5"
-                                    >
-                                        <span> ├── </span>{child.name}
-                                    </Option>,
-                                    ...child.subChildren.map((subChild, subChildIndex) => (
-                                        <Option 
-                                            key={`subchild-${menu._id}-${child._id}-${subChild._id}`} 
-                                            value={subChild.path} 
-                                            className="pl-10"
-                                        >
-                                            <span>├────</span> {subChild.name}
-                                        </Option>
-                                    ))
-                                ])
-                            ])}
+                            {menuList.map(item => (
+                                <React.Fragment key={item._id}>
+                                    <Option key={`${item._id}-parent`} value={item.parent.path} className="font-bold">{item.parent.name}</Option>
+                                    {item.children && item.children.map(child => (
+                                        <React.Fragment key={child._id}>
+                                            <Option key={child._id} value={child.path} className="pl-5">
+                                                <span> ├── </span>{child.name}
+                                            </Option>
+                                            {child.subChildren && child.subChildren.map(subChild => (
+                                                <Option key={subChild._id} value={subChild.path} className="pl-10">
+                                                    <span>├────</span> {subChild.name}
+                                                </Option>
+                                            ))}
+                                        </React.Fragment>
+                                    ))}
+                                </React.Fragment>
+                            ))}
                         </Select>
                     </Form.Item>
 

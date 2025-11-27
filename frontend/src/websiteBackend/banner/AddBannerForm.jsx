@@ -80,26 +80,22 @@ const AddBannerForm = () => {
     }
   };
 
-  const renderMenuOptions = (menu) => {
-    return (
-      <React.Fragment key={menu._id}>
-        <Option value={menu.parent.path} className="font-bold">
-          {menu.parent.name}
-        </Option>
-        {menu.children.map((child) => (
-          <React.Fragment key={child._id}>
-            <Option value={child.path} className="pl-5">
-              <span> ├── </span>{child.name}
-            </Option>
-            {child.subChildren.map((subChild) => (
-              <Option key={subChild._id} value={subChild.path} className="pl-10">
-                <span>├────</span> {subChild.name}
-              </Option>
-            ))}
-          </React.Fragment>
-        ))}
-      </React.Fragment>
-    );
+  const renderMenuOptions = (items) => {
+    const options = [];
+    items.forEach(item => {
+      options.push(<Option key={item._id} value={item.parent.path} className="font-bold">{item.parent.name}</Option>);
+      if (item.children) {
+        item.children.forEach(child => {
+          options.push(<Option key={child._id} value={child.path} className="pl-5"><span> ├── </span>{child.name}</Option>);
+          if (child.subChildren) {
+            child.subChildren.forEach(subChild => {
+              options.push(<Option key={subChild._id} value={subChild.path} className="pl-10"><span>├────</span> {subChild.name}</Option>);
+            });
+          }
+        });
+      }
+    });
+    return options;
   };
 
   return (
@@ -121,7 +117,7 @@ const AddBannerForm = () => {
         <Form form={form} layout="vertical" onFinish={onFinish}>
           <Form.Item name="pageSlug" label="Page Slug" rules={[{ required: true, message: 'Please select a page slug!' }]}>
             <Select placeholder="Select a menu item" loading={loading}>
-              {menuList.map(menu => renderMenuOptions(menu))}
+              {renderMenuOptions(menuList)}
             </Select>
           </Form.Item>
           <Form.Item name="image" label="Banner Image" rules={[{ required: true, message: 'Please upload an image!' }]}>
