@@ -178,7 +178,7 @@ const menuData = [
         children: [
           { title: "Meta List", icon: List, url: "/meta-table" },
           { title: "Meta Form", icon: List, url: "/meta-form" },
-          // { title: "Add New", icon: PlusSquare, url: "/contact-info/add" },
+          { title: "Tracking Info", icon: List, url: "/tracking" },
         ]
       },
       {
@@ -205,8 +205,8 @@ const menuData = [
           { title: "Terms and Condition", icon: PlusSquare, url: "/terms-and-conditions-form" },
         ]
       }
-    ]
-  }
+    ],
+  },
 ];
 
 export default function AppSidebar() {

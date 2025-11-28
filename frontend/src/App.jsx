@@ -124,6 +124,7 @@ const CareerInfoForm = lazy(() => import('./websiteBackend/career/CareerInfoForm
 import useDocumentTitle from './websiteBackend/staticMetaKeyword/DynamicMeta';
 import CriticalStyles from './website/componets/CriticalStyles';
 import ImportExcel from './chemical/ImportExcel';
+import TrackingInfo from './clickTrack/TrackingInfo';
 
 // Auth Components
 const PrivateRoute = ({ children }) => {
@@ -334,6 +335,8 @@ function App() {
             { path: 'privacypolicy-terms', element: <Suspense fallback={<LoadingFallback />}><PrivacyForm /></Suspense> },
             { path: 'terms-and-conditions-form', element: <Suspense fallback={<LoadingFallback />}><TermsConditionForm /></Suspense> },
             { path: 'import-excel', element: <Suspense fallback={<LoadingFallback />}><ImportExcel /></Suspense> },
+            { path: 'tracking', element: <Suspense fallback={<LoadingFallback />}><TrackingInfo /></Suspense> },
+            
           ]
         }
       ]
