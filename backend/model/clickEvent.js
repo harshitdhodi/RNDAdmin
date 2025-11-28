@@ -4,7 +4,6 @@ const mongoose = require('mongoose');
 const clickEventSchema = new mongoose.Schema({
   eventType: {
     type: String,
-    enum: ['button_click', 'page_view', 'form_submit', 'product_view', 'inquiry_click'],
     required: true
   },
   
