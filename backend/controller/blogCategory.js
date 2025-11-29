@@ -53,8 +53,6 @@ const getCategoryById = async (req, res) => {
   }
 };
 
-<<<<<<< HEAD
-=======
 
 // Get a category by Slug
 const getCategoryBySlug = async (req, res) => {
@@ -72,7 +70,6 @@ const getCategoryBySlug = async (req, res) => {
 };
 
 
->>>>>>> 6eaae5458c9d9da428bbbf6655b2150ac7ea833b
 // Update a category by ID
 const updateCategory = async (req, res) => {
   const { id } = req.query;
@@ -119,10 +116,6 @@ module.exports = {
   getAllCategories,
   getCategoryById,
   updateCategory,
-<<<<<<< HEAD
-  deleteCategory
-=======
   deleteCategory,
   getCategoryBySlug
->>>>>>> 6eaae5458c9d9da428bbbf6655b2150ac7ea833b
 };

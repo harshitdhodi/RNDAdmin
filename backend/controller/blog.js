@@ -287,11 +287,7 @@ module.exports = {
   getBlogsByCategory,
   getLatestBlog ,
   getAllBlogsExceptLatest,
-<<<<<<< HEAD
-  getBlogBySlug
-=======
   getBlogBySlug,
   incrementBlogVisits
->>>>>>> 6eaae5458c9d9da428bbbf6655b2150ac7ea833b
 
 };

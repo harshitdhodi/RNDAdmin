@@ -9,11 +9,7 @@ import SearchBar from "./SearchBar";
 import Footer from "../home/Footer";
 import { useGetLogoQuery } from "@/slice/logo/LogoSlice";
 import NavSection from "./NavSection";
-<<<<<<< HEAD
-1
-=======
 
->>>>>>> 6eaae5458c9d9da428bbbf6655b2150ac7ea833b
 export default function NavbarComp({ categories }) {
   const [productDropdownOpen, setProductDropdownOpen] = useState(false);
   const [categoryDropdownOpen, setCategoryDropdownOpen] = useState(null);
@@ -53,21 +49,7 @@ export default function NavbarComp({ categories }) {
   }, []);
 
   const { data: logoData } = useGetLogoQuery();
-
-  useEffect(() => {
-    if (logoData?.favIcon) {
-      const faviconUrl = `/api/logo/download/${logoData.favIcon}`;
-      const favicon = document.querySelector('link[rel="icon"]');
-      if (favicon) {
-        favicon.href = faviconUrl;
-      } else {
-        const newFavicon = document.createElement("link");
-        newFavicon.rel = "icon";
-        newFavicon.href = faviconUrl;
-        document.head.appendChild(newFavicon);
-      }
-    }
-  }, [logoData?.favIcon]);
+  console.log("Logo Data in Navbar:", logoData);
 
   return (
     <>

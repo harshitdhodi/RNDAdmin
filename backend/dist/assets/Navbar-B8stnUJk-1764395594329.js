@@ -1,1 +1,0 @@
-import{r as t,u as a,j as s}from"./index-hVri1bw9-1764395594329.js";import o from"./Navbar-D539vBeJ-1764395594329.js";import"./Footer-Rbyhtmo7-1764395594329.js";import"./phone-D5XJvCjE-1764395594329.js";const u=()=>{const[r,l]=t.useState(!1),{data:e}=a();return console.log(e),s.jsx("header",{className:"w-full",children:s.jsx(o,{categories:e})})};export{u as default};

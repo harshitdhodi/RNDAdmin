@@ -77,11 +77,7 @@ const Navbar = () => {
 
     return (
         <>
-<<<<<<< HEAD
-            <nav className="bg-[#3b1f91] flex items-center justify-between text-white relative">
-=======
             <nav className="bg-[#304a8a] flex items-center justify-between text-white relative">
->>>>>>> 6eaae5458c9d9da428bbbf6655b2150ac7ea833b
                 <SidebarTrigger />
                 <div className="flex w-full items-center justify-end space-x-8">
                     <NotificationsDropdown

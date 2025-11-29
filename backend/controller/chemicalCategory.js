@@ -106,49 +106,6 @@ const insertSubSubCategory = async (req, res) => {
   }
 };
 
-<<<<<<< HEAD
-const updateCategory = async (req, res) => {
-  const { categoryId } = req.query;
-
-  const { 
-    category, alt, imgtitle, slug, metatitle, metadescription,details,
-    metakeywords, metacanonical, metalanguage, metaschema, 
-    otherMeta, url, priority, changeFreq 
-  } = req.body;
-
-  let photo = req.body.photo;
-
-  if (req.file) {
-    photo = req.file.filename; // New image uploaded
-  }
-
-  try {
-    // Find the existing category
-    const existingCategory = await ProductCategory.findById(categoryId);
-
-    if (!existingCategory) {
-      return res.status(404).json({ message: 'Category not found' });
-    }
-
-    // Delete the old image if a new one is uploaded
-    if (req.file && existingCategory.photo) {
-      const oldImagePath = path.join(__dirname, '../images', existingCategory.photo); // Adjust the path to match your setup
-
-      // Check if the file exists before attempting to delete
-      if (fs.existsSync(oldImagePath)) {
-        fs.unlinkSync(oldImagePath);
-      }
-    }
-
-    // Update the category with new data
-    const updatedCategory = await ProductCategory.findByIdAndUpdate(
-      categoryId,
-      { 
-        category, alt, imgtitle, photo, slug,details,
-         metatitle, metadescription, 
-        metakeywords, metacanonical, metalanguage, metaschema, otherMeta, 
-        url, priority, changeFreq 
-=======
 const sharp = require("sharp");
 const multer = require("multer");
 
@@ -285,20 +242,10 @@ const updateCategory = async (req, res) => {
         priority,
         changeFreq,
         photo,
->>>>>>> 6eaae5458c9d9da428bbbf6655b2150ac7ea833b
       },
       { new: true, runValidators: true }
     );
 
-<<<<<<< HEAD
-    res.status(200).json(updatedCategory);
-  } catch (error) {
-    res.status(500).json({ message: 'Server error', error });
-  }
-};
-
-
-=======
     return res.status(200).json(updated);
   } catch (error) {
     console.log(error);
@@ -306,7 +253,6 @@ const updateCategory = async (req, res) => {
   }
 };
 
->>>>>>> 6eaae5458c9d9da428bbbf6655b2150ac7ea833b
 const updateSubCategory = async (req, res) => {
   // Update category
   const { categoryId, subCategoryId } = req.query;
@@ -936,9 +882,7 @@ const getSpecificCategoryById = async (req, res) => {
     res.status(500).json({ message: 'Server error', error }); // Return server error in case of any issue
   }
 };
-<<<<<<< HEAD
-module.exports = { insertCategory, insertSubCategory, insertSubSubCategory, updateCategory, updateSubCategory, updatesubsubcategory, deletecategory, deletesubcategory, deletesubsubcategory, getAll, getSpecificCategory, getSpecificSubcategory, getSpecificSubSubcategory,fetchCategoryUrlPriorityFreq, editCategoryUrlPriorityFreq, fetchCategoryUrlPriorityFreqById,fetchCategoryUrlmeta, editCategoryUrlmeta ,getSpecificSubcategoryBySlug
-=======
+
 
 const getTopCategories = async (req, res) => {
   try {

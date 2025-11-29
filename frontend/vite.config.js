@@ -12,14 +12,8 @@ import cssInjectedByJsPlugin from 'vite-plugin-css-injected-by-js';
 const deferNonCriticalCSS = () => ({
   name: "defer-non-critical-css",
   transformIndexHtml(html, { bundle }) {
-<<<<<<< HEAD
-    // console.log("Bundle:", bundle); // Log the bundle object
-    if (!bundle) {
-      return html; 
-=======
      if (!bundle) {
       return html;
->>>>>>> 6eaae5458c9d9da428bbbf6655b2150ac7ea833b
     }
     const cssFile = Object.keys(bundle).find((file) => file.endsWith(".css"));
     if (cssFile) {
@@ -48,54 +42,10 @@ export default defineConfig({
     viteCompression({ algorithm: "brotliCompress" }),
     viteCompression({ algorithm: "gzip" }),
     // PWA Configuration
-<<<<<<< HEAD
-    VitePWA({
-      registerType: "autoUpdate",
-      includeAssets: ["favicon.ico", "apple-touch-icon.png", "mask-icon.svg"],
-      manifest: {
-        name: "Vite PWA Project",
-        short_name: "Vite PWA",
-        theme_color: "#ffffff",
-        icons: [
-          { src: "pwa-64x64.png", sizes: "64x64", type: "image/png" },
-          { src: "pwa-192x192.png", sizes: "192x192", type: "image/png" },
-          { src: "pwa-512x512.png", sizes: "512x512", type: "image/png", purpose: "any" },
-          { src: "maskable-icon-512x512.png", sizes: "512x512", type: "image/png", purpose: "maskable" },
-        ],
-      },
-      workbox: {
-        maximumFileSizeToCacheInBytes: 5 * 1024 * 1024,
-        runtimeCaching: [
-          {
-            urlPattern: /.*\.(?:png|jpg|jpeg|svg|gif|pdf)$/,
-            handler: "CacheFirst",
-            options: {
-              cacheName: "large-assets",
-              expiration: {
-                maxEntries: 10,
-                maxAgeSeconds: 7 * 24 * 60 * 60,
-              },
-            },
-          },
-          {
-            urlPattern: /.*\.(?:js|css)/,
-            handler: "NetworkFirst",
-            options: {
-              cacheName: "static-resources",
-            },
-          },
-        ],
-      },
-    }),
-    // Critical CSS (used with SSR or pre-rendered HTML)
-    critical({
-      criticalUrl: "http://localhost:3028", // optional: use your base URL or entry HTML
-=======
     VitePWA({ registerType: "autoUpdate", workbox: { globPatterns: [] } }), // Disable PWA caching
     // Critical CSS (used with SSR or pre-rendered HTML)
     critical({
       criticalUrl: "http://localhost:3030", // optional: use your base URL or entry HTML
->>>>>>> 6eaae5458c9d9da428bbbf6655b2150ac7ea833b
       criticalBase: "dist/",
       criticalPages: [{ uri: "", template: "index" }],
       critical: {
@@ -169,21 +119,13 @@ export default defineConfig({
   },
   server: {
     historyApiFallback: true,
-<<<<<<< HEAD
-    port: 3000,
-=======
     port: 3001,
->>>>>>> 6eaae5458c9d9da428bbbf6655b2150ac7ea833b
     headers: {
       "Service-Worker-Allowed": "/",
     },
     proxy: {
       "/api": {
-<<<<<<< HEAD
-        target: "http://localhost:3028",
-=======
         target: "http://localhost:3030",
->>>>>>> 6eaae5458c9d9da428bbbf6655b2150ac7ea833b
         changeOrigin: false,
         secure: false,
       },

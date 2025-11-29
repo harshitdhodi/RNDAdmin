@@ -2,7 +2,6 @@ import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Sidebar, SidebarContent, SidebarGroup, SidebarGroupLabel, SidebarMenu, SidebarMenuItem, SidebarMenuButton } from "@/components/ui/sidebar";
 import { Collapsible, CollapsibleTrigger, CollapsibleContent } from "@/components/ui/collapsible";
-import logoimage from "../../../public/headerLogo.webp";
 import { ChevronDown, LayoutDashboard, PlusSquare, List, Settings, ArrowLeftRightIcon, UsersRoundIcon, Truck, Mail, FileQuestion, GanttChart, FlaskConical, Globe, Image, Menu, Newspaper, Contact, Briefcase, Info, Search, FileText, Send, SlidersHorizontal, FileType, Building, Handshake, ShoppingCart, ShieldQuestion, FileCheck, KeyRound, Link as LinkIcon, BookCopy, Lock, FileLock, MessageSquareQuote } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Link, useLocation } from "react-router-dom";
@@ -212,6 +211,26 @@ const menuData = [
 export default function AppSidebar() {
   const [openSections, setOpenSections] = useState({ Website: true });
   const [userMenuOpen, setUserMenuOpen] = useState(false);
+  const [logoData, setLogoData] = useState({ url: '', alt: 'Company Logo' });
+
+  useEffect(() => {
+    const fetchLogo = async () => {
+      try {
+        const response = await axios.get("/api/companyLogo/get-logo");
+        if (response.data.success && response.data.data) {
+          const { headerLogo, headerLogoAltName } = response.data.data;
+          // Construct the full URL for the logo image
+          const imageUrl = `${import.meta.env.VITE_API_URL}/uploads/${headerLogo}`;
+          setLogoData({ url: imageUrl, alt: headerLogoAltName || 'Company Logo' });
+        }
+      } catch (error) {
+        console.error("Failed to fetch logo:", error);
+        // You could set a fallback logo here if needed
+      }
+    };
+
+    fetchLogo();
+  }, []);
 
 
   const toggleUserMenu = () => {
@@ -258,12 +277,12 @@ export default function AppSidebar() {
       );
     });
 
-  return (
+  return (  
     <Sidebar >
       <SidebarContent>
 
         <div className="p-4 border-b">
-          <img src={logoimage} alt="Company Logo" className="h-16 mx-auto" />
+          {logoData.url && <img src={logoData.url} alt={logoData.alt} className="h-16 mx-auto" />}
         </div>
     
         <SidebarGroup>

@@ -72,11 +72,7 @@ export const AddChemicalDialog = ({
         <Dialog open={open} onOpenChange={(isOpen) => !isOpen && onOpenChange(false)}>
             <DialogContent className="max-w-lg p-6">
                 <DialogHeader>
-<<<<<<< HEAD
-                    <DialogTitle className="text-lg font-semibold text-[#3b1f91]">
-=======
                     <DialogTitle className="text-lg font-semibold text-[#304a8a]">
->>>>>>> 6eaae5458c9d9da428bbbf6655b2150ac7ea833b
                         Add Chemicals to Customer
                     </DialogTitle>
                 </DialogHeader>
@@ -144,11 +140,7 @@ export const AddChemicalDialog = ({
                     <div className="flex justify-between mt-4">
                         <Button
                             onClick={handleAddChemical}
-<<<<<<< HEAD
-                            className="bg-[#3b1f91] hover:bg-purple-700"
-=======
                             className="bg-[#304a8a] hover:bg-purple-700"
->>>>>>> 6eaae5458c9d9da428bbbf6655b2150ac7ea833b
                             disabled={selectedChemicals.length === 0}
                         >
                             + Add Chemicals

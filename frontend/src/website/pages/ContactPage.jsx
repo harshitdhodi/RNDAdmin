@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 import { Link, useLocation } from 'react-router-dom';
 import { Banner } from '../componets/Banner';
 import LeftSection from '../componets/contact_sec/LeftSide';
@@ -41,48 +40,4 @@ const ContactPage = () => {
   );
 };
 
-=======
-import { Link, useLocation } from 'react-router-dom';
-import { Banner } from '../componets/Banner';
-import LeftSection from '../componets/contact_sec/LeftSide';
-import RightSection from '../componets/contact_sec/RightSide';
-import Footer from '../componets/home/Footer';
-import img from "../images/contact-us.png";
-import { useGetBannerByPageSlugQuery } from '@/slice/banner/banner';
-
-const ContactPage = () => {
-  const location = useLocation();
-  const path = location.pathname.replace(/^\//, '') || 'contact';
-  const { data: banners, isLoading: isBannerLoading } = useGetBannerByPageSlugQuery(path);
-
-  return (
-    <>
-      <div>
-        {isBannerLoading ? (
-          <div>Loading banner...</div>
-        ) : (
-          <Banner imageUrl={banners && banners.length > 0 ? `/api/image/download/${banners[0].image}` : img} />
-        )}
-      </div>
-
-      <div className="max-w-7xl mx-auto py-4 mb-10">
-        <nav className="py-2 border-b mb-8 border-gray-200 px-6">
-          <div className="flex items-center space-x-2 text-sm">
-            <Link to="/" className="text-gray-600 hover:text-gray-900">
-              Home
-            </Link>
-            <span className="text-gray-400">&raquo;</span>
-            <span className="text-orange-500">Contact Us</span>
-          </div>
-        </nav>
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          <LeftSection />
-          <RightSection />
-        </div>
-      </div>
-    </>
-  );
-};
-
->>>>>>> 6eaae5458c9d9da428bbbf6655b2150ac7ea833b
 export default ContactPage;

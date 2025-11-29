@@ -10,14 +10,9 @@ const BlogSchema = new Schema({
     alt: [{ type: String, default: '' }],
     imageTitle: [{ type: String, default: '' }],
     slug: { type: String, unique: true },
-<<<<<<< HEAD
-    postedBy: { type: String, required: true },
-    visits: { type: Number, default: 0 },
-=======
     postedBy: { type: String,  },
     visits: { type: Number, default: 0 },
     
->>>>>>> 6eaae5458c9d9da428bbbf6655b2150ac7ea833b
     metatitle: { type: String },
     metadescription: { type: String },
     metakeywords: { type: String },
@@ -30,12 +25,8 @@ const BlogSchema = new Schema({
     changeFreq: { type: String },
     lastmod: { type: Date, default: Date.now },
     status: { type: String, required: true },
-<<<<<<< HEAD
-    categories: { type: Schema.Types.ObjectId, ref: 'BlogCategory' },
-=======
     viewedIPs: { type: [String], default: [] },
     category: { type: Schema.Types.ObjectId, ref: 'BlogCategory' },
->>>>>>> 6eaae5458c9d9da428bbbf6655b2150ac7ea833b
     createdAt: { type: Date, default: Date.now },
     updatedAt: { type: Date, default: Date.now },
 });

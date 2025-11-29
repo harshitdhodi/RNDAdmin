@@ -1,19 +1,9 @@
 import React, { useState, useEffect } from "react";
-<<<<<<< HEAD
-import { useLocation, Link } from "react-router-dom";
-import Breadcrumb from "../componets/SubCategoryPage/BreadCrumb";
-import { Pagination } from "../componets/category_subcategory/Pegination";
-import GradeSidebar from "../componets/productsByLetter/GradeSidebar";
-import AlphabetbaseProductTable from "../componets/productsByLetter/ProductsTable";
-import Info from "../componets/productsByLetter/Info";
-import Footer from "../componets/home/Footer";
-=======
 import { useLocation } from "react-router-dom";
 import Breadcrumb from "../componets/SubCategoryPage/BreadCrumb";
 import GradeSidebar from "../componets/productsByLetter/GradeSidebar";
 import AlphabetbaseProductTable from "../componets/productsByLetter/ProductsTable";
 import Info from "../componets/productsByLetter/Info";
->>>>>>> 6eaae5458c9d9da428bbbf6655b2150ac7ea833b
 const formatText = (text) => {
   if (!text) return '';
   
