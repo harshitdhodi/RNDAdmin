@@ -17,10 +17,6 @@ const createAboutUs = async (req, res) => {
             return res.status(400).json({ error: 'Title, short description, description, and section are required' });
         }
 
-        if (!image) {
-            return res.status(400).json({ error: 'Image is required' });
-        }
-
         // Generate slug from section
         const slug = generateSlug(section);
 
