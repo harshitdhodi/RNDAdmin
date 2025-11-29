@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Form, Input, Button, Upload, message, Breadcrumb, Spin, Select } from 'antd';
+import { Form, Input, Button, Upload, message, Breadcrumb, Spin } from 'antd';
 import { UploadOutlined } from '@ant-design/icons';
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
@@ -142,21 +142,19 @@ const AboutUsForm = () => {
         <Form.Item
           name="section"
           label="Section"
-          rules={[{ required: true, message: 'Please select a section!' }]}
+          rules={[{ required: true, message: 'Please input a section!' }]}
         >
-          <Select 
-            placeholder="Select a section"
-            onChange={(value) => {
+          <Input
+            placeholder="Enter a section"
+            onChange={(e) => {
+              const { value } = e.target;
               if (!isCustomSlug) {
                 const newSlug = value.toLowerCase().replace(/\s+/g, '-');
                 setAutoSlug(newSlug);
                 form.setFieldsValue({ slug: newSlug });
               }
             }}
-          >
-            <Select.Option value="Introduction">Introduction</Select.Option>
-            <Select.Option value="Mission Vision">Mission Vision</Select.Option>
-          </Select>
+          />
         </Form.Item>
 
         <Form.Item
@@ -238,9 +236,7 @@ const AboutUsForm = () => {
         </Form.Item>
 
         <Form.Item
-          name="image"
           label="Image"
-          rules={[{ required: false, message: 'Please upload an image!' }]}
         >
           <Upload {...uploadProps} listType="picture">
             <Button icon={<UploadOutlined />}>

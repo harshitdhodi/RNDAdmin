@@ -7,11 +7,11 @@ const contactSchema = new mongoose.Schema({
   },
   lastName: {
     type: String,
-    required: true,
+   
   },
   organisation: {
     type: String,
-    required: true,
+   
   },
   department: String,
   address: String,
@@ -23,7 +23,7 @@ const contactSchema = new mongoose.Schema({
   },
   message: {
     type: String,
-    required: true,
+    
   },
   needCallback: {
     type: Boolean,

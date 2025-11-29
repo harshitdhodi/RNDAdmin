@@ -14,7 +14,6 @@ const aboutUsSchema = new mongoose.Schema({
     },
     section: {
         type: String,
-        enum: ['Introduction', 'Mission Vision'],
         required: true
     }
 }, {

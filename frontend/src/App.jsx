@@ -123,10 +123,8 @@ const CareerInfoForm = lazy(() => import('./websiteBackend/career/CareerInfoForm
 // Non-lazy imports
 import useDocumentTitle from './websiteBackend/staticMetaKeyword/DynamicMeta';
 import CriticalStyles from './website/componets/CriticalStyles';
-<<<<<<< HEAD
-=======
 import ImportExcel from './chemical/ImportExcel';
->>>>>>> 6eaae5458c9d9da428bbbf6655b2150ac7ea833b
+import TrackingInfo from './clickTrack/TrackingInfo';
 
 // Auth Components
 const PrivateRoute = ({ children }) => {
@@ -158,36 +156,36 @@ function App() {
       element: <AppContent />, // Use the AppContent here
       children: [
         // Public Routes (Website)
-        {
-          path: '/',
-          element: (
-            <Suspense fallback={<LoadingFallback />}>
-              <Navbar />
-            </Suspense>
-          ),
-          children: [
-            { index: true, element: <Suspense fallback={<LoadingFallback />}><HomePage /></Suspense> },
-            { path: 'categories', element: <Suspense fallback={<LoadingFallback />}><ProductCategoryPage /></Suspense> },
-            { path: 'products/code?number', element: <Suspense fallback={<LoadingFallback />}><Hello /></Suspense> },
-            { path: 'alphabetsbaseCategory', element: <Suspense fallback={<LoadingFallback />}><AlphabetsBaseCategory /></Suspense> },
-            { path: ':chemicals', element: <Suspense fallback={<LoadingFallback />}><Saperator /></Suspense> },
-            { path: ':slug', element: <Suspense fallback={<LoadingFallback />}><Saperator /></Suspense> },
-            { path: 'contact-us', element: <Suspense fallback={<LoadingFallback />}><ContactPage /></Suspense> },
-            { path: 'blogs', element: <Suspense fallback={<LoadingFallback />}><BlogPage /></Suspense> },
-            { path: 'blog/:slug', element: <Suspense fallback={<LoadingFallback />}><BlogSaparator /></Suspense> },
-            { path: ':chemicals/:slug', element: <Suspense fallback={<LoadingFallback />}><Hello /></Suspense> },
-            { path: ':chemicals/:slug/:subsubCategorySlug', element: <Suspense fallback={<LoadingFallback />}><ChemicalSubcategoryPage /></Suspense> },
-            { path: '/search', element: <Suspense fallback={<LoadingFallback />}><ProductSearchBar /></Suspense> },
-            { path: '/about', element: <Suspense fallback={<LoadingFallback />}><AboutDescription /></Suspense> },
-            { path: '/introduction', element: <Suspense fallback={<LoadingFallback />}><Introduction /></Suspense> },
-            { path: '/vision-mission', element: <Suspense fallback={<LoadingFallback />}><MainContent /></Suspense> },
-            { path: '/worldwide', element: <Suspense fallback={<LoadingFallback />}><WorldWide /></Suspense> },
-            { path: '/careers', element: <Suspense fallback={<LoadingFallback />}><CareerForm /></Suspense> },
-            { path: '/advance-search', element: <Suspense fallback={<LoadingFallback />}><AdvanceSearch /></Suspense> },
-            { path: '/privacy-policy', element: <Suspense fallback={<LoadingFallback />}><PrivacyPolicy /></Suspense> },
-            { path: '/terms-and-conditions', element: <Suspense fallback={<LoadingFallback />}><TermsAndConditions /></Suspense> }
-          ]
-        },
+        // {
+        //   path: '/',
+        //   element: (
+        //     <Suspense fallback={<LoadingFallback />}>
+        //       <Navbar />
+        //     </Suspense>
+        //   ),
+        //   children: [
+        //     { index: true, element: <Suspense fallback={<LoadingFallback />}><HomePage /></Suspense> },
+        //     { path: 'categories', element: <Suspense fallback={<LoadingFallback />}><ProductCategoryPage /></Suspense> },
+        //     { path: 'products/code?number', element: <Suspense fallback={<LoadingFallback />}><Hello /></Suspense> },
+        //     { path: 'alphabetsbaseCategory', element: <Suspense fallback={<LoadingFallback />}><AlphabetsBaseCategory /></Suspense> },
+        //     { path: ':chemicals', element: <Suspense fallback={<LoadingFallback />}><Saperator /></Suspense> },
+        //     { path: ':slug', element: <Suspense fallback={<LoadingFallback />}><Saperator /></Suspense> },
+        //     { path: 'contact-us', element: <Suspense fallback={<LoadingFallback />}><ContactPage /></Suspense> },
+        //     { path: 'blogs', element: <Suspense fallback={<LoadingFallback />}><BlogPage /></Suspense> },
+        //     { path: 'blog/:slug', element: <Suspense fallback={<LoadingFallback />}><BlogSaparator /></Suspense> },
+        //     { path: ':chemicals/:slug', element: <Suspense fallback={<LoadingFallback />}><Hello /></Suspense> },
+        //     { path: ':chemicals/:slug/:subsubCategorySlug', element: <Suspense fallback={<LoadingFallback />}><ChemicalSubcategoryPage /></Suspense> },
+        //     { path: '/search', element: <Suspense fallback={<LoadingFallback />}><ProductSearchBar /></Suspense> },
+        //     { path: '/about', element: <Suspense fallback={<LoadingFallback />}><AboutDescription /></Suspense> },
+        //     { path: '/introduction', element: <Suspense fallback={<LoadingFallback />}><Introduction /></Suspense> },
+        //     { path: '/vision-mission', element: <Suspense fallback={<LoadingFallback />}><MainContent /></Suspense> },
+        //     { path: '/worldwide', element: <Suspense fallback={<LoadingFallback />}><WorldWide /></Suspense> },
+        //     { path: '/careers', element: <Suspense fallback={<LoadingFallback />}><CareerForm /></Suspense> },
+        //     { path: '/advance-search', element: <Suspense fallback={<LoadingFallback />}><AdvanceSearch /></Suspense> },
+        //     { path: '/privacy-policy', element: <Suspense fallback={<LoadingFallback />}><PrivacyPolicy /></Suspense> },
+        //     { path: '/terms-and-conditions', element: <Suspense fallback={<LoadingFallback />}><TermsAndConditions /></Suspense> }
+        //   ]
+        // },
         // Authentication Route
         { 
           path: 'login', 
@@ -336,10 +334,9 @@ function App() {
             // Privacy Policy Routes
             { path: 'privacypolicy-terms', element: <Suspense fallback={<LoadingFallback />}><PrivacyForm /></Suspense> },
             { path: 'terms-and-conditions-form', element: <Suspense fallback={<LoadingFallback />}><TermsConditionForm /></Suspense> },
-<<<<<<< HEAD
-=======
             { path: 'import-excel', element: <Suspense fallback={<LoadingFallback />}><ImportExcel /></Suspense> },
->>>>>>> 6eaae5458c9d9da428bbbf6655b2150ac7ea833b
+            { path: 'tracking', element: <Suspense fallback={<LoadingFallback />}><TrackingInfo /></Suspense> },
+            
           ]
         }
       ]
