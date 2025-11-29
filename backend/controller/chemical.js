@@ -529,13 +529,22 @@ console.log("Chemicals Found:", chemicals);
 // get chemical by category and Alphabet 
 exports.getChemicalByCategoryAndAlphabet = async (req, res) => {
   try {
-    // Destructure categoryslug and the selected alphabet from query parameters
+    // Destructure the selected alphabet from query parameters
     const { alphabet } = req.query;
     
-    // Step 1: Query for chemicals by category and name starting with the provided alphabet (case-insensitive)
-    const chemicals = await Chemical.find({
-      'name': { $regex: `^${alphabet}`, $options: 'i' } // Match name starting with alphabet (case-insensitive)
-    });
+    let filter = {};
+
+    if (alphabet) {
+      if (alphabet.toLowerCase() === 'num') {
+        // If alphabet is 'num', find chemicals where the name starts with any number (0-9)
+        filter.name = { $regex: `^[0-9]`, $options: 'i' };
+      } else {
+        // For any other alphabet, find chemicals where the name starts with that letter
+        filter.name = { $regex: `^${alphabet}`, $options: 'i' };
+      }
+    }
+    // Step 1: Query for chemicals based on the filter
+    const chemicals = await Chemical.find(filter);
 
     // Step 2: Return the fetched chemicals
     res.status(200).json(chemicals);

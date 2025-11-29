@@ -122,7 +122,7 @@ exports.createInquiry = async (req, res) => {
                             </tr>
                             <tr>
                                 <td align="center" style="font-size: 14px; color: #888; padding-top: 15px; border-top: 1px solid #ddd;">
-    <p>&copy; <span id="year"></span> VBRS Chemicals. All rights reserved.</p>
+    <p>&copy; <span id="year"></span> Chemtom. All rights reserved.</p>
 </td>
 
 <script>
@@ -157,7 +157,7 @@ exports.createInquiry = async (req, res) => {
         // **Send Email to Customer**
         if (inquiryData.email) {
             const customerMailOptions = {
-                from: `"VBRS Chemicals" <${smtpConfig.name}>`,
+                from: `"Chemtom" <${smtpConfig.name}>`,
                 to: inquiryData.email,
                 subject: customerTemplate.subject,
                 html: customerTemplate.body.replace("[First Name]", inquiryData.firstName || "Customer"),

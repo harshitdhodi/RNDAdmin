@@ -1,1 +1,0 @@
-import{r as u}from"./index-DhlDUgTv-1764301063565.js";function o(r){const e=u.useRef({value:r,previous:r});return u.useMemo(()=>(e.current.value!==r&&(e.current.previous=e.current.value,e.current.value=r),e.current.previous),[r])}export{o as u};
