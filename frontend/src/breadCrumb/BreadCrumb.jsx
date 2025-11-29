@@ -15,7 +15,11 @@ export function BreadcrumbWithCustomSeparator({ items }) {
         {items.map((item, index) => (
           <BreadcrumbItem key={index}>
             {index === items.length - 1 ? (
+<<<<<<< HEAD
               <BreadcrumbPage className="text-[#3b1f91] font-medium">
+=======
+              <BreadcrumbPage className="text-[#304a8a] font-medium">
+>>>>>>> 6eaae5458c9d9da428bbbf6655b2150ac7ea833b
                 {item.label}
               </BreadcrumbPage>
             ) : (

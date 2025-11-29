@@ -1,5 +1,9 @@
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+<<<<<<< HEAD
 import { useSearchParams } from "react-router-dom";
+=======
+import { Link, useSearchParams } from "react-router-dom";
+>>>>>>> 6eaae5458c9d9da428bbbf6655b2150ac7ea833b
 import { useState, useEffect } from "react";
 import { Loader2 } from "lucide-react";
 import Footer from "../home/Footer";

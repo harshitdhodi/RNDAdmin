@@ -106,6 +106,7 @@ const insertSubSubCategory = async (req, res) => {
   }
 };
 
+<<<<<<< HEAD
 const updateCategory = async (req, res) => {
   const { categoryId } = req.query;
 
@@ -147,10 +148,149 @@ const updateCategory = async (req, res) => {
          metatitle, metadescription, 
         metakeywords, metacanonical, metalanguage, metaschema, otherMeta, 
         url, priority, changeFreq 
+=======
+const sharp = require("sharp");
+const multer = require("multer");
+
+// ---------------------------------------------
+// 1️⃣ MULTER CONFIGURATION (INBUILT)
+// ---------------------------------------------
+
+// Upload directories
+const uploadDir = path.join(__dirname, "../logos");
+const tempDir = path.join(__dirname, "../temp");
+
+// Create folders if missing
+[uploadDir, tempDir].forEach((dir) => {
+  if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
+});
+
+// Multer storage - Save file to /temp first
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, tempDir);
+  },
+  filename: function (req, file, cb) {
+    const ext = path.extname(file.originalname).toLowerCase();
+    const finalExt = ext === ".svg" ? ".svg" : ".webp"; // Convert everything except SVG → .webp
+    cb(null, `photo_${Date.now()}${finalExt}`);
+  },
+});
+
+const uploadPhoto = multer({
+  storage,
+  limits: { fileSize: 5 * 1024 * 1024 }, // 5MB limit
+  fileFilter: (req, file, cb) => {
+    if (!file.mimetype.startsWith("image/") && file.mimetype !== "image/svg+xml") {
+      return cb(new Error("Only image files allowed"));
+    }
+    cb(null, true);
+  }
+}).single("photo");
+
+// ---------------------------------------------
+// 2️⃣ IMAGE PROCESS FUNCTION
+// ---------------------------------------------
+
+async function processImage(tempPath, finalPath) {
+  const ext = path.extname(tempPath).toLowerCase();
+
+  if (ext === ".svg") {
+    await fs.promises.rename(tempPath, finalPath); // SVG → move as it is
+  } else {
+    await sharp(tempPath)
+      .webp({ quality: 90 })
+      .resize({ width: 1024, withoutEnlargement: true })
+      .toFile(finalPath);
+  }
+}
+
+// ---------------------------------------------
+// 3️⃣ UPDATE CATEGORY CONTROLLER
+// ---------------------------------------------
+
+const updateCategory = async (req, res) => {
+  const { categoryId } = req.query;
+
+  const {
+    category,
+    alt,
+    imgtitle,
+    slug,
+    metatitle,
+    metadescription,
+    details,
+    metakeywords,
+    metacanonical,
+    metalanguage,
+    metaschema,
+    otherMeta,
+    url,
+    priority,
+    changeFreq,
+  } = req.body;
+
+  let photo = req.body.photo; // default (existing image)
+
+  try {
+    const existing = await ProductCategory.findById(categoryId);
+    if (!existing) {
+      return res.status(404).json({ message: "Category not found" });
+    }
+
+    // ---------------------------------------------
+    // 3.1 PROCESS NEW UPLOADED PHOTO
+    // ---------------------------------------------
+    if (req.file) {
+      // Final path
+      const finalPath = path.join(uploadDir, req.file.filename);
+
+      // Process image (SVG or WebP)
+      await processImage(req.file.path, finalPath);
+
+      // Set new photo name
+      photo = req.file.filename;
+
+      // Delete temp file after processing
+      fs.unlink(req.file.path, (e) => e && console.log("Temp delete failed"));
+    }
+
+    // ---------------------------------------------
+    // 3.2 DELETE OLD IMAGE IF NEW UPLOADED
+    // ---------------------------------------------
+    if (req.file && existing.photo) {
+      const oldPath = path.join(uploadDir, existing.photo);
+      if (fs.existsSync(oldPath)) fs.unlinkSync(oldPath);
+    }
+
+    // ---------------------------------------------
+    // 3.3 UPDATE DATABASE
+    // ---------------------------------------------
+    const updated = await ProductCategory.findByIdAndUpdate(
+      categoryId,
+      {
+        category,
+        alt,
+        imgtitle,
+        slug,
+        details,
+        metatitle,
+        metadescription,
+        metakeywords,
+        metacanonical,
+        metalanguage,
+        metaschema,
+        otherMeta,
+        url,
+        priority,
+        changeFreq,
+        photo,
+>>>>>>> 6eaae5458c9d9da428bbbf6655b2150ac7ea833b
       },
       { new: true, runValidators: true }
     );
 
+<<<<<<< HEAD
     res.status(200).json(updatedCategory);
   } catch (error) {
     res.status(500).json({ message: 'Server error', error });
@@ -158,6 +298,15 @@ const updateCategory = async (req, res) => {
 };
 
 
+=======
+    return res.status(200).json(updated);
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({ message: "Server error", error });
+  }
+};
+
+>>>>>>> 6eaae5458c9d9da428bbbf6655b2150ac7ea833b
 const updateSubCategory = async (req, res) => {
   // Update category
   const { categoryId, subCategoryId } = req.query;
@@ -787,5 +936,26 @@ const getSpecificCategoryById = async (req, res) => {
     res.status(500).json({ message: 'Server error', error }); // Return server error in case of any issue
   }
 };
+<<<<<<< HEAD
 module.exports = { insertCategory, insertSubCategory, insertSubSubCategory, updateCategory, updateSubCategory, updatesubsubcategory, deletecategory, deletesubcategory, deletesubsubcategory, getAll, getSpecificCategory, getSpecificSubcategory, getSpecificSubSubcategory,fetchCategoryUrlPriorityFreq, editCategoryUrlPriorityFreq, fetchCategoryUrlPriorityFreqById,fetchCategoryUrlmeta, editCategoryUrlmeta ,getSpecificSubcategoryBySlug
+=======
+
+const getTopCategories = async (req, res) => {
+  try {
+    // Find the top 5 categories, sorted by creation date in descending order
+    const categories = await ProductCategory.find({})
+      .sort({ createdAt: -1 })
+      .limit(5);
+console.log(categories)
+    if (!categories || categories.length === 0) {
+      return res.status(404).json({ message: 'No categories found' });
+    }
+
+    res.status(200).json(categories);
+  } catch (error) {
+    res.status(500).json({ message: 'Server error', error });
+  }
+};
+module.exports = { uploadPhoto, insertCategory, insertSubCategory, insertSubSubCategory, updateCategory, updateSubCategory, updatesubsubcategory, deletecategory, deletesubcategory, deletesubsubcategory, getAll, getSpecificCategory, getSpecificSubcategory, getSpecificSubSubcategory,fetchCategoryUrlPriorityFreq, editCategoryUrlPriorityFreq, fetchCategoryUrlPriorityFreqById,fetchCategoryUrlmeta, editCategoryUrlmeta ,getSpecificSubcategoryBySlug, getTopCategories
+>>>>>>> 6eaae5458c9d9da428bbbf6655b2150ac7ea833b
   , fetchCategoryUrlmetaById, getSpecificCategoryById };

@@ -123,6 +123,10 @@ const CareerInfoForm = lazy(() => import('./websiteBackend/career/CareerInfoForm
 // Non-lazy imports
 import useDocumentTitle from './websiteBackend/staticMetaKeyword/DynamicMeta';
 import CriticalStyles from './website/componets/CriticalStyles';
+<<<<<<< HEAD
+=======
+import ImportExcel from './chemical/ImportExcel';
+>>>>>>> 6eaae5458c9d9da428bbbf6655b2150ac7ea833b
 
 // Auth Components
 const PrivateRoute = ({ children }) => {
@@ -332,6 +336,10 @@ function App() {
             // Privacy Policy Routes
             { path: 'privacypolicy-terms', element: <Suspense fallback={<LoadingFallback />}><PrivacyForm /></Suspense> },
             { path: 'terms-and-conditions-form', element: <Suspense fallback={<LoadingFallback />}><TermsConditionForm /></Suspense> },
+<<<<<<< HEAD
+=======
+            { path: 'import-excel', element: <Suspense fallback={<LoadingFallback />}><ImportExcel /></Suspense> },
+>>>>>>> 6eaae5458c9d9da428bbbf6655b2150ac7ea833b
           ]
         }
       ]

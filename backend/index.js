@@ -2,7 +2,6 @@ const express = require('express');
 const fs = require('fs');
 const path = require('path');
 const admin = require("./route/admin");
-const NodeCache = require('node-cache');
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
 const sharp = require('sharp');
@@ -18,39 +17,6 @@ app.use(bodyParser.json({ limit: '10mb' }));
 app.use(bodyParser.urlencoded({ limit: '10mb', extended: true }));
 app.use(compression({ threshold: 1024 }));
 
-// Cache setup with 5-hour default TTL
-const cache = new NodeCache({
-  stdTTL: 18000, // 5 hours in seconds
-  checkperiod: 600,
-  useClones: false,
-  deleteOnExpire: true,
-  maxKeys: 1000,
-});
-
-// Cache middleware - Fixed to avoid overriding res.send incorrectly
-const cacheMiddleware = (duration = 18000) => (req, res, next) => {
-  if (req.method !== 'GET') return next(); // Only cache GET requests
-
-  const key = `__express__${req.originalUrl}`;
-  const cached = cache.get(key);
-
-  if (cached) {
-    res.setHeader('X-Cache', 'HIT');
-    res.setHeader('Cache-Control', 'public, max-age=18000');
-    return res.send(cached);
-  }
-
-  res.setHeader('X-Cache', 'MISS');
-  const originalJson = res.json;
-  res.json = function (data) {
-    if (res.statusCode < 300) { // Cache only successful responses
-      cache.set(key, data, duration);
-    }
-    return originalJson.call(this, data);
-  };
-  next();
-};
-
 // Custom image optimization route
 app.get('/images/:filename', async (req, res) => {
   const { filename } = req.params;
@@ -59,13 +25,6 @@ app.get('/images/:filename', async (req, res) => {
 
   try {
     if (!fs.existsSync(imagePath)) return res.status(404).send('Image not found');
-
-    const cacheKey = `image_${filename}_${w}_${q}`;
-    const cachedImage = cache.get(cacheKey);
-    if (cachedImage) {
-      res.setHeader('X-Cache', 'HIT');
-      return res.type('image/webp').send(cachedImage);
-    }
 
     const ua = req.headers['user-agent'] || '';
     let targetWidth = parseInt(w, 10);
@@ -78,8 +37,7 @@ app.get('/images/:filename', async (req, res) => {
       .webp({ quality: parseInt(q, 10) })
       .toBuffer();
 
-    cache.set(cacheKey, optimizedImage, 18000);
-    res.setHeader('Cache-Control', 'public, max-age=31536000');
+    res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
     res.type('image/webp').send(optimizedImage);
   } catch (err) {
     console.error('Image processing error:', err);
@@ -88,18 +46,14 @@ app.get('/images/:filename', async (req, res) => {
 });
 
 // Static file serving
-app.use(express.static(path.join(__dirname, 'public'), {
-  maxAge: '30d',
-  setHeaders: (res, filepath) => {
-    if (filepath.match(/\.(jpg|jpeg|png|webp)$/)) {
-      res.setHeader('Cache-Control', 'public, max-age=31536000');
-    } else if (filepath.endsWith('.xml')) {
-      res.setHeader('Content-Type', 'application/xml');
-    }
+app.use(express.static(path.join(__dirname, 'public'), { maxAge: 0 }));
+
+app.use(express.static(path.join(__dirname, 'dist'), {
+  maxAge: 0,
+  setHeaders: (res) => {
+    res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
   },
 }));
-
-app.use(express.static(path.join(__dirname, 'dist'), { maxAge: '365d' }));
 
 // API Routes with caching
 const apiRoutes = [
@@ -144,15 +98,16 @@ const apiRoutes = [
   ['/api/privacy', require('./route/privacy')],
   ['/api/terms', require('./route/termscondition')],
   ['/api/careerInfo', require('./route/careerInfo')],
+  ['/api/importFun', require('./route/ImportFun')],
 ];
 
 // Apply cache middleware to all API routes
 apiRoutes.forEach(([route, handler]) => {
-  app.use(route, cacheMiddleware(18000), handler);
+  app.use(route, handler);
 });
 
 // Catch-all route for SPA
-app.get('*', cacheMiddleware(18000), (req, res) => {
+app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, 'dist', 'index.html'));
 });
 
@@ -174,14 +129,7 @@ app.listen(PORT, () => {
     EMAIL_PASS: process.env.EMAIL_PASS ? 'Set' : 'Not Set',
   });
   console.log(`Server running on port ${PORT}`);
-  generateAllSitemaps(); // Generate sitemaps on startup
-});
-
-// Cache cleanup on shutdown
-process.on('SIGTERM', () => {
-  cache.flushAll();
-  console.log('Cache flushed on shutdown');
-  process.exit(0);
+  // generateAllSitemaps(); // Generate sitemaps on startup
 });
 
 // SMTP Connection Test (assuming you have nodemailer setup)

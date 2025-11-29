@@ -5,7 +5,11 @@ import Header from "./Header";
 import PromoSidebar from "./PromoSidebar";
 import Sidebar from "./Sidebar";
 import { useGetSpecificCategoryBySlugQuery } from "@/slice/chemicalSlice/chemicalCategory";
+<<<<<<< HEAD
 import Footer from "../home/Footer";
+=======
+
+>>>>>>> 6eaae5458c9d9da428bbbf6655b2150ac7ea833b
 
 const SubCategories = () => {
   const { chemicals, categorySlug, selectedLetter } = useParams(); // Get all URL parameters

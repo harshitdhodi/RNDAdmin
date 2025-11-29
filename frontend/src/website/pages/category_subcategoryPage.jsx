@@ -3,10 +3,15 @@ import { useLocation, useParams } from 'react-router-dom';
 import { Breadcrumb } from '../componets/category_subcategory/BreadCrumb';
 import { Sidebar } from '../componets/category_subcategory/Sidebar';
 import ProductTable from '../componets/category_subcategory/ProductTable';
+<<<<<<< HEAD
 import { Pagination } from '../componets/category_subcategory/Pegination';
 import SubCategoryInfo from '../componets/category_subcategory/SubcategoryInfo';
 import axios from 'axios';
 import Footer from '../componets/home/Footer';
+=======
+import SubCategoryInfo from '../componets/category_subcategory/SubcategoryInfo';
+import axios from 'axios';
+>>>>>>> 6eaae5458c9d9da428bbbf6655b2150ac7ea833b
 
 export default function ChemicalSubcategoryPage() {
   const { chemicals, slug, subsubCategorySlug } = useParams();

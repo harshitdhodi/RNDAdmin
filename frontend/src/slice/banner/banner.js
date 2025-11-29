@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 
 export const bannerApi = createApi({
@@ -68,4 +69,76 @@ export const {
   useCreateBannerMutation,
   useUpdateBannerMutation,
   useDeleteBannerMutation,
+=======
+import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
+
+export const bannerApi = createApi({
+  reducerPath: 'bannerApi',
+  baseQuery: fetchBaseQuery({ baseUrl: '/api/banner' }),
+  tagTypes: ['Banner'],
+  endpoints: (builder) => ({
+    // Get all banners
+    getAllBanners: builder.query({
+      query: () => '/getAll',
+      providesTags: ['Banner'],
+    }),
+
+    // Get banner by ID
+    getBannerById: builder.query({
+      query: (id) => ({
+        url: '/get',
+        params: { id },
+      }),
+      providesTags: ['Banner'],
+    }),
+
+    // Get banner by pageSlug
+    getBannerByPageSlug: builder.query({
+      query: (pageSlug) => ({
+        url: '/getByPageSlug',
+        params: { pageSlug },
+      }),
+      providesTags: ['Banner'],
+    }),
+    // Create new banner
+    createBanner: builder.mutation({
+      query: (bannerData) => ({
+        url: '/add',
+        method: 'POST',
+        body: bannerData,
+      }),
+      invalidatesTags: ['Banner'],
+    }),
+
+    // Update banner
+    updateBanner: builder.mutation({
+      query: ({id,bannerData}) => ({
+        url: `/update?id=${id}`,
+        method: 'PUT',
+        body: bannerData,
+      }),
+      invalidatesTags: ['Banner'],
+    }),
+
+    // Delete banner
+    deleteBanner: builder.mutation({
+      query: (id) => ({
+        url: '/delete',
+        method: 'DELETE',
+        params: { id },
+      }),
+      invalidatesTags: ['Banner'],
+    }),
+  }),
+});
+
+// Export hooks for usage in components
+export const {
+  useGetAllBannersQuery,
+  useGetBannerByIdQuery,
+  useGetBannerByPageSlugQuery,
+  useCreateBannerMutation,
+  useUpdateBannerMutation,
+  useDeleteBannerMutation,
+>>>>>>> 6eaae5458c9d9da428bbbf6655b2150ac7ea833b
 } = bannerApi;

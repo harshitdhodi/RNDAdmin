@@ -9,7 +9,11 @@ import SearchBar from "./SearchBar";
 import Footer from "../home/Footer";
 import { useGetLogoQuery } from "@/slice/logo/LogoSlice";
 import NavSection from "./NavSection";
+<<<<<<< HEAD
 1
+=======
+
+>>>>>>> 6eaae5458c9d9da428bbbf6655b2150ac7ea833b
 export default function NavbarComp({ categories }) {
   const [productDropdownOpen, setProductDropdownOpen] = useState(false);
   const [categoryDropdownOpen, setCategoryDropdownOpen] = useState(null);

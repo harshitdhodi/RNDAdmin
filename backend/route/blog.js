@@ -11,6 +11,10 @@ router.put('/update',image,blogController.updateBlog); // Update blog by ID
 router.delete('/delete', blogController.deleteBlog); // Delete blog by ID
 router.get('/category', blogController.getBlogsByCategory); // Get blogs by category ID
 router.get('/getLatestBlog',blogController.getLatestBlog);
+<<<<<<< HEAD
+=======
+router.put('/incrementBlogVisits',blogController.incrementBlogVisits);
+>>>>>>> 6eaae5458c9d9da428bbbf6655b2150ac7ea833b
 router.get('/getAllBlogsExceptLatest',blogController.getAllBlogsExceptLatest);
 router.get('/getBlogBySlug',blogController.getBlogBySlug)
 module.exports = router;
