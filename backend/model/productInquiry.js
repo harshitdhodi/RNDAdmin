@@ -19,11 +19,11 @@ const inquirySchema = new mongoose.Schema({
   },
   subject: {
     type: String,
-    required: true
+    
   },
   message: {
     type: String,
-    required: true
+    
   },
   companyName: {
     type: String,
