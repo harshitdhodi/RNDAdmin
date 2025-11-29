@@ -220,7 +220,7 @@ export default function AppSidebar() {
         if (response.data.success && response.data.data) {
           const { headerLogo, headerLogoAltName } = response.data.data;
           // Construct the full URL for the logo image
-          const imageUrl = `${import.meta.env.VITE_API_URL}/uploads/${headerLogo}`;
+          const imageUrl = `${headerLogo}`;
           setLogoData({ url: imageUrl, alt: headerLogoAltName || 'Company Logo' });
         }
       } catch (error) {
@@ -282,7 +282,7 @@ export default function AppSidebar() {
       <SidebarContent>
 
         <div className="p-4 border-b">
-          {logoData.url && <img src={logoData.url} alt={logoData.alt} className="h-16 mx-auto" />}
+          {logoData.url && <img src={`/api/logo/download/${logoData.url}`} alt={logoData.alt} className="h-16 mx-auto" />}
         </div>
     
         <SidebarGroup>
