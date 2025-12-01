@@ -3,30 +3,24 @@ const Inquiry = require('../model/productInquiry');
 const nodemailer = require('nodemailer');
 
 const transporter = nodemailer.createTransport({
-  host: 'smtp.gmail.com',
-  port: 465,
-  secure: true,
+  host: 'smtppro.zoho.in',    // or smtp.zoho.eu if you're in Europe
+  port: 465,                // 587 for TLS, 465 for SSL
+  secure: true,            // true only if port 465
   auth: {
-    user: process.env.EMAIL_USER,
-    pass: process.env.EMAIL_PASS
+    user: process.env.EMAIL_USER || 'sales@chemtom.com',        // e.g., inquiry@yourdomain.com
+    pass: process.env.EMAIL_PASS || '3itpmNuTzkHc'        // ← your 12-character app password
+  },
+  tls: {
+    rejectUnauthorized: false
   }
 });
 
-// Add this to debug environment variables
-console.log('Environment Variables:', {
-  EMAIL_USER: process.env.EMAIL_USER ? 'Set' : 'Not Set',
-  EMAIL_PASS: process.env.EMAIL_PASS ? 'Set' : 'Not Set'
-});
-
-// Add this verification before your routes
+console.log('Environment Variables', process.env.EMAIL_USER, process.env.EMAIL_PASS);
+// Verify on startup
 transporter.verify((error, success) => {
-  if (error) {
-    console.error('SMTP connection error:', error);
-  } else {
-    console.log('SMTP connection successful');
-  }
+  if (error) console.error('SMTP Error:', error);
+  else console.log('Zoho SMTP Ready');
 });
-
 
 exports.createInquiry = async (req, res) => {
  
@@ -38,7 +32,7 @@ exports.createInquiry = async (req, res) => {
 
     const newInquiry = new Inquiry(req.body); 
     await newInquiry.save();
-
+console.log('New Inquiry Saved:', newInquiry);
     // HTML Email Template
     const emailHTML = `
        <!DOCTYPE html>
@@ -109,14 +103,13 @@ exports.createInquiry = async (req, res) => {
 </html>
         `;
 
-        const mailOptions = {
-          from: `"${newInquiry.name}"`, // User's name as display, your email for actual sending
-          to: process.env.EMAIL_FROM,
-          subject: 'New Inquiry',
-          html: emailHTML,
-          replyTo: newInquiry.email // Reply goes directly to the user's email
-        };
-        
+const mailOptions = {
+  from: `"Website Inquiry" <${process.env.EMAIL_USER}>`,  // Safe & verified sender
+  to: process.env.EMAIL_FROM,
+  replyTo: newInquiry.email,   // User gets replies
+  subject: `New Inquiry from ${newInquiry.name}`,
+  html: emailHTML
+};
         
 
     // Send email

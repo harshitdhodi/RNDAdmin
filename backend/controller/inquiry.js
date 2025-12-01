@@ -34,7 +34,7 @@ exports.createInquiry = async (req, res) => {
             status: req.body.status || "New Inquiry",
             source: req.body.source || "",
         };
-
+console.log("Inquiry Data:", inquiryData);
         // Save Inquiry to Database
         const inquiry = new Inquiry(inquiryData);
         await inquiry.save();
@@ -67,15 +67,15 @@ exports.createInquiry = async (req, res) => {
         const ownerEmail = inquiryData.ownerEmail || smtpConfig.name; // Fallback to SMTP user email
 
         // **Create Email Transporter**
-        const transporter = nodemailer.createTransport({
-            host: smtpConfig.host,
-            port: smtpConfig.port || 587,
-            secure: smtpConfig.isSSL,
-            auth: {
-                user: smtpConfig.name,
-                pass: smtpConfig.password,
-            },
-        });
+          const transporter = nodemailer.createTransport({
+             host: smtpConfig.host,
+             port: smtpConfig.port || 465,
+             secure: smtpConfig.isSSL,
+             auth: {
+               user: smtpConfig.name,
+               pass: smtpConfig.password,
+             },
+           });
 
         // **Owner Email Template**
         const ownerEmailBody = `

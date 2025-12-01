@@ -3,7 +3,7 @@ const Career = require('../model/career');
 const { default: axios } = require('axios');
 const nodemailer = require('nodemailer');
 
-const submitApplication = async (req, res) => {
+const   submitApplication = async (req, res) => {
   try {
     const { name, address, email, contactNo, postAppliedFor } = req.body;
 
@@ -45,7 +45,7 @@ const submitApplication = async (req, res) => {
     await application.save();
 
     // Fetch SMTP Configuration
-    const { data: smtpResponse } = await axios.get("/api/smtp/get");
+    const { data: smtpResponse } = await axios.get("https://admin.chemtom.com/api/smtp/get");
     const smtpConfig = smtpResponse.data?.[0];
 
     if (!smtpConfig || !smtpConfig.host) {
@@ -53,7 +53,7 @@ const submitApplication = async (req, res) => {
     }
 
     // Fetch Email Templates
-    const { data: emailTemplateResponse } = await axios.get("/api/template/get");
+    const { data: emailTemplateResponse } = await axios.get("https://admin.chemtom.com/api/template/get");
     const emailTemplates = emailTemplateResponse.data;
 
     if (!emailTemplates || emailTemplates.length === 0) {
@@ -72,7 +72,7 @@ const submitApplication = async (req, res) => {
     // **Create Email Transporter**
     const transporter = nodemailer.createTransport({
       host: smtpConfig.host,
-      port: smtpConfig.port || 587,
+      port: smtpConfig.port || 465,
       secure: smtpConfig.isSSL,
       auth: {
         user: smtpConfig.name,
@@ -140,7 +140,7 @@ const submitApplication = async (req, res) => {
     // **Send Email to Owner**
     if (ownerEmail) {
       const ownerMailOptions = {
-        from: `"VBRS Chemicals" <${smtpConfig.name}>`,
+        from: `"Chemtom" <${smtpConfig.name}>`,
         to: ownerEmail,
         subject: "New Application Received",
         html: ownerEmailBody,

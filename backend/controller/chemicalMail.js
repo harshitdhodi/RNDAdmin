@@ -14,13 +14,16 @@ const sendEmail = async (req, res) => {
     }
 
     // Configure nodemailer
-    const transporter = nodemailer.createTransport({
-      service: 'gmail',
-      auth: {
-        user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_PASS,
-      },
-    });
+   const transporter = nodemailer.createTransport({
+  host: "smtp.zoho.in",   // use .com only if you are using Zoho.com, not India region
+  port: 465,
+  secure: true,
+  auth: {
+    user: process.env.EMAIL_USER,   // yourname@yourdomain.com
+    pass: process.env.EMAIL_PASS,   // Zoho App Password (not normal password)
+  },
+});
+
 
     // Send email
     const mailOptions = {
