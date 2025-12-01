@@ -16,14 +16,14 @@ const sendEmail = async (req, res) => {
       port: 587, // Replace with your SMTP port
       secure: false, // Use true for 465, false for other ports
       auth: {
-        user: 'harshit.dhodi2108@gmail.com', // Replace with your SMTP username
-        pass: 'jnkb ytek ilqm ryfm', // Replace with your SMTP password
+        user: 'sales@chemtom.com', // Replace with your SMTP username
+        pass: 'Chemtom@2025', // Replace with your SMTP password
       },
     });
 
     // Email options
     const mailOptions = {
-      from: 'mansihande09@gmail.com', // Sender address
+      from: 'sales@chemtom.com', // Sender address
       to: email, // Primary recipient
       cc: cc_email, // CC recipients
       subject: subject,
