@@ -2,9 +2,9 @@ const nodemailer = require('nodemailer');
 require('dotenv').config(); 
 // This is the ONLY place where nodemailer should be configured.
 const transporter = nodemailer.createTransport({
-  host: process.env.SMTP_HOST,     // smtp.zoho.in
+  host: process.env.EMAIL_HOST,     // smtp.zoho.in
   port: process.env.SMTP_PORT,     // 465 or 587
-  secure: process.env.SMTP_PORT === '465', // SSL for 465
+  secure: true,
   auth: {
     user: process.env.EMAIL_USER,
     pass: process.env.EMAIL_PASS
