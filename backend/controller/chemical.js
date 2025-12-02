@@ -760,9 +760,23 @@ exports.getLatestChemicals = async (req, res) => {
 exports.getLatestChemicalsExcept = async (req, res) => {
   try {
     const { slug } = req.query;
+    
+    // Step 1: Find the original chemical to get its subcategory
+    const originalChemical = await Chemical.findOne({ slug }).select('subCategorySlug');
 
-    // Fetch latest 8 chemicals excluding the one with matching slug
-    const chemicals = await Chemical.find({ slug: { $ne: slug } })
+    // If the original chemical isn't found, or has no subcategory, return empty.
+    if (!originalChemical || !originalChemical.subCategorySlug) {
+      return res.status(200).json({
+        success: true,
+        data: []
+      });
+    }
+
+    // Step 2: Fetch the latest 8 chemicals from the same subcategory, excluding the original one.
+    const chemicals = await Chemical.find({ 
+        subCategorySlug: originalChemical.subCategorySlug, // Match the subcategory
+        slug: { $ne: slug }                                // Exclude the current chemical
+      })
       .sort({ createdAt: -1 })  // Sort by creation date in descending order
       .limit(8);                // Limit to 8 items
 

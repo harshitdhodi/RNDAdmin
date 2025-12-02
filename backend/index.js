@@ -1,3 +1,4 @@
+require('dotenv').config(); // Must be the very first line
 const express = require('express');
 const fs = require('fs');
 const path = require('path');
@@ -7,7 +8,6 @@ const mongoose = require('mongoose');
 const sharp = require('sharp');
 const compression = require('compression');
 const app = express();
-require('dotenv').config();
 const cookieParser = require('cookie-parser');
 const { generateAllSitemaps } = require('./route/sitemap');
  
@@ -100,8 +100,8 @@ const apiRoutes = [
   ['/api/careerInfo', require('./route/careerInfo')],
   ['/api/importFun', require('./route/ImportFun')],
   ['/api/tracking', require('./route/tracking')],
-  ['/api/msds', require('./route/msds')],
-
+  ['/api/msds', require('./route/msds').default],
+  ['/api/cookies', require('./route/cookies')],
 ];
 
 // Apply cache middleware to all API routes
@@ -134,5 +134,3 @@ app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
   // generateAllSitemaps(); // Generate sitemaps on startup
 });
-
-

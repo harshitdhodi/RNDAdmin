@@ -221,7 +221,7 @@ Message: ${message || '—'}
     if (smtpConfigured) {
       const transporter = nodemailer.createTransport({
         host: smtpHost,
-        port: parseInt(process.env.SMTP_PORT || '587', 10),
+        port: parseInt(process.env.SMTP_PORT || '465', 10),
         secure: process.env.SMTP_SECURE === 'true',
         auth: {
           user: smtpUser,

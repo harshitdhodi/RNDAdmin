@@ -12,18 +12,18 @@ const sendEmail = async (req, res) => {
 
     // SMTP configuration
     const transporter = nodemailer.createTransport({
-      host: 'smtp.gmail.com', // Replace with your SMTP host
-      port: 587, // Replace with your SMTP port
-      secure: false, // Use true for 465, false for other ports
+      host: process.env.SMTP_HOST || 'smtp.gmail.com',
+      port: parseInt(process.env.SMTP_PORT || '465', 10),
+      secure: (process.env.SMTP_PORT || '465') === '465',
       auth: {
-        user: 'sales@chemtom.com', // Replace with your SMTP username
-        pass: 'Chemtom@2025', // Replace with your SMTP password
+        user: process.env.EMAIL_USER, // Your SMTP username from .env
+        pass: process.env.EMAIL_PASS, // Your SMTP password from .env
       },
     });
 
     // Email options
     const mailOptions = {
-      from: 'sales@chemtom.com', // Sender address
+      from: process.env.EMAIL_FROM || process.env.EMAIL_USER, // Sender address
       to: email, // Primary recipient
       cc: cc_email, // CC recipients
       subject: subject,

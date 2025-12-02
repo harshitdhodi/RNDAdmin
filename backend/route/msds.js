@@ -1,6 +1,6 @@
 // routes/msdsRoutes.js
 import express from 'express';
-import { handleMsdsRequest } from '../controller/msdsInquiry';
+import { handleMsdsRequest } from '../controller/msdsInquiry.js';
 
 const router = express.Router();
 

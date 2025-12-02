@@ -1,32 +1,12 @@
 require('dotenv').config();
 const Inquiry = require('../model/productInquiry');
-const nodemailer = require('nodemailer');
-
-const transporter = nodemailer.createTransport({
-  host: 'smtppro.zoho.in',    // or smtp.zoho.eu if you're in Europe
-  port: 465,                // 587 for TLS, 465 for SSL
-  secure: true,            // true only if port 465
-  auth: {
-    user: process.env.EMAIL_USER || 'sales@chemtom.com',        // e.g., inquiry@yourdomain.com
-    pass: process.env.EMAIL_PASS || '3itpmNuTzkHc'        // ← your 12-character app password
-  },
-  tls: {
-    rejectUnauthorized: false
-  }
-});
-
-console.log('Environment Variables', process.env.EMAIL_USER, process.env.EMAIL_PASS);
-// Verify on startup
-transporter.verify((error, success) => {
-  if (error) console.error('SMTP Error:', error);
-  else console.log('Zoho SMTP Ready');
-});
+const { sendEmail } = require('./emailService'); // Import the centralized email service
 
 exports.createInquiry = async (req, res) => {
  
   try {
     // Verify email configuration first
-    if (!process.env.EMAIL_USER || !process.env.EMAIL_PASS || !process.env.EMAIL_FROM) {
+    if (!process.env.EMAIL_USER || !process.env.EMAIL_PASS) {
       throw new Error('Email configuration is missing');
     }
 
@@ -105,7 +85,7 @@ console.log('New Inquiry Saved:', newInquiry);
 
 const mailOptions = {
   from: `"Website Inquiry" <${process.env.EMAIL_USER}>`,  // Safe & verified sender
-  to: process.env.EMAIL_FROM,
+  to: process.env.EMAIL_FROM || process.env.EMAIL_USER, // Send to admin, fallback to user
   replyTo: newInquiry.email,   // User gets replies
   subject: `New Inquiry from ${newInquiry.name}`,
   html: emailHTML
@@ -113,7 +93,7 @@ const mailOptions = {
         
 
     // Send email
-    await transporter.sendMail(mailOptions);
+    await sendEmail(mailOptions);
 
     // Respond to the client
     res.status(201).json({ success: true, data: newInquiry });
