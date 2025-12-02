@@ -99,7 +99,8 @@ const apiRoutes = [
   ['/api/terms', require('./route/termscondition')],
   ['/api/careerInfo', require('./route/careerInfo')],
   ['/api/importFun', require('./route/ImportFun')],
-  ['/api/tracking', require('./route/tracking')]
+  ['/api/tracking', require('./route/tracking')],
+  ['/api/msds', require('./route/msds')],
 
 ];
 
