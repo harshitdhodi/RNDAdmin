@@ -33,6 +33,10 @@ const inquirySchema = new mongoose.Schema({
     type: String,
     required: false
   },
+  url:{
+    type: String,
+    required: true
+  },
   pinCode: {
     type: String,
     required: false

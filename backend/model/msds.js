@@ -39,6 +39,10 @@ const msdsSchema = new mongoose.Schema({
     type: Date,
     default: Date.now,
   },
+  url: {
+    type: String,
+    required: true,
+  },
   // optional UTM / campaign fields
   utm_source: { type: String, required: false },
   utm_medium: { type: String, required: false },

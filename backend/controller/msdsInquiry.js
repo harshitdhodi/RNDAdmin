@@ -12,15 +12,17 @@ export const handleMsdsRequest = async (req, res) => {
       docType = '  ',
       productName = '',
       path = '',
+      url = '',
+      
       from,
       adminEmail: adminEmailFromBody
     } = req.body || {};
 
     // Basic validation
-    if (!name || !email || !phone) {
+    if (!name || !email || !phone || !url) {
       return res.status(400).json({
         success: false,
-        error: 'Missing required fields: name, email and phone are required.'
+        error: 'Missing required fields: name, email, phone, and url are required.'
       });
     }
 
@@ -48,7 +50,7 @@ Message: ${message || '—'}
             margin: 0;
             padding: 0;
             font-family: 'Arial', 'Helvetica', sans-serif;
-            background-color: #f4f4f4;
+            background-color: #f5f5f5;
         }
         .email-container {
             max-width: 600px;
@@ -59,7 +61,7 @@ Message: ${message || '—'}
             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
         }
         .header {
-            background: linear-gradient(135deg, #bf352d 0%, #d94940 100%);
+            background: #ffbc90;
             color: #ffffff;
             padding: 30px 20px;
             text-align: center;
@@ -73,11 +75,11 @@ Message: ${message || '—'}
         .subheader {
             background-color: #f8f9fa;
             padding: 20px;
-            border-bottom: 3px solid #bf352d;
+            border-bottom: 3px solid #f5f5f5;
         }
         .subheader h3 {
             margin: 0;
-            color: #bf352d;
+            color: #ff573c;
             font-size: 20px;
             font-weight: 600;
         }
@@ -103,28 +105,28 @@ Message: ${message || '—'}
         }
         .info-table td:first-child {
             font-weight: 600;
-            color: #495057;
+            color: #6c757d;
             width: 35%;
         }
         .info-table td:last-child {
             color: #212529;
         }
         .request-type {
-            background-color: #fef2f2;
-            border-left: 4px solid #bf352d;
+            background-color: #fff5f3;
+            border-left: 4px solid #f5f5f5;
             padding: 15px;
             margin: 20px 0;
             border-radius: 4px;
         }
         .request-type p {
             margin: 0;
-            color: #bf352d;
+            color: #ff573c;
             font-weight: 600;
             font-size: 14px;
         }
         .divider {
             height: 2px;
-            background: linear-gradient(to right, #bf352d, #d94940, #bf352d);
+            background: #f5f5f5;
             margin: 20px 0;
         }
         .footer {
@@ -150,7 +152,7 @@ Message: ${message || '—'}
 <body>
     <div class="email-container">
         <div class="header">
-            <h2>APURVA CHEMICALS PVT LTD</h2>
+            <img src="https://admin.chemtom.com/api/logo/download/headerLogo_1764672964886.webp" alt="Apurva Chemicals PVT LTD" style="height: 50px; margin-bottom: 10px;">
         </div>
         
         <div class="subheader">
@@ -199,7 +201,7 @@ Message: ${message || '—'}
         </div>
         
         <div class="footer">
-            <p>This is an automated notification from Apurva Chemicals PVT LTD.</p>
+            <p>This is an automated notification from Chemtom.</p>
             <p style="margin-top: 5px;">Please do not reply to this email.</p>
         </div>
     </div>

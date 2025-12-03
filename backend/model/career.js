@@ -13,6 +13,10 @@ const careerSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  url: {
+    type: String,
+    required: true,
+  },
   contactNo: {
     type: String,
     required: true,
