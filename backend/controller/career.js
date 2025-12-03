@@ -5,10 +5,10 @@ const nodemailer = require('nodemailer');
 
 const   submitApplication = async (req, res) => {
   try {
-    const { name, address, email, contactNo, postAppliedFor } = req.body;
+    const { name, address, email, contactNo, postAppliedFor, url } = req.body;
 
     // Validate inputs
-    if (!name || !address || !email || !contactNo || !postAppliedFor) {
+    if (!name || !address || !email || !contactNo || !postAppliedFor || !url) {
       return res.status(400).json({ message: 'All fields are required' });
     }
 
