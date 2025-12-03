@@ -39,7 +39,8 @@ const   submitApplication = async (req, res) => {
       email,
       contactNo,
       postAppliedFor,
-      resumeFile: resumePath
+      resumeFile: resumePath,
+      url
     });
 
     await application.save();
