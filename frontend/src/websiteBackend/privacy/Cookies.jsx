@@ -88,7 +88,7 @@ const CookiesForm = () => {
     // Update form field value to trigger validation
     form.setFieldsValue({ cookiesPolicy: content });
   };
-
+  
   const handleFinish = async () => {
     try {
       const dataToSend = { cookiesPolicy };

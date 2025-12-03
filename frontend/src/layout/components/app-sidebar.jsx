@@ -202,6 +202,7 @@ const menuData = [
         children: [
           { title: "Privacy Policy", icon: List, url: "/privacypolicy-terms" },
           { title: "Terms and Condition", icon: PlusSquare, url: "/terms-and-conditions-form" },
+          { title: "Cookies", icon: Lock, url: "/cookies" },
         ]
       }
     ],

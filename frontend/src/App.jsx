@@ -125,6 +125,7 @@ import useDocumentTitle from './websiteBackend/staticMetaKeyword/DynamicMeta';
 import CriticalStyles from './website/componets/CriticalStyles';
 import ImportExcel from './chemical/ImportExcel';
 import TrackingInfo from './clickTrack/TrackingInfo';
+import CookiesForm from './websiteBackend/privacy/Cookies';
 
 // Auth Components
 const PrivateRoute = ({ children }) => {
@@ -336,7 +337,9 @@ function App() {
             { path: 'terms-and-conditions-form', element: <Suspense fallback={<LoadingFallback />}><TermsConditionForm /></Suspense> },
             { path: 'import-excel', element: <Suspense fallback={<LoadingFallback />}><ImportExcel /></Suspense> },
             { path: 'tracking', element: <Suspense fallback={<LoadingFallback />}><TrackingInfo /></Suspense> },
-            
+           
+            // Cookies Policy Route 
+            { path: 'cookies', element: <Suspense fallback={<LoadingFallback />}><CookiesForm /></Suspense> },
           ]
         }
       ]
