@@ -65,11 +65,11 @@ const CookiesForm = () => {
       try {
         const response = await axios.get('/api/cookies');
         if (response.data.length > 0) {
-          const cookiesData = response.data[0];
-          setCookiesPolicy(cookiesData.cookiesPolicy);
+          const cookiesData = response.data[0]; // Assuming API returns { _id, CookiesPolicy }
+          setCookiesPolicy(cookiesData.CookiesPolicy); // State for ReactQuill
           setCookiesId(cookiesData._id);
-          form.setFieldsValue({
-            cookiesPolicy: cookiesData.cookiesPolicy,
+          form.setFieldsValue({ // Set antd form field value
+            cookiesPolicy: cookiesData.CookiesPolicy,
           });
           setIsExistingData(true);
         }
@@ -91,7 +91,7 @@ const CookiesForm = () => {
   
   const handleFinish = async () => {
     try {
-      const dataToSend = { cookiesPolicy };
+      const dataToSend = { CookiesPolicy: cookiesPolicy }; // API expects 'CookiesPolicy'
       
       if (isExistingData) {
         await axios.put(`/api/cookies/${cookiesId}`, dataToSend);
@@ -100,7 +100,7 @@ const CookiesForm = () => {
         await axios.post('/api/cookies', dataToSend);
         message.success('Cookies data created successfully');
       }
-      navigate('/cookies-policy');
+     
     } catch (error) {
       message.error('Failed to save cookies data');
       console.error('Error:', error);

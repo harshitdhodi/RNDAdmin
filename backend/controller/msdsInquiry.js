@@ -61,7 +61,7 @@ Message: ${message || '—'}
             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
         }
         .header {
-            background: #ffbc90;
+            background: #f8f9fa;
             color: #ffffff;
             padding: 30px 20px;
             text-align: center;

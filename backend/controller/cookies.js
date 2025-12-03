@@ -9,8 +9,8 @@ app.use(express.urlencoded({ limit: '500mb', extended: true }));
 // Create a new cookies document
 const createCookies = async (req, res) => {
   try {
-    const { cookiesPolicy } = req.body;
-    const newCookies = new Cookies({ cookiesPolicy });
+    const { CookiesPolicy } = req.body;
+    const newCookies = new Cookies({ CookiesPolicy });
     await newCookies.save();
     res.status(201).json(newCookies);
   } catch (error) {
@@ -44,10 +44,10 @@ const getCookiesById = async (req, res) => {
 // Update a cookies document by ID
 const updateCookies = async (req, res) => {
   try {
-    const { cookiesPolicy } = req.body;
+    const { CookiesPolicy } = req.body;
     const updatedCookies = await Cookies.findByIdAndUpdate(
       req.params.id,
-      { cookiesPolicy },
+      { CookiesPolicy },
       { new: true }
     );
     if (!updatedCookies) {
