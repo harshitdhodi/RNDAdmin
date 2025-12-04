@@ -664,12 +664,15 @@ exports.searchChemicals = async (req, res) => {
                 { grade: searchRegex },
                 { chemical_type: searchRegex },
                 { molecular_formula: searchRegex },
+                { olfactory: searchRegex },
+                { application: searchRegex },
                 { synonyms: searchRegex },
                 { product_code: searchRegex },
                 { auto_p_code: searchRegex }
+                
             ]
         })
-        .select('name cas_number grade slug chemical_type molecular_formula product_code auto_p_code') // Select only needed fields
+        .select('name cas_number grade slug chemical_type molecular_formula product_code auto_p_code olfactory application') // Select only needed fields
         .limit(10); // Limit results for better performance
 
         // Format the response
@@ -683,12 +686,16 @@ exports.searchChemicals = async (req, res) => {
             molecular_formula: chemical.molecular_formula,
             product_code: chemical.product_code,
             auto_p_code: chemical.auto_p_code,
+            olfactory: chemical.olfactory,
+            application: chemical.application,
             matchedOn: [ // Indicate which fields matched the search
                 chemical.name.match(searchRegex) ? 'name' : null,
                 chemical.cas_number.match(searchRegex) ? 'cas_number' : null,
                 chemical.grade.match(searchRegex) ? 'grade' : null,
                 chemical.chemical_type.match(searchRegex) ? 'chemical_type' : null,
                 chemical.molecular_formula.match(searchRegex) ? 'molecular_formula' : null,
+                chemical.olfactory && chemical.olfactory.match(searchRegex) ? 'olfactory' : null,
+                chemical.application && chemical.application.some(a => a.match(searchRegex)) ? 'application' : null,
                 chemical.product_code.match(searchRegex) ? 'product_code' : null,
                 chemical.auto_p_code.match(searchRegex) ? 'auto_p_code' : null
             ].filter(Boolean)
