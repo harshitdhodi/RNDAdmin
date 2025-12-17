@@ -16,39 +16,26 @@ const menuData = [
 
   },
   {
-    title: "Chemical",
+    title: "Services",
     icon: FlaskConical,
     children: [
-      { title: "List", icon: List, url: "/chemical-table" },
-      { title: "Add New", icon: PlusSquare, url: "/chemical-form" },
-      { title: "Chemical Types", icon: FileType, url: "/chemical-types" },
-      { title: "Search Suppliers", icon: Truck, url: "/search-suppliers" },
-      { title: "Unit", icon: PlusSquare, url: "/unit" },
-      { title: "Tax", icon: PlusSquare, url: "#types" },
-      { title: "Category", icon: GanttChart, url: "/chemical-category" },
-      { title: "Import Excel", icon: FileText, url: "/import-excel" }
+      { title: "ServiceList", icon: List, url: "/chemical-table" },
+      // { title: "Add New", icon: PlusSquare, url: "/service-category-form" },
+    
+      { title: "Category", icon: GanttChart, url: "/service-category" },
+      // { title: "Import Excel", icon: FileText, url: "/import-excel" }
     ]
   },
   {
-    title: "Supplier",
-    icon: Truck,
+    title: "Portfolio",
+    icon: ShoppingCart,
     children: [
-      { title: "List", icon: List, url: "/supplier-table" },
-      { title: "Add New", icon: PlusSquare, url: "/supplier-form" },
-      { title: "Chemical Mapping", icon: ArrowLeftRightIcon, url: "/chemical-mapping" },
-      { title: "Search Chemicals", icon: Search, url: "/chemical-search" }
+      { title: "Portfolio List", icon: List, url: "/portfolio-table" },
+      { title: "Add New", icon: PlusSquare, url: "/portfolio-form" },
+      { title: "Category", icon: GanttChart, url: "/portfolio-category-table" },
     ]
   },
-  {
-    title: "Customer",
-    icon: UsersRoundIcon,
-    children: [
-      { title: "List", icon: List, url: "/customer-table" },
-      { title: "Add New", icon: PlusSquare, url: "/customer-form" },
-      { title: "Chemical Mapping", icon: ArrowLeftRightIcon, url: "/customer-chemical-mapping" },
 
-    ]
-  },
   {
     title: "Email",
     icon: Mail,
@@ -98,13 +85,13 @@ const menuData = [
           { title: "Blog Card", icon: PlusSquare, url: "/blogCard" },
         ]
       },
-      // {
-      //   title: "Inquiry",
-      //   icon: FileQuestion,
-      //   children: [
-      //     { title: "List", icon: List, url: "/product-inquiry-table" },
-      //   ]
-      // },
+      {
+        title: "Faq",
+        icon: FileQuestion,
+        children: [
+          { title: "List", icon: List, url: "/faq" },
+        ]
+      },
       {
         title: "Corporate",
         icon: Building,
@@ -125,13 +112,7 @@ const menuData = [
 
         ]
       },
-      {
-        title: "Worldwide",
-        icon: Globe,
-        children: [
-          { title: "List", icon: List, url: "/worldwide-table" },
-        ]
-      },
+     
       {
         title: "Career",
         icon: Briefcase,
@@ -148,14 +129,7 @@ const menuData = [
           // { title: "Add New", icon: PlusSquare, url: "/contact-info/add" },
         ]
       },
-      {
-        title: "Slide Show",
-        icon: SlidersHorizontal,
-        children: [
-          { title: "slideshow Table", icon: PlusSquare, url: "/slideShow-table" },
-          { title: "slide show", icon: List, url: "/slideShow-form" },
-        ]
-      },
+      
       {
         title: "WhatsUp Info",
         icon: MessageSquareQuote,

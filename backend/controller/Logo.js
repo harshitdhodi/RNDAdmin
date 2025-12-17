@@ -36,23 +36,46 @@ const addLogo = async (req, res) => {
 const updateLogo = async (req, res) => {
     try {
         let logo = await Logo.findOne();
-        if (!logo) return res.status(404).json({ success: false, message: 'Logo not found' });
+        const isNew = !logo;
 
-        // Store old values before updating
-        const updatedLogo = {
-            headerLogo: req.files?.headerLogo ? req.files.headerLogo[0].filename : logo.headerLogo,
-            favIcon: req.files?.favIcon ? req.files.favIcon[0].filename : logo.favIcon,
-            headerLogoName: req.body.headerLogoName ?? logo.headerLogoName,
-            headerLogoAltName: req.body.headerLogoAltName ?? logo.headerLogoAltName,
-            favIconName: req.body.favIconName ?? logo.favIconName,
-            favIconAltName: req.body.favIconAltName ?? logo.favIconAltName
-        };
+        if (!logo) {
+            // If no logo exists, create a new one
+            logo = new Logo({});
+        }
+       
+        if (!isNew) {
+            const oldHeaderLogo = logo.headerLogo;
+            const oldFavIcon = logo.favIcon;
 
-        // Update database
-        Object.assign(logo, updatedLogo);
+            const deleteFile = (filePath) => {
+                if (!filePath) return;
+                const fullPath = path.join(__dirname, '..', 'logos', filePath);
+                if (fs.existsSync(fullPath)) {
+                    fs.unlink(fullPath, (err) => {
+                        if (err) console.error(`Error deleting old file: ${fullPath}`, err);
+                    });
+                }
+            };
+
+            // If a new file is uploaded, delete the old one.
+            if (req.body.headerLogo) deleteFile(oldHeaderLogo);
+            if (req.body.favIcon) deleteFile(oldFavIcon);
+        }
+
+        // Assign new values from the request, falling back to existing values
+        logo.headerLogo = req.body.headerLogo || logo.headerLogo;
+        logo.favIcon = req.body.favIcon || logo.favIcon;
+        logo.headerLogoName = req.body.headerLogoName ?? logo.headerLogoName;
+        logo.headerLogoAltName = req.body.headerLogoAltName ?? logo.headerLogoAltName;
+        logo.favIconName = req.body.favIconName ?? logo.favIconName;
+        logo.favIconAltName = req.body.favIconAltName ?? logo.favIconAltName;
+
         await logo.save();
 
-        res.status(200).json({ success: true, data: updatedLogo, message: 'Logo updated successfully' });
+        const statusCode = isNew ? 201 : 200;
+        const message = isNew ? 'Logo added successfully' : 'Logo updated successfully';
+
+        res.status(statusCode).json({ success: true, data: logo, message });
 
     } catch (error) {
         console.error("Error updating logo:", error);
@@ -83,7 +106,7 @@ const deleteLogo = async (req, res) => {
 
         // Delete associated files
         const deleteFile = (filePath) => {
-            const fullPath = path.join(__dirname, '..', 'uploads', 'logos', filePath);
+            const fullPath = path.join(__dirname, '..', 'logos', filePath);
             if (fs.existsSync(fullPath)) fs.unlink(fullPath, (err) => console.error(`Error deleting file:`, err));
         };
 

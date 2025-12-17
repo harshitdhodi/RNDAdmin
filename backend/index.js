@@ -1,4 +1,3 @@
-require('dotenv').config(); // Must be the very first line
 const express = require('express');
 const fs = require('fs');
 const path = require('path');
@@ -8,6 +7,8 @@ const mongoose = require('mongoose');
 const sharp = require('sharp');
 const compression = require('compression');
 const app = express();
+require('dotenv').config();
+
 const cookieParser = require('cookie-parser');
 const { generateAllSitemaps } = require('./route/sitemap');
  
@@ -59,6 +60,10 @@ app.use(express.static(path.join(__dirname, 'dist'), {
 const apiRoutes = [
   ['/api/admin', admin],
   ['/api/supplier', require('./route/supplier')],
+   ['/api/services', require('./routes/services')],
+  ['/api/faq', require('./route/FAQ')],
+  ['/api/portfolio', require('./route/portfolio')],
+  ['/api/pageHeading', require('./route/pageHeading.js')],
   ['/api/chemicalCategory', require('./route/chemicalCategory')],
   ['/api/chemical', require('./route/chemical')],
   ['/api/customer', require('./route/customer')],
@@ -98,10 +103,6 @@ const apiRoutes = [
   ['/api/privacy', require('./route/privacy')],
   ['/api/terms', require('./route/termscondition')],
   ['/api/careerInfo', require('./route/careerInfo')],
-  ['/api/importFun', require('./route/ImportFun')],
-  ['/api/tracking', require('./route/tracking')],
-  ['/api/msds', require('./route/msds').default],
-  ['/api/cookies', require('./route/cookies')],
 ];
 
 // Apply cache middleware to all API routes
@@ -133,4 +134,22 @@ app.listen(PORT, () => {
   });
   console.log(`Server running on port ${PORT}`);
   // generateAllSitemaps(); // Generate sitemaps on startup
+});
+
+// SMTP Connection Test (assuming you have nodemailer setup)
+const nodemailer = require('nodemailer');
+const transporter = nodemailer.createTransport({
+  service: 'gmail', // or your email service
+  auth: {
+    user: process.env.EMAIL_USER,
+    pass: process.env.EMAIL_PASS,
+  },
+});
+
+transporter.verify((error, success) => {
+  if (error) {
+    console.error('SMTP connection failed:', error);
+  } else {
+    console.log('SMTP connection successful');
+  }
 });
