@@ -5,7 +5,7 @@ const sharp = require('sharp');
 
 // Define the directories
 const catalogueDir = path.join(__dirname, '../catalogues');
-const photoDir = path.join(__dirname, '../images');
+const photoDir = path.join(__dirname, '../uploads/images');
 const resumeDir = path.join(__dirname, '../resumes');
 const tempDir = path.join(__dirname, '../temp');
 

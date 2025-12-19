@@ -3,19 +3,18 @@ const User = require('../model/contactinfo');
 // Create a new user
 exports.createUser = async (req, res) => {
   try {
-    const { address, mobiles, emails,imgTitle,altName } = req.body;
-console.log(req.file)
+    const { address, mobiles, emails, } = req.body;
+
    
     // Collect file names
-    const photo = req.files.map(file => file.filename);
+
 
 
     const newUser = new User({
-      photo,
+    
       address,
       mobiles,
       emails
-      ,imgTitle,altName
     });
 
     await newUser.save();
@@ -54,8 +53,20 @@ const fs = require('fs');
 
 exports.updateUser = async (req, res) => {
   try {
-    const { id } = req.query;
-    const { address, mobiles, emails, imgTitle, altName } = req.body;
+    const { id } = req.query; // or req.params.id depending on your route
+    const { address, mobiles, emails } = req.body;
+
+    // Validate ID presence
+    if (!id) {
+      return res.status(400).json({ message: 'User ID is required' });
+    }
+
+    // Validate that at least one field is provided for update
+    if (!address && !mobiles && !emails) {
+      return res.status(400).json({
+        message: 'At least one field (address, mobiles, or emails) must be provided for update',
+      });
+    }
 
     // Fetch the user by ID
     const user = await User.findById(id);
@@ -63,41 +74,56 @@ exports.updateUser = async (req, res) => {
       return res.status(404).json({ message: 'User not found' });
     }
 
-    let newPhotos = [];
+    // Prepare updated data — only include fields that are provided
+    const updatedData = {};
+    if (address !== undefined) updatedData.address = address;
+    if (mobiles !== undefined) updatedData.mobiles = mobiles;
+    if (emails !== undefined) updatedData.emails = emails;
 
-    // Check if new files are uploaded
-    if (req.files && req.files.length > 0) {
-      newPhotos = req.files.map(file => file.filename);
-
-      // Delete the old images if they exist
-      if (user.photo && user.photo.length > 0) {
-        user.photo.forEach(image => {
-          const oldImagePath = path.join(__dirname, '../photo', image);
-          if (fs.existsSync(oldImagePath)) {
-            fs.unlinkSync(oldImagePath);
-            console.log('Old image deleted:', image);
-          }
-        });
-      }
+    // Optional: Add validation for arrays (mobiles, emails)
+    if (mobiles && !Array.isArray(mobiles)) {
+      return res.status(400).json({ message: 'mobiles must be an array' });
+    }
+    if (emails && !Array.isArray(emails)) {
+      return res.status(400).json({ message: 'emails must be an array' });
     }
 
-    // Prepare the updated data
-    const updatedData = {
-      address,
-      mobiles,
-      emails,
-      imgTitle,
-      altName,
-      ...(newPhotos.length > 0 && { photo: newPhotos }), // Update photos only if new ones are uploaded
-    };
+    // Update the user (atomic update)
+    const updatedUser = await User.findByIdAndUpdate(
+      id,
+      { $set: updatedData }, // Use $set to only update provided fields
+      { new: true, runValidators: true } // return updated doc + run schema validators
+    );
 
-    // Update the user in the database
-    const updatedUser = await User.findByIdAndUpdate(id, updatedData, { new: true });
+    if (!updatedUser) {
+      return res.status(404).json({ message: 'User not found during update' });
+    }
 
-    res.status(200).json({ message: 'User updated successfully', data: updatedUser });
+    return res.status(200).json({
+      message: 'User updated successfully',
+      data: updatedUser,
+    });
   } catch (error) {
-    console.error('Error updating user:', error.message);
-    res.status(500).json({ error: 'Internal server error', details: error.message });
+    console.error('Error updating user:', error);
+
+    // Handle MongoDB validation errors specifically
+    if (error.name === 'ValidationError') {
+      const errors = Object.values(error.errors).map((err) => err.message);
+      return res.status(400).json({ message: 'Validation error', errors });
+    }
+
+    // Handle duplicate key errors (e.g., unique email)
+    if (error.code === 11000) {
+      return res.status(409).json({
+        message: 'Duplicate field value entered',
+        details: error.keyValue,
+      });
+    }
+
+    return res.status(500).json({
+      message: 'Internal server error',
+      details: process.env.NODE_ENV === 'development' ? error.message : undefined,
+    });
   }
 };
 

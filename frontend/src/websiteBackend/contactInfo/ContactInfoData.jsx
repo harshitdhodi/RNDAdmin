@@ -202,72 +202,7 @@ const ContactInfoForm = () => {
                     </button>
                 </div>
 
-                {/* Multiple image upload */}
-                <div>
-                    <label className="block text-sm font-medium text-gray-700">Logo Images</label>
-                    <input
-                        type="file"
-                        onChange={handleFileChange}
-                        accept="image/*"
-                        multiple
-                        className="mt-1 block w-full"
-                    />
-                    <div className="mt-2 grid grid-cols-3 gap-4">
-                        {formData.previewUrls.map((url, index) => (
-                            <div key={index} className="space-y-2">
-                                <img
-                                    src={url}
-                                    alt={formData.altName[index] || `Preview ${index + 1}`}
-                                    className="w-24 h-24 object-cover rounded"
-                                />
-                                <input
-                                    type="text"
-                                    placeholder="Image Title"
-                                    value={formData.imgTitle[index] || ''}
-                                    onChange={(e) => {
-                                        const newImgTitles = [...formData.imgTitle];
-                                        newImgTitles[index] = e.target.value;
-                                        setFormData(prev => ({
-                                            ...prev,
-                                            imgTitle: newImgTitles
-                                        }));
-                                    }}
-                                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm"
-                                />
-                                <input
-                                    type="text"
-                                    placeholder="Alt Text"
-                                    value={formData.altName[index] || ''}
-                                    onChange={(e) => {
-                                        const newAltNames = [...formData.altName];
-                                        newAltNames[index] = e.target.value;
-                                        setFormData(prev => ({
-                                            ...prev,
-                                            altName: newAltNames
-                                        }));
-                                    }}
-                                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm"
-                                />
-                                <button
-                                    type="button"
-                                    onClick={() => {
-                                        setFormData(prev => ({
-                                            ...prev,
-                                            previewUrls: prev.previewUrls.filter((_, i) => i !== index),
-                                            photo: Array.from(prev.photo).filter((_, i) => i !== index),
-                                            imgTitle: prev.imgTitle.filter((_, i) => i !== index),
-                                            altName: prev.altName.filter((_, i) => i !== index)
-                                        }));
-                                    }}
-                                    className="text-red-500"
-                                >
-                                    Remove
-                                </button>
-                            </div>
-                        ))}
-                    </div>
-                </div>
-
+             
                 <button
                     type="submit"
                     className="w-full bg-indigo-600 text-white py-2 px-4 rounded-md hover:bg-indigo-700"

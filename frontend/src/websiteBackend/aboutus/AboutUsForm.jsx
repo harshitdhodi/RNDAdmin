@@ -40,7 +40,7 @@ const AboutUsForm = () => {
         slug: aboutUsData.slug,
       });
       setAutoSlug(aboutUsData.slug);
-      setIsCustomSlug(aboutUsData.slug !== aboutUsData.section.toLowerCase().replace(/\s+/g, '-'));
+      setIsCustomSlug(aboutUsData.slug !== (aboutUsData.section ? aboutUsData.section.toLowerCase().replace(/\s+/g, '-') : ''));
 
       // Set existing image
       if (aboutUsData.image) {
@@ -173,7 +173,7 @@ const AboutUsForm = () => {
                     setAutoSlug(currentSlug);
                   } else {
                     // If switching back to auto, regenerate from section
-                    const sectionValue = form.getFieldValue('section');
+                    const sectionValue = form.getFieldValue('section') || '';
                     const newSlug = sectionValue.toLowerCase().replace(/\s+/g, '-');
                     setAutoSlug(newSlug);
                     form.setFieldsValue({ slug: newSlug });

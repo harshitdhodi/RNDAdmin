@@ -28,7 +28,7 @@ import { contactInfoApi } from '../slice/contactInfo/contactInfo';
 import { metaApi } from '@/slice/staticMeta/staticMeta';
 import { menuListingApi } from '@/slice/menuListing/menuList';
 import{whatsUpInfoApi} from '@/slice/whatsUpInfo/WhatsUpInfo';
-
+import { coreValueApi } from '@/slice/coreValue/coreValue';
 const store = configureStore({
   reducer: {
     [chemicalApi.reducerPath]: chemicalApi.reducer, // RTK Query reducer for chemicals
@@ -59,7 +59,8 @@ const store = configureStore({
     [menuListingApi.reducerPath]: menuListingApi.reducer,
     [whatsUpInfoApi.reducerPath]:whatsUpInfoApi.reducer ,
     [navigationLinkApi.reducerPath]: navigationLinkApi.reducer,
-    [catalogueApi.reducerPath]: catalogueApi.reducer
+    [catalogueApi.reducerPath]: catalogueApi.reducer,
+    [coreValueApi.reducerPath]: coreValueApi.reducer
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
@@ -94,6 +95,7 @@ const store = configureStore({
       .concat(whatsUpInfoApi.middleware)
       .concat(navigationLinkApi.middleware)
       .concat(catalogueApi.middleware)
+      .concat(coreValueApi.middleware),
 });
 
 export default store;

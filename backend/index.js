@@ -103,6 +103,8 @@ const apiRoutes = [
   ['/api/privacy', require('./route/privacy')],
   ['/api/terms', require('./route/termscondition')],
   ['/api/careerInfo', require('./route/careerInfo')],
+  ['/api/staff', require('./routes/ourStaff')],
+  ['/api/coreValue', require('./route/CoreValue')]
 ];
 
 // Apply cache middleware to all API routes
@@ -137,19 +139,19 @@ app.listen(PORT, () => {
 });
 
 // SMTP Connection Test (assuming you have nodemailer setup)
-const nodemailer = require('nodemailer');
-const transporter = nodemailer.createTransport({
-  service: 'gmail', // or your email service
-  auth: {
-    user: process.env.EMAIL_USER,
-    pass: process.env.EMAIL_PASS,
-  },
-});
+// const nodemailer = require('nodemailer');
+// const transporter = nodemailer.createTransport({
+//   service: 'gmail', // or your email service
+//   auth: {
+//     user: process.env.EMAIL_USER,
+//     pass: process.env.EMAIL_PASS,
+//   },
+// });
 
-transporter.verify((error, success) => {
-  if (error) {
-    console.error('SMTP connection failed:', error);
-  } else {
-    console.log('SMTP connection successful');
-  }
-});
+// transporter.verify((error, success) => {
+//   if (error) {
+//     console.error('SMTP connection failed:', error);
+//   } else {
+//     console.log('SMTP connection successful');
+//   }
+// });

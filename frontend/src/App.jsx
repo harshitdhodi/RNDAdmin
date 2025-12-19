@@ -137,6 +137,12 @@ import PortfolioCategoryForm from './websiteBackend/portfolio/CreatePortfolioCat
 import PortfolioTable from './websiteBackend/portfolio/Portfolio';
 import PortfolioForm from './websiteBackend/portfolio/CreatePortfolio';
 import EditPortfolio from './websiteBackend/portfolio/EditPortFolio';
+import StaffTable from './websiteBackend/ourStaff/Staff';
+import StaffForm from './websiteBackend/ourStaff/CreateStaff';
+import EditStaff from './websiteBackend/ourStaff/EditStaff';
+import CoreValueTable from './websiteBackend/coreValue/CoreValueTable';
+import AddCoreValue from './websiteBackend/coreValue/AddCoreValue';
+import EditCoreValue from './websiteBackend/coreValue/EditCoreValue';
 
 // Auth Components
 const PrivateRoute = ({ children }) => {
@@ -224,6 +230,18 @@ function App() {
                 </ChemicalProvider>
               )
             },
+
+            //Our Staff Management Routes
+            { path: 'our-staff-table', element: <Suspense fallback={<LoadingFallback />}><StaffTable /></Suspense> },
+            { path: 'our-staff-form', element: <Suspense fallback={<LoadingFallback />}><StaffForm /></Suspense> },
+            { path: 'edit-our-staff-form/:id', element: <Suspense fallback={<LoadingFallback />}><EditStaff /></Suspense> },
+
+
+            // Core Value Management Routes
+            { path: 'core-value-table', element: <Suspense fallback={<LoadingFallback />}><CoreValueTable /></Suspense> },
+            { path: 'add-core-value', element: <Suspense fallback={<LoadingFallback />}><AddCoreValue /></Suspense> },
+            { path: 'edit-core-value/:id', element: <Suspense fallback={<LoadingFallback />}><EditCoreValue /></Suspense> },
+
             // { path: 'chemical-form', element: <Suspense fallback={<LoadingFallback />}><ChemicalFormPage /></Suspense> },
             // { path: 'edit-chemical-form/:id', element: <Suspense fallback={<LoadingFallback />}><ChemicalFormPage /></Suspense> },
             // { path: 'chemical-types', element: <Suspense fallback={<LoadingFallback />}><ChemicalTypes /></Suspense> },
@@ -282,7 +300,7 @@ function App() {
             { path: 'portfolio-category', element: <Suspense fallback={<LoadingFallback />}><PorfolioCategoryTable /></Suspense> },
             { path: 'portfolio-category-form', element: <Suspense fallback={<LoadingFallback />}><PortfolioCategoryForm /></Suspense> },
             { path: 'edit-portfolio-category-form/:id', element: <Suspense fallback={<LoadingFallback />}><PortfolioCategoryForm /></Suspense> },
-            { path: 'portfolio', element: <Suspense fallback={<LoadingFallback />}><PortfolioTable /></Suspense> },
+            { path: 'portfolio   ', element: <Suspense fallback={<LoadingFallback />}><PortfolioTable /></Suspense> },
             { path: 'portfolio-form', element: <Suspense fallback={<LoadingFallback />}><PortfolioForm /></Suspense> },
             { path: 'edit-portfolio-form/:id', element: <Suspense fallback={<LoadingFallback />}><EditPortfolio /></Suspense> },
 
