@@ -1,0 +1,194 @@
+import React, { useState } from "react";
+import axios from "axios";
+import { useNavigate } from "react-router-dom";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+
+const AddClientForm = () => {
+  const [title, setTitle] = useState("");
+  const [photos, setPhotos] = useState([]);
+  const [photoAlts, setPhotoAlts] = useState([]);
+  const [color, setColor] = useState("");
+  const [altName, setAltName] = useState("");
+  const [imgTitle, setImgTitle] = useState("");
+  const navigate = useNavigate();
+  const [isLoading, setIsLoading] = useState(false);
+
+  const handlePhotoChange = (e) => {
+    const files = Array.from(e.target.files);
+    // Limit the number of photos to 5
+    if (photos.length + files.length > 5) {
+      toast.error("You can only upload up to 5 photos");
+      return;
+    }
+    setPhotos([...photos, ...files]);
+    // Initialize alt text for each new photo
+    const newPhotoAlts = Array.from({ length: files.length }, () => "");
+    setPhotoAlts([...photoAlts, ...newPhotoAlts]);
+  };
+
+  const handleDeleteImage = (index) => {
+    setPhotos((prevPhotos) => prevPhotos.filter((_, i) => i !== index));
+    setPhotoAlts((prevPhotoAlts) => prevPhotoAlts.filter((_, i) => i !== index));
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setIsLoading(true);
+    try {
+      const formData = new FormData();
+      formData.append("title", title);
+      formData.append("color", color);
+      formData.append("altName", altName);
+      formData.append("imgTitle", imgTitle);
+      
+      // Append each photo along with its alt text
+      photos.forEach((photo, index) => {
+        formData.append(`photo`, photo);
+        formData.append(`alt`, photoAlts[index]);
+      });
+
+      const response = await axios.post(
+        "/api/clients",
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+          withCredentials: true
+        }
+      );
+
+      toast.success("Client added successfully!");
+      setTitle("");
+      setPhotos([]);
+      setPhotoAlts([]);
+      setColor("");
+      setAltName("");
+      setImgTitle("");
+      navigate("/clients-table");
+    } catch (error) {
+      console.error(error);
+      toast.error("Error adding client!");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  return (
+    <form onSubmit={handleSubmit} className="p-4">
+      <ToastContainer />
+      <h1 className="text-xl font-bold font-serif text-gray-700 uppercase text-center">
+        Add Client
+      </h1>
+      
+      <div className="mb-4">
+        <label htmlFor="title" className="block font-semibold mb-2">
+          Title
+        </label>
+        <input
+          id="title"
+          value={title}
+          onChange={(e) => setTitle(e.target.value)}
+          className="w-full p-2 border rounded focus:outline-none"
+          required
+        />
+      </div>
+
+      <div className="mb-4">
+        <label htmlFor="color" className="block font-semibold mb-2">
+          Color
+        </label>
+        <div className="flex items-center gap-4">
+          <input
+            type="color"
+            id="color"
+            value={color}
+            onChange={(e) => setColor(e.target.value)}
+            className="w-20 h-10 border rounded cursor-pointer"
+          />
+          <input
+            type="text"
+            value={color}
+            onChange={(e) => setColor(e.target.value)}
+            placeholder="#000000"
+            className="flex-1 p-2 border rounded focus:outline-none"
+          />
+        </div>
+      </div>
+
+      <div className="mb-4">
+        <label htmlFor="altName" className="block font-semibold mb-2">
+          Alt Name
+        </label>
+        <input
+          id="altName"
+          value={altName}
+          onChange={(e) => setAltName(e.target.value)}
+          className="w-full p-2 border rounded focus:outline-none"
+        />
+      </div>
+
+      <div className="mb-4">
+        <label htmlFor="imgTitle" className="block font-semibold mb-2">
+          Image Title
+        </label>
+        <input
+          id="imgTitle"
+          value={imgTitle}
+          onChange={(e) => setImgTitle(e.target.value)}
+          className="w-full p-2 border rounded focus:outline-none"
+        />
+      </div>
+
+      <div className="mt-4">
+        <label htmlFor="photo" className="block font-semibold mb-2">
+          Photos
+        </label>
+        <input
+          type="file"
+          name="photo"
+          id="photo"
+          multiple
+          onChange={handlePhotoChange}
+          className="border rounded focus:outline-none"
+          accept="image/*"
+        />
+        {photos.length > 0 && (
+          <div className="mt-2 flex flex-wrap gap-4">
+            {photos.map((photo, index) => (
+              <div key={index} className="relative w-56 group flex flex-col items-center">
+                <div className="relative w-56">
+                  <img
+                    src={URL.createObjectURL(photo)}
+                    alt={`Client ${index + 1}`}
+                    className="h-32 w-56 object-contain"
+                  />
+
+                  <button
+                    type="button"
+                    onClick={() => handleDeleteImage(index)}
+                    className="absolute top-4 right-2 bg-red-500 text-white rounded-md p-1 size-6 flex items-center justify-center hover:bg-red-600 focus:outline-none"
+                  >
+                    X
+                  </button>
+                </div>
+           
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+
+      <button 
+        type="submit" 
+        className={`bg-blue-500 text-white py-2 px-4 rounded mt-8 ${isLoading ? "opacity-50 cursor-not-allowed" : ""}`}
+        disabled={isLoading}
+      >
+        {isLoading ? "Adding..." : "Add Client"}
+      </button>
+    </form>
+  );
+};
+
+export default AddClientForm;

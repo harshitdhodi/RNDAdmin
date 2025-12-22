@@ -143,6 +143,9 @@ import EditStaff from './websiteBackend/ourStaff/EditStaff';
 import CoreValueTable from './websiteBackend/coreValue/CoreValueTable';
 import AddCoreValue from './websiteBackend/coreValue/AddCoreValue';
 import EditCoreValue from './websiteBackend/coreValue/EditCoreValue';
+import ClientsTable from './websiteBackend/clients/ClientsTable';
+import AddClientForm from './websiteBackend/clients/AddClientsForm';
+import EditClientForm from './websiteBackend/clients/EditClientsForm';
 
 // Auth Components
 const PrivateRoute = ({ children }) => {
@@ -236,6 +239,10 @@ function App() {
             { path: 'our-staff-form', element: <Suspense fallback={<LoadingFallback />}><StaffForm /></Suspense> },
             { path: 'edit-our-staff-form/:id', element: <Suspense fallback={<LoadingFallback />}><EditStaff /></Suspense> },
 
+            // Clients Management Routes
+            { path: 'clients-table', element: <Suspense fallback={<LoadingFallback />}><ClientsTable /></Suspense> },
+            { path: 'add-client', element: <Suspense fallback={<LoadingFallback />}><AddClientForm /></Suspense> },
+            { path: 'edit-client/:id', element: <Suspense fallback={<LoadingFallback />}><EditClientForm /></Suspense> },
 
             // Core Value Management Routes
             { path: 'core-value-table', element: <Suspense fallback={<LoadingFallback />}><CoreValueTable /></Suspense> },

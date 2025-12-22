@@ -81,7 +81,7 @@ const getBlogById = async (req, res) => {
   const { id } = req.query;
 
   try {
-    const blog = await Blog.findById(id); // Populate the category field
+    const blog = await Blog.findById(id).populate('category'); // Populate the category field
     if (!blog) {
       return res.status(404).json({ message: 'Blog not found' });
     }

@@ -27,7 +27,7 @@ const insertStaff = async (req, res) => {
 const getStaff = async (req, res) => {
   try {
     const { page = 1 } = req.query;
-    const limit = 5;
+    const limit = req.query.limit ? parseInt(req.query.limit) : 10;
 
     const count = await OurStaff.countDocuments();
     const ourstaff = await OurStaff.find()

@@ -15,6 +15,7 @@ const OurStaffSchema = new Schema({
     ln: { type: String, default: "#" },
     in: { type: String, default: "#" },
   },
+  
   status: { type: String, default: false, },
   createdAt: { type: Date, default: Date.now },
   updatedAt: { type: Date, default: Date.now }

@@ -104,7 +104,8 @@ const apiRoutes = [
   ['/api/terms', require('./route/termscondition')],
   ['/api/careerInfo', require('./route/careerInfo')],
   ['/api/staff', require('./routes/ourStaff')],
-  ['/api/coreValue', require('./route/CoreValue')]
+  ['/api/coreValue', require('./route/CoreValue')],
+  ['/api/clients', require('./route/clients')],
 ];
 
 // Apply cache middleware to all API routes

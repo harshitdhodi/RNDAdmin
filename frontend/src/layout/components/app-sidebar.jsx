@@ -93,6 +93,15 @@ const menuData = [
         ]
       },
       {
+        title:"Clients",
+        icon: Users,
+        children:[
+          {title:"Client List",icon:List,url:"/clients-table"},
+          {title:"Add New",icon:PlusSquare,url:"/add-client"}
+        ]
+      },
+      
+      {
         title: "Corporate",
         icon: Building,
         children: [

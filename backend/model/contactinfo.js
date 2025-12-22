@@ -17,6 +17,10 @@ const UserSchema = new mongoose.Schema({
     type: String, // Single address field
     required: true,
   },
+  mapLink: {
+    type: String, // Single map link field
+    required: true,
+  },      
   mobiles: {
     type: [String], // Array of mobile numbers
     required: true,

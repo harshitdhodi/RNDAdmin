@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useAddUserMutation, useUpdateUserMutation, useGetAllUsersQuery } from '@/slice/contactInfo/contactInfo';
+import { MapPin, Phone, Mail, LinkIcon } from 'lucide-react';
 
 const ContactInfoForm = () => {
     const [formData, setFormData] = useState({
@@ -9,7 +10,8 @@ const ContactInfoForm = () => {
         imgTitle: [''],
         altName: [''],
         photo: [],
-        previewUrls: []
+        previewUrls: [],
+        mapLink: ''
     });
 
     const [addUser] = useAddUserMutation();
@@ -21,13 +23,14 @@ const ContactInfoForm = () => {
         if (allUsers && allUsers.length > 0) {
             const existingData = allUsers[0];
             setFormData({
-                address: existingData.address,
-                mobiles: existingData.mobiles,
-                emails: existingData.emails,
+                address: existingData.address || '',
+                mobiles: existingData.mobiles || [''],
+                emails: existingData.emails || [''],
                 imgTitle: existingData.imgTitle || [''],
                 altName: existingData.altName || [''],
                 photo: [],
-                previewUrls: existingData.photo ? existingData.photo.map(p => `/api/image/download/${p}`) : []
+                previewUrls: existingData.photo ? existingData.photo.map(p => `/api/image/download/${p}`) : [],
+                mapLink: existingData.mapLink || ''
             });
         }
     }, [allUsers]);
@@ -61,6 +64,8 @@ const ContactInfoForm = () => {
         
         const submitFormData = new FormData();
         submitFormData.append('address', formData.address);
+        submitFormData.append('mapLink', formData.mapLink);
+        
         formData.mobiles.forEach(mobile => {
             submitFormData.append('mobiles[]', mobile);
         });
@@ -95,150 +100,181 @@ const ContactInfoForm = () => {
                     id: allUsers[0]._id, 
                     formData: submitFormData 
                 }).unwrap();
+                alert('Contact information updated successfully!');
             } else {
                 await addUser(submitFormData).unwrap();
+                alert('Contact information added successfully!');
             }
         } catch (error) {
             console.error('Error:', error);
+            alert('Error saving contact information. Please try again.');
         }
     };
 
     return (
-        <div className="max-w-2xl mx-auto p-4">
-            <form onSubmit={handleSubmit} className="space-y-6">
-                {/* Address Field */}
-                <div>
-                    <label className="block text-sm font-medium text-gray-700">Address</label>
-                    <textarea
-                        value={formData.address}
-                        onChange={(e) => setFormData(prev => ({
-                            ...prev,
-                            address: e.target.value
-                        }))}
-                        className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
-                        required
-                    />
+        <div className="min-h-screen ">
+            <div className="max-w-3xl ">
+                {/* Header */}
+                <div className="bg-white rounded-t-2xl  p-2 border-b-4 border-indigo-600">
+                    <h1 className="text-3xl font-bold text-gray-900">Contact Information</h1>
+                  
                 </div>
 
-                {/* Mobile Numbers */}
-                <div>
-                    <label className="block text-sm font-medium text-gray-700">Mobile Numbers</label>
-                    {formData.mobiles.map((mobile, index) => (
-                        <div key={index} className="flex gap-2 mt-1">
-                            <input
-                                type="tel"
-                                value={mobile}
-                                onChange={(e) => setFormData(prev => {
-                                    const newArray = [...prev.mobiles];
-                                    newArray[index] = e.target.value;
-                                    return {
-                                        ...prev,
-                                        mobiles: newArray
-                                    };
-                                })}
-                                className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
-                                required
-                            />
-                            {formData.mobiles.length > 1 && (
-                                <button type="button" onClick={() => setFormData(prev => {
-                                    const newArray = [...prev.mobiles];
-                                    newArray.splice(index, 1);
-                                    return {
-                                        ...prev,
-                                        mobiles: newArray
-                                    };
-                                })} className="text-red-500">
-                                    Remove
-                                </button>
-                            )}
-                        </div>
-                    ))}
-                    <button type="button" onClick={() => setFormData(prev => ({
-                        ...prev,
-                        mobiles: [...prev.mobiles, '']
-                    }))} className="mt-2 text-indigo-600">
-                        Add Mobile
-                    </button>
-                </div>
-
-                {/* Emails */}
-                <div>
-                    <label className="block text-sm font-medium text-gray-700">Emails</label>
-                    {formData.emails.map((email, index) => (
-                        <div key={index} className="flex gap-2 mt-1">
-                            <input
-                                type="email"
-                                value={email}
-                                onChange={(e) => setFormData(prev => {
-                                    const newArray = [...prev.emails];
-                                    newArray[index] = e.target.value;
-                                    return {
-                                        ...prev,
-                                        emails: newArray
-                                    };
-                                })}
-                                className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
-                                required
-                            />
-                            {formData.emails.length > 1 && (
-                                <button type="button" onClick={() => setFormData(prev => {
-                                    const newArray = [...prev.emails];
-                                    newArray.splice(index, 1);
-                                    return {
-                                        ...prev,
-                                        emails: newArray
-                                    };
-                                })} className="text-red-500">
-                                    Remove
-                                </button>
-                            )}
-                        </div>
-                    ))}
-                    <button type="button" onClick={() => setFormData(prev => ({
-                        ...prev,
-                        emails: [...prev.emails, '']
-                    }))} className="mt-2 text-indigo-600">
-                        Add Email
-                    </button>
-                </div>
-
-             
-                <button
-                    type="submit"
-                    className="w-full bg-indigo-600 text-white py-2 px-4 rounded-md hover:bg-indigo-700"
-                >
-                    {allUsers && allUsers.length > 0 ? 'Update' : 'Submit'}
-                </button>
-            </form>
-
-            {/* Display existing data */}
-            {/* {allUsers && allUsers.length > 0 && (
-                <div className="mt-8">
-                    <h2 className="text-xl font-bold mb-4">Current Contact Information</h2>
-                    <div className="border p-4 rounded-lg">
-                        <p><strong>Address:</strong> {allUsers[0].address}</p>
-                        <p><strong>Mobiles:</strong> {allUsers[0].mobiles.join(', ')}</p>
-                        <p><strong>Emails:</strong> {allUsers[0].emails.join(', ')}</p>
-                        {allUsers[0].photo && allUsers[0].photo.length > 0 && (
-                            <div className="mt-2">
-                                <p><strong>Logos:</strong></p>
-                                <div className="mt-1 grid grid-cols-3 gap-4">
-                                    {allUsers[0].photo.map((photo, index) => (
-                                        <div key={index} className="space-y-1">
-                                            <img
-                                                src={`/api/image/download/${photo}`}
-                                                alt={allUsers[0].altName[index] || ''}
-                                                className="w-24 h-24 object-cover rounded"
-                                            />
-                                            <p className="text-sm">{allUsers[0].imgTitle[index] || ''}</p>
-                                        </div>
-                                    ))}
-                                </div>
-                            </div>
-                        )}
+                {/* Form */}
+                <div className="bg-white rounded-b-2xl  p-5 space-y-6">
+                    {/* Address Field */}
+                    <div className="space-y-2">
+                        <label className="flex items-center text-sm font-semibold text-gray-700">
+                            <MapPin className="w-5 h-5 mr-2 text-indigo-600" />
+                            Address
+                        </label>
+                        <textarea
+                            value={formData.address}
+                            onChange={(e) => setFormData(prev => ({
+                                ...prev,
+                                address: e.target.value
+                            }))}
+                            rows="3"
+                            className="w-full px-4 py-3 rounded-lg border-2 border-gray-200 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 transition-all outline-none"
+                            placeholder="Enter your business address"
+                            required
+                        />
                     </div>
+
+                    {/* Map Link Field */}
+                    <div className="space-y-2">
+                        <label className="flex items-center text-sm font-semibold text-gray-700">
+                            <LinkIcon className="w-5 h-5 mr-2 text-indigo-600" />
+                            Map Link
+                        </label>
+                        <input
+                            type="url"
+                            value={formData.mapLink}
+                            onChange={(e) => setFormData(prev => ({
+                                ...prev,
+                                mapLink: e.target.value
+                            }))}
+                            className="w-full px-4 py-3 rounded-lg border-2 border-gray-200 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 transition-all outline-none"
+                            placeholder="https://maps.google.com/..."
+                        />
+                    </div>
+
+                    {/* Mobile Numbers */}
+                    <div className="space-y-2">
+                        <label className="flex items-center text-sm font-semibold text-gray-700">
+                            <Phone className="w-5 h-5 mr-2 text-indigo-600" />
+                            Mobile Numbers
+                        </label>
+                        {formData.mobiles.map((mobile, index) => (
+                            <div key={index} className="flex gap-2">
+                                <input
+                                    type="tel"
+                                    value={mobile}
+                                    onChange={(e) => setFormData(prev => {
+                                        const newArray = [...prev.mobiles];
+                                        newArray[index] = e.target.value;
+                                        return {
+                                            ...prev,
+                                            mobiles: newArray
+                                        };
+                                    })}
+                                    className="flex-1 px-4 py-3 rounded-lg border-2 border-gray-200 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 transition-all outline-none"
+                                    placeholder="+91 XXXXX XXXXX"
+                                    required
+                                />
+                                {formData.mobiles.length > 1 && (
+                                    <button 
+                                        type="button" 
+                                        onClick={() => setFormData(prev => {
+                                            const newArray = [...prev.mobiles];
+                                            newArray.splice(index, 1);
+                                            return {
+                                                ...prev,
+                                                mobiles: newArray
+                                            };
+                                        })} 
+                                        className="px-4 py-2 bg-red-100 text-red-600 rounded-lg hover:bg-red-200 transition-colors font-medium"
+                                    >
+                                        Remove
+                                    </button>
+                                )}
+                            </div>
+                        ))}
+                        <button 
+                            type="button" 
+                            onClick={() => setFormData(prev => ({
+                                ...prev,
+                                mobiles: [...prev.mobiles, '']
+                            }))} 
+                            className="text-indigo-600 hover:text-indigo-700 font-medium text-sm flex items-center gap-1"
+                        >
+                            <span className="text-xl">+</span> Add Mobile Number
+                        </button>
+                    </div>
+
+                    {/* Emails */}
+                    <div className="space-y-2">
+                        <label className="flex items-center text-sm font-semibold text-gray-700">
+                            <Mail className="w-5 h-5 mr-2 text-indigo-600" />
+                            Email Addresses
+                        </label>
+                        {formData.emails.map((email, index) => (
+                            <div key={index} className="flex gap-2">
+                                <input
+                                    type="email"
+                                    value={email}
+                                    onChange={(e) => setFormData(prev => {
+                                        const newArray = [...prev.emails];
+                                        newArray[index] = e.target.value;
+                                        return {
+                                            ...prev,
+                                            emails: newArray
+                                        };
+                                    })}
+                                    className="flex-1 px-4 py-3 rounded-lg border-2 border-gray-200 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 transition-all outline-none"
+                                    placeholder="contact@example.com"
+                                    required
+                                />
+                                {formData.emails.length > 1 && (
+                                    <button 
+                                        type="button" 
+                                        onClick={() => setFormData(prev => {
+                                            const newArray = [...prev.emails];
+                                            newArray.splice(index, 1);
+                                            return {
+                                                ...prev,
+                                                emails: newArray
+                                            };
+                                        })} 
+                                        className="px-4 py-2 bg-red-100 text-red-600 rounded-lg hover:bg-red-200 transition-colors font-medium"
+                                    >
+                                        Remove
+                                    </button>
+                                )}
+                            </div>
+                        ))}
+                        <button 
+                            type="button" 
+                            onClick={() => setFormData(prev => ({
+                                ...prev,
+                                emails: [...prev.emails, '']
+                            }))} 
+                            className="text-indigo-600 hover:text-indigo-700 font-medium text-sm flex items-center gap-1"
+                        >
+                            <span className="text-xl">+</span> Add Email Address
+                        </button>
+                    </div>
+
+                    {/* Submit Button */}
+                    <button
+                        type="button"
+                        onClick={handleSubmit}
+                        className="w-full bg-gradient-to-r from-indigo-600 to-blue-600 text-white py-4 px-6 rounded-lg hover:from-indigo-700 hover:to-blue-700 transition-all font-semibold text-lg shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
+                    >
+                        {allUsers && allUsers.length > 0 ? '✓ Update Contact Information' : '+ Add Contact Information'}
+                    </button>
                 </div>
-            )} */}
+            </div>
         </div>
     );
 };

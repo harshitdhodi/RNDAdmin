@@ -3,18 +3,14 @@ const User = require('../model/contactinfo');
 // Create a new user
 exports.createUser = async (req, res) => {
   try {
-    const { address, mobiles, emails, } = req.body;
-
-   
-    // Collect file names
-
-
+    const { address, mobiles, emails, mapLink } = req.body;
 
     const newUser = new User({
     
       address,
       mobiles,
-      emails
+      emails,
+      mapLink
     });
 
     await newUser.save();
@@ -54,7 +50,7 @@ const fs = require('fs');
 exports.updateUser = async (req, res) => {
   try {
     const { id } = req.query; // or req.params.id depending on your route
-    const { address, mobiles, emails } = req.body;
+    const { address, mobiles, emails, mapLink } = req.body;
 
     // Validate ID presence
     if (!id) {
@@ -62,9 +58,9 @@ exports.updateUser = async (req, res) => {
     }
 
     // Validate that at least one field is provided for update
-    if (!address && !mobiles && !emails) {
+    if (!address && !mobiles && !emails && !mapLink) {
       return res.status(400).json({
-        message: 'At least one field (address, mobiles, or emails) must be provided for update',
+        message: 'At least one field (address, mobiles, emails, or mapLink) must be provided for update',
       });
     }
 
@@ -79,6 +75,7 @@ exports.updateUser = async (req, res) => {
     if (address !== undefined) updatedData.address = address;
     if (mobiles !== undefined) updatedData.mobiles = mobiles;
     if (emails !== undefined) updatedData.emails = emails;
+    if (mapLink !== undefined) updatedData.mapLink = mapLink;
 
     // Optional: Add validation for arrays (mobiles, emails)
     if (mobiles && !Array.isArray(mobiles)) {

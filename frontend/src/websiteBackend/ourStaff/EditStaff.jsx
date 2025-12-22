@@ -8,6 +8,7 @@ const EditStaff = () => {
   const [S_id, setS_id] = useState("");
   const [name, setName] = useState("");
   const [jobTitle, setJobTitle] = useState("");
+  const [details, setDetails] = useState("");
   const [photo, setPhoto] = useState([]);
   
   const [fb, setFb] = useState("");
@@ -53,6 +54,7 @@ const EditStaff = () => {
       setS_id(staff.S_id);
       setName(staff.name);
       setJobTitle(staff.jobTitle);
+      setDetails(staff.details || "");
       setInitialPhotos(staff.photo);
       setStatus(staff.status);
       setInitialPhotoAlts(staff.alt);
@@ -74,6 +76,7 @@ const EditStaff = () => {
       formData.append('S_id', S_id);
       formData.append('name', name);
       formData.append('jobTitle', jobTitle);
+      formData.append('details', details);
       formData.append('status', status);
       formData.append('socials', JSON.stringify({
         fb,
@@ -216,6 +219,17 @@ const EditStaff = () => {
           onChange={(e) => setJobTitle(e.target.value)}
           className="w-full p-2 border rounded focus:outline-none"
           required
+        />
+      </div>
+      <div className="mb-4">
+        <label className="block font-semibold mb-2">
+          Details
+        </label>
+        <ReactQuill
+          theme="snow"
+          value={details}
+          onChange={setDetails}
+          modules={modules}
         />
       </div>
       <div className="mb-4">

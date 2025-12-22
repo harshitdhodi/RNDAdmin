@@ -28,7 +28,7 @@ const CoreValueTable = () => {
         <img
         src={`/api/image/download/${image}`}
         alt="Core Value"
-        className="w-36 h-12 object-cover"
+        className="w-36 h-12 object-contain"
       />
       
       ),
