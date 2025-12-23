@@ -79,7 +79,7 @@ const CategoryTable = () => {
         accessor: "category",
         Cell: ({ row }) => (
           <div className="flex items-center gap-2 hover:text-blue-500 cursor-pointer"
-            onClick={() => navigate(`/ServiceCategory/editServiceCategory/${row.original.slug}`)}>
+            onClick={() => navigate(`/edit-service-category/${row.original.slug}`)}>
             {row.original.photo && <img src={`/api/logo/download/${row.original.photo}`} alt={row.original.alt} className="w-6 h-6" />}
             {row.original.category}
           </div>
@@ -101,7 +101,7 @@ const CategoryTable = () => {
         Cell: ({ row }) => (
           <div className="flex gap-4">
             <button className="text-blue-500 hover:text-blue-700 transition">
-              <Link to={`/ServiceCategory/editServiceCategory/${row.original.slug}`}>
+              <Link to={`/edit-service-category/${row.original.slug}`}>
                 <Edit />
               </Link>
             </button>
@@ -231,7 +231,7 @@ const CategoryTable = () => {
                       <React.Fragment key={subIndex}>
                         <tr className="border-b border-gray-300 hover:bg-gray-100 transition duration-150">
                           <td></td>
-                          <td className="py-2 px-8 flex gap-2 hover:text-blue-500 cursor-pointer" onClick={() => navigate(`/ServiceCategory/editServiceCategory/${row.original.slug}/${subcategory.slug}`)}><BsArrowReturnRight />{subcategory.photo && <img src={`/api/logo/download/${subcategory.photo}`} alt={subcategory.alt} className="w-6 h-6" />}<span>{subcategory.category}</span></td>
+                          <td className="py-2 px-8 flex gap-2 hover:text-blue-500 cursor-pointer" onClick={() => navigate(`/edit-service-category/${row.original.slug}/${subcategory.slug}`)}><BsArrowReturnRight />{subcategory.photo && <img src={`/api/logo/download/${subcategory.photo}`} alt={subcategory.alt} className="w-6 h-6" />}<span>{subcategory.category}</span></td>
                           <td className="py-2 px-4">
                             <div className="relative group">
                               <input
@@ -251,7 +251,7 @@ const CategoryTable = () => {
                           <td className="py-2 px-4">
                             <div className="flex gap-4">
                               <button className="text-blue-500 hover:text-blue-700 transition">
-                                <Link to={`/ServiceCategory/editServiceCategory/${row.original.slug}/${subcategory.slug}`}>
+                                <Link to={`/edit-service-category/${row.original.slug}/${subcategory.slug}`}>
                                   <Edit />
                                 </Link>
                               </button>
@@ -270,7 +270,7 @@ const CategoryTable = () => {
                         {subcategory.subSubCategory && subcategory.subSubCategory.map((subSubcategory, subSubIndex) => (
                           <tr key={subSubIndex} className="border-b border-gray-300 hover:bg-gray-100 transition duration-150">
                             <td></td>
-                            <td className="py-2 px-12 flex gap-2 hover:text-blue-500 cursor-pointer" onClick={() => navigate(`/ServiceCategory/editServiceCategory/${row.original.slug}/${subcategory.slug}/${subSubcategory.slug}`)}><BsArrowReturnRight />{subSubcategory.photo && <img alt={subSubcategory.alt} src={`/api/logo/download/${subSubcategory.photo}`} className="w-6 h-6" />}<span>{subSubcategory.category}</span></td>
+                            <td className="py-2 px-12 flex gap-2 hover:text-blue-500 cursor-pointer" onClick={() => navigate(`/edit-service-category/${row.original.slug}/${subcategory.slug}/${subSubcategory.slug}`)}><BsArrowReturnRight />{subSubcategory.photo && <img alt={subSubcategory.alt} src={`/api/logo/download/${subSubcategory.photo}`} className="w-6 h-6" />}<span>{subSubcategory.category}</span></td>
                             <td className="py-2 px-4">
                               <div className="relative group">
                                 <input
@@ -290,7 +290,7 @@ const CategoryTable = () => {
                             <td className="py-2 px-4">
                               <div className="flex gap-4">
                                 <button className="text-blue-500 hover:text-blue-700 transition">
-                                  <Link to={`/ServiceCategory/editServiceCategory/${row.original.slug}/${subcategory.slug}/${subSubcategory.slug}`}>
+                                  <Link to={`/edit-service-category/${row.original.slug}/${subcategory.slug}/${subSubcategory.slug}`}>
                                     <Edit />
                                   </Link>
                                 </button>

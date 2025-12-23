@@ -179,7 +179,7 @@ const EditServiceCategory = () => {
         draggable: true,
       });
       setTimeout(() => {
-        navigate("/ServiceCategory");
+        navigate("/service-category");
       }, 1500);
     } catch (error) {
       console.error("Error updating data:", error);
@@ -218,7 +218,7 @@ const EditServiceCategory = () => {
         });
         
         setTimeout(() => {
-          navigate("/ServiceCategory");
+          navigate("/service-category");
         }, 1500);
       } catch (error) {
         console.error("Error deleting service:", error);
