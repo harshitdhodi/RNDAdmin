@@ -12,6 +12,8 @@ import loading from "react-useanimations/lib/loading";
 const CategoryTable = () => {
   const [categories, setCategories] = useState([]);
   const [loadings, setLoading] = useState(true);
+  const [heading, setHeading] = useState("");
+  const [subheading, setSubheading] = useState("");
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [itemToDelete, setItemToDelete] = useState(null);
   const navigate = useNavigate();
@@ -32,7 +34,7 @@ const CategoryTable = () => {
   const deleteCategory = async ({ id, categoryId, subCategoryId, subSubCategoryId }) => {
     let url = '';
     let itemType = 'Category';
-    
+
     if (categoryId && subCategoryId && subSubCategoryId) {
       url = `/api/services/deletesubsubcategory?categoryId=${categoryId}&subCategoryId=${subCategoryId}&subSubCategoryId=${subSubCategoryId}`;
       itemType = 'Sub-subcategory';
@@ -172,14 +174,85 @@ const CategoryTable = () => {
   useEffect(() => {
     fetchCategories();
   }, []);
+  const fetchHeadings = async () => {
+    try {
+      const response = await axios.get('/api/pageHeading/heading?pageType=main-services', { withCredentials: true });
+      const { heading, subheading } = response.data;
+      setHeading(heading || '');
+      setSubheading(subheading || '');
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
+  const saveHeadings = async () => {
+    try {
+      await axios.put('/api/pageHeading/updateHeading?pageType=main-services', {
+        heading,
+        subheading,
+      }, { withCredentials: true });
+      toast.success('Headings updated successfully!', {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+      });
+    } catch (error) {
+      console.error(error);
+      toast.error('Failed to update headings. Please try again.', {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+      });
+    }
+  };
+
+  useEffect(() => {
+    fetchHeadings();
+  }, []);
+
+  const handleHeadingChange = (e) => setHeading(e.target.value);
+  const handleSubheadingChange = (e) => setSubheading(e.target.value);
   return (
     <div className="p-4 overflow-x-auto">
       <ToastContainer />
+      <div className="mb-8 border border-gray-200 shadow-lg p-4 rounded ">
+        <div className="grid md:grid-cols-2 md:gap-2 grid-cols-1">
+          <div className="mb-6">
+            <label className="block text-gray-700 font-bold mb-2 uppercase font-serif">Heading</label>
+            <input
+              type="text"
+              value={heading}
+              onChange={handleHeadingChange}
+              className="w-full px-4 py-2 border rounded-md focus:outline-none focus:border-blue-500 transition duration-300"
+            />
+          </div>
+          <div className="mb-6">
+            <label className="block text-gray-700 font-bold mb-2 uppercase font-serif">Sub heading</label>
+            <textarea
+              type="text"
+              value={subheading}
+              onChange={handleSubheadingChange}
+              className="w-full px-4 py-2 border rounded-md focus:outline-none focus:border-blue-500 transition duration-300"
+            />
+          </div>
+        </div>
+        <button
+          onClick={saveHeadings}
+          className="px-4 py-2 bg-slate-700 text-white rounded hover:bg-slate-900 transition duration-300 font-serif"
+        >
+          Save
+        </button>
+      </div>
       <div className="flex justify-between items-center mb-4">
         <h1 className="text-xl font-bold text-gray-700 font-serif uppercase">Categories</h1>
         <Link to="/service-category-form"><button className="px-4 py-2 bg-slate-700 text-white rounded hover:bg-slate-900 transition duration-300">
-         <Plus size={15} /></button></Link>
+          <Plus size={15} /></button></Link>
       </div>
       {loadings ? (
         <div className="flex justify-center"><UseAnimations animation={loading} size={56} /></div>
@@ -325,7 +398,7 @@ const CategoryTable = () => {
           <div className="bg-white p-6 rounded-lg shadow-xl w-96">
             <div className="flex justify-between items-center mb-4">
               <h3 className="text-lg font-semibold">Confirm Deletion</h3>
-              <button 
+              <button
                 onClick={() => setShowDeleteModal(false)}
                 className="text-gray-500 hover:text-gray-700"
               >
