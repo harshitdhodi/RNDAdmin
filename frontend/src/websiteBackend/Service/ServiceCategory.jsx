@@ -81,7 +81,7 @@ const CategoryTable = () => {
         accessor: "category",
         Cell: ({ row }) => (
           <div className="flex items-center gap-2 hover:text-blue-500 cursor-pointer"
-            onClick={() => navigate(`/edit-service-category/${row.original.slug}`)}>
+            onClick={() => navigate(`/serviceSec1-form`)}>
             {row.original.photo && <img src={`/api/logo/download/${row.original.photo}`} alt={row.original.alt} className="w-6 h-6" />}
             {row.original.category}
           </div>

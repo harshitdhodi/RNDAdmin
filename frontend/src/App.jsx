@@ -146,6 +146,10 @@ import EditCoreValue from './websiteBackend/coreValue/EditCoreValue';
 import ClientsTable from './websiteBackend/clients/ClientsTable';
 import AddClientForm from './websiteBackend/clients/AddClientsForm';
 import EditClientForm from './websiteBackend/clients/EditClientsForm';
+import ServiceSec1Form from './websiteBackend/Service/serviceSec1/ServiceSec1Form';
+import ServiceSec1Table from './websiteBackend/Service/serviceSec1/ServiceSec1Table';
+import ServiceSec2Form from './websiteBackend/Service/serviceSec2/ServiceSec2Form';
+import ServiceSec2Table from './websiteBackend/Service/serviceSec2/ServiceSec2Table';
 
 // Auth Components
 const PrivateRoute = ({ children }) => {
@@ -391,6 +395,16 @@ function App() {
             { path: 'terms-and-conditions-form', element: <Suspense fallback={<LoadingFallback />}><TermsConditionForm /></Suspense> },
             { path: 'import-excel', element: <Suspense fallback={<LoadingFallback />}><ImportExcel /></Suspense> },
             { path: 'tracking', element: <Suspense fallback={<LoadingFallback />}><TrackingInfo /></Suspense> },
+
+            // Services Section 1 Management Routes
+            { path: 'serviceSec1-table', element: <Suspense fallback={<LoadingFallback />}><ServiceSec1Table /></Suspense> },
+            { path: 'serviceSec1-form', element: <Suspense fallback={<LoadingFallback />}><ServiceSec1Form /></Suspense> },
+            { path: 'edit-serviceSec1/:id', element: <Suspense fallback={<LoadingFallback />}><ServiceSec1Form /></Suspense> },
+
+            // Service Section 2 Management Routes
+            { path: 'serviceSec2-table', element: <Suspense fallback={<LoadingFallback />}><ServiceSec2Table /></Suspense> },
+            { path: 'serviceSec2-form', element: <Suspense fallback={<LoadingFallback />}><ServiceSec2Form /></Suspense> },
+            { path: 'service-sec2-form/:id', element: <Suspense fallback={<LoadingFallback />}><ServiceSec2Form /></Suspense> },
 
             // Cookies Policy Route 
             { path: 'cookies', element: <Suspense fallback={<LoadingFallback />}><CookiesForm /></Suspense> },

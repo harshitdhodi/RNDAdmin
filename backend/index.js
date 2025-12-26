@@ -106,6 +106,9 @@ const apiRoutes = [
   ['/api/staff', require('./routes/ourStaff')],
   ['/api/coreValue', require('./route/CoreValue')],
   ['/api/clients', require('./route/clients')],
+  ['/api/serviceSec1', require('./route/serviceSec1')],
+  ['/api/serviceSec2', require('./route/serviceSection2')],
+  ['/api/serviceSec3', require('./route/serviceSec3.js')],
 ];
 
 // Apply cache middleware to all API routes

@@ -20,7 +20,7 @@ const menuData = [
     icon: FlaskConical,
     children: [
       { title: "ServiceList", icon: List, url: "/chemical-table" },
-      // { title: "Add New", icon: PlusSquare, url: "/service-category-form" },
+      { title: "ServiceSec1 Table", icon: PlusSquare, url: "/serviceSec1-table" },
     
       { title: "Category", icon: GanttChart, url: "/service-category" },
       // { title: "Import Excel", icon: FileText, url: "/import-excel" }
