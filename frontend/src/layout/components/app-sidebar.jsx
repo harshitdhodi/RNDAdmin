@@ -21,9 +21,11 @@ const menuData = [
     children: [
       { title: "ServiceList", icon: List, url: "/chemical-table" },
       { title: "ServiceSec1 Table", icon: PlusSquare, url: "/serviceSec1-table" },
-    
+      { title: "ServiceSec2 Table", icon: PlusSquare, url: "/serviceSec2-table" },
+
+      { title: "ServiceSec3 Table", icon: PlusSquare, url: "/serviceSec3-table" },
       { title: "Category", icon: GanttChart, url: "/service-category" },
-      // { title: "Import Excel", icon: FileText, url: "/import-excel" }
+      { title: "Testimonials", icon: FileText, url: "/testimonials" }
     ]
   },
   {
@@ -93,14 +95,14 @@ const menuData = [
         ]
       },
       {
-        title:"Clients",
+        title: "Clients",
         icon: Users,
-        children:[
-          {title:"Client List",icon:List,url:"/clients-table"},
-          {title:"Add New",icon:PlusSquare,url:"/add-client"}
+        children: [
+          { title: "Client List", icon: List, url: "/clients-table" },
+          { title: "Add New", icon: PlusSquare, url: "/add-client" }
         ]
       },
-      
+
       {
         title: "Corporate",
         icon: Building,
@@ -116,7 +118,7 @@ const menuData = [
           { title: "Core Value List", icon: List, url: "/core-value-table" },
           { title: "Add New", icon: PlusSquare, url: "/core-value-form" },
         ]
-      },  
+      },
       {
         title: "Banner",
         icon: Image,
@@ -129,7 +131,8 @@ const menuData = [
 
         ]
       },
-     { title: "Our Staff", icon: Users, children: [
+      {
+        title: "Our Staff", icon: Users, children: [
           { title: "Staff List", icon: List, url: "/our-staff-table" },
           { title: "Add New", icon: PlusSquare, url: "/our-staff-form" },
         ]
@@ -150,7 +153,7 @@ const menuData = [
           // { title: "Add New", icon: PlusSquare, url: "/contact-info/add" },
         ]
       },
-      
+
       {
         title: "WhatsUp Info",
         icon: MessageSquareQuote,
@@ -182,15 +185,15 @@ const menuData = [
           { title: "List", icon: List, url: "/navigationLink" },
           { title: "Add New", icon: PlusSquare, url: "/navigationLink-form" },
         ]
-      }, 
+      },
       {
-        title:"catalogue Management",
+        title: "catalogue Management",
         icon: BookCopy,
-        children:[
-          {title:"Catalogue List",icon:List,url:"/catalogue-table"},
+        children: [
+          { title: "Catalogue List", icon: List, url: "/catalogue-table" },
           // {title:"Add New",icon:PlusSquare,url:"/catalogue-form"}
         ]
-      } ,
+      },
       {
         title: "PrivacyPolicy and Terms",
         icon: ShieldQuestion,
@@ -273,14 +276,14 @@ export default function AppSidebar() {
       );
     });
 
-  return (  
+  return (
     <Sidebar >
       <SidebarContent>
 
         <div className="p-4 border-b">
           {logoData.url && <img src={`/api/logo/download/${logoData.url}`} alt={logoData.alt} className="h-16 mx-auto" />}
         </div>
-    
+
         <SidebarGroup>
           <SidebarGroupLabel>Application</SidebarGroupLabel>
           <SidebarMenu>{renderMenuItems(menuData)}</SidebarMenu>

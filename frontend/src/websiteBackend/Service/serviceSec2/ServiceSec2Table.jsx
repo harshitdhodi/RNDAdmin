@@ -362,7 +362,7 @@ const ServiceSec2Table = () => {
                                             <div className="md:col-span-2">
                                               <p className="text-sm font-medium text-gray-500 mb-2">Image:</p>
                                               <img
-                                                src={`/uploads/images/${card.photo}`}
+                                                src={`/api/image/download/${card.photo}`}
                                                 alt={card.alt || 'Card image'}
                                                 className="max-w-xs h-auto rounded-lg border border-gray-300"
                                                 onError={(e) => {

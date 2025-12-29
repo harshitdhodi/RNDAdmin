@@ -150,6 +150,11 @@ import ServiceSec1Form from './websiteBackend/Service/serviceSec1/ServiceSec1For
 import ServiceSec1Table from './websiteBackend/Service/serviceSec1/ServiceSec1Table';
 import ServiceSec2Form from './websiteBackend/Service/serviceSec2/ServiceSec2Form';
 import ServiceSec2Table from './websiteBackend/Service/serviceSec2/ServiceSec2Table';
+import ServiceSec3Table from './websiteBackend/Service/serviceSec3/ServiceSec3Table';
+import ServiceSec3Form from './websiteBackend/Service/serviceSec3/ServiceSec3Form';
+import CreateTestimonials from './websiteBackend/testimonial/CreateTestimonials';
+import TestimonialsTable from './websiteBackend/testimonial/TestimonialTable';
+import EditTestimonial from './websiteBackend/testimonial/EditTestimonial';
 
 // Auth Components
 const PrivateRoute = ({ children }) => {
@@ -403,9 +408,18 @@ function App() {
 
             // Service Section 2 Management Routes
             { path: 'serviceSec2-table', element: <Suspense fallback={<LoadingFallback />}><ServiceSec2Table /></Suspense> },
-            { path: 'serviceSec2-form', element: <Suspense fallback={<LoadingFallback />}><ServiceSec2Form /></Suspense> },
+            { path: 'service-sec2-form', element: <Suspense fallback={<LoadingFallback />}><ServiceSec2Form /></Suspense> },
             { path: 'service-sec2-form/:id', element: <Suspense fallback={<LoadingFallback />}><ServiceSec2Form /></Suspense> },
 
+            // Service Section 3 Management Routes
+            { path: 'serviceSec3-table', element: <Suspense fallback={<LoadingFallback />}><ServiceSec3Table /></Suspense> },
+            { path: 'service-sec3-form', element: <Suspense fallback={<LoadingFallback />}><ServiceSec3Form /></Suspense> },
+            { path: 'service-sec3-form/:id', element: <Suspense fallback={<LoadingFallback />}><ServiceSec3Form /></Suspense> },
+
+            //testimonials Policy Route
+            { path: 'add-testimonials', element: <Suspense fallback={<LoadingFallback />}><CreateTestimonials /></Suspense> },
+            { path: 'testimonials', element: <Suspense fallback={<LoadingFallback />}><TestimonialsTable /></Suspense> },
+            { path: 'testimonials/editTestimonials/:id', element: <Suspense fallback={<LoadingFallback />}><EditTestimonial /></Suspense> },
             // Cookies Policy Route 
             { path: 'cookies', element: <Suspense fallback={<LoadingFallback />}><CookiesForm /></Suspense> },
           ]

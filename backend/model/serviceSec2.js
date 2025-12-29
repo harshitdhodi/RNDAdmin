@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 
-const ServiceSec1Schema = new mongoose.Schema({
+const ServiceSec2Schema = new mongoose.Schema({
   heading: {
     type: String,
     trim: true,
@@ -68,7 +68,7 @@ const ServiceSec1Schema = new mongoose.Schema({
 });
 
 // Compound unique index to ensure only one document per category/subcategory/subsubcategory combo
-ServiceSec1Schema.index(
+ServiceSec2Schema.index(
   { categoryId: 1, subCategoryId: 1, subSubCategoryId: 1 },
   { 
     unique: true,
@@ -80,7 +80,7 @@ ServiceSec1Schema.index(
 );
 
 // Pre-save hook to automatically determine the level
-ServiceSec1Schema.pre('save', function(next) {
+ServiceSec2Schema.pre('save', function(next) {
   if (this.subSubCategoryId && this.subSubCategoryId !== null) {
     this.level = 'subsubcategory';
   } else if (this.subCategoryId && this.subCategoryId !== null) {
@@ -91,4 +91,4 @@ ServiceSec1Schema.pre('save', function(next) {
   next();
 });
 
-module.exports = mongoose.model('ServiceSec2', ServiceSec1Schema);
+module.exports = mongoose.model('ServiceSec2', ServiceSec2Schema);
