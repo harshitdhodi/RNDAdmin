@@ -155,6 +155,7 @@ import ServiceSec3Form from './websiteBackend/Service/serviceSec3/ServiceSec3For
 import CreateTestimonials from './websiteBackend/testimonial/CreateTestimonials';
 import TestimonialsTable from './websiteBackend/testimonial/TestimonialTable';
 import EditTestimonial from './websiteBackend/testimonial/EditTestimonial';
+import WhyChooseUsCRUD from './websiteBackend/whychooseus/WhyChooseUsCRUD';
 
 // Auth Components
 const PrivateRoute = ({ children }) => {
@@ -185,38 +186,7 @@ function App() {
       path: '/',
       element: <AppContent />, // Use the AppContent here
       children: [
-        // Public Routes (Website)
-        // {
-        //   path: '/',
-        //   element: (
-        //     <Suspense fallback={<LoadingFallback />}>
-        //       <Navbar />
-        //     </Suspense>
-        //   ),
-        //   children: [
-        //     { index: true, element: <Suspense fallback={<LoadingFallback />}><HomePage /></Suspense> },
-        //     { path: 'categories', element: <Suspense fallback={<LoadingFallback />}><ProductCategoryPage /></Suspense> },
-        //     { path: 'products/code?number', element: <Suspense fallback={<LoadingFallback />}><Hello /></Suspense> },
-        //     { path: 'alphabetsbaseCategory', element: <Suspense fallback={<LoadingFallback />}><AlphabetsBaseCategory /></Suspense> },
-        //     { path: ':chemicals', element: <Suspense fallback={<LoadingFallback />}><Saperator /></Suspense> },
-        //     { path: ':slug', element: <Suspense fallback={<LoadingFallback />}><Saperator /></Suspense> },
-        //     { path: 'contact-us', element: <Suspense fallback={<LoadingFallback />}><ContactPage /></Suspense> },
-        //     { path: 'blogs', element: <Suspense fallback={<LoadingFallback />}><BlogPage /></Suspense> },
-        //     { path: 'blog/:slug', element: <Suspense fallback={<LoadingFallback />}><BlogSaparator /></Suspense> },
-        //     { path: ':chemicals/:slug', element: <Suspense fallback={<LoadingFallback />}><Hello /></Suspense> },
-        //     { path: ':chemicals/:slug/:subsubCategorySlug', element: <Suspense fallback={<LoadingFallback />}><ChemicalSubcategoryPage /></Suspense> },
-        //     { path: '/search', element: <Suspense fallback={<LoadingFallback />}><ProductSearchBar /></Suspense> },
-        //     { path: '/about', element: <Suspense fallback={<LoadingFallback />}><AboutDescription /></Suspense> },
-        //     { path: '/introduction', element: <Suspense fallback={<LoadingFallback />}><Introduction /></Suspense> },
-        //     { path: '/vision-mission', element: <Suspense fallback={<LoadingFallback />}><MainContent /></Suspense> },
-        //     { path: '/worldwide', element: <Suspense fallback={<LoadingFallback />}><WorldWide /></Suspense> },
-        //     { path: '/careers', element: <Suspense fallback={<LoadingFallback />}><CareerForm /></Suspense> },
-        //     { path: '/advance-search', element: <Suspense fallback={<LoadingFallback />}><AdvanceSearch /></Suspense> },
-        //     { path: '/privacy-policy', element: <Suspense fallback={<LoadingFallback />}><PrivacyPolicy /></Suspense> },
-        //     { path: '/terms-and-conditions', element: <Suspense fallback={<LoadingFallback />}><TermsAndConditions /></Suspense> }
-        //   ]
-        // },
-        // Authentication Route
+       
         {
           path: 'login',
           element: <Suspense fallback={<LoadingFallback />}><LoginRoute /></Suspense>
@@ -258,31 +228,7 @@ function App() {
             { path: 'add-core-value', element: <Suspense fallback={<LoadingFallback />}><AddCoreValue /></Suspense> },
             { path: 'edit-core-value/:id', element: <Suspense fallback={<LoadingFallback />}><EditCoreValue /></Suspense> },
 
-            // { path: 'chemical-form', element: <Suspense fallback={<LoadingFallback />}><ChemicalFormPage /></Suspense> },
-            // { path: 'edit-chemical-form/:id', element: <Suspense fallback={<LoadingFallback />}><ChemicalFormPage /></Suspense> },
-            // { path: 'chemical-types', element: <Suspense fallback={<LoadingFallback />}><ChemicalTypes /></Suspense> },
-            // { path: 'chemical-category', element: <Suspense fallback={<LoadingFallback />}><CategoriesPage /></Suspense> },
-            // { path: 'chemical-category-form', element: <Suspense fallback={<LoadingFallback />}><CategoryForm /></Suspense> },
-            // {
-            //   path: 'edit-chemical-category/:categoryId/:subCategoryId?/:subSubCategoryId?',
-            //   element: <Suspense fallback={<LoadingFallback />}><UpdateCategoryForm /></Suspense>
-            // },
-            // { path: 'unit', element: <Suspense fallback={<LoadingFallback />}><UnitsPage /></Suspense> },
-            // { path: 'search-suppliers', element: <Suspense fallback={<LoadingFallback />}><SearchSuppliers /></Suspense> },
-
-            // Supplier Management Routes
-            // { path: 'supplier-table', element: <Suspense fallback={<LoadingFallback />}><SuppliersTable /></Suspense> },
-            // { path: 'supplier-form', element: <Suspense fallback={<LoadingFallback />}><SupplierForm /></Suspense> },
-            // { path: 'chemical-mapping', element: <Suspense fallback={<LoadingFallback />}><ChemicalMapping /></Suspense> },
-            // { path: 'chemical-search', element: <Suspense fallback={<LoadingFallback />}><ChemicalSearch /></Suspense> },
-            // { path: 'edit-supplier-form/:id', element: <Suspense fallback={<LoadingFallback />}><EditSupplierForm /></Suspense> },
-
-            // Customer Management Routes
-            // { path: 'customer-table', element: <Suspense fallback={<LoadingFallback />}><CustomerTable /></Suspense> },
-            // { path: 'customer-form', element: <Suspense fallback={<LoadingFallback />}><CustomerForm /></Suspense> },
-            // { path: 'customer-chemical-mapping', element: <Suspense fallback={<LoadingFallback />}><CustomerChemicalMapping /></Suspense> },
-            // { path: 'edit-customer-form/:id', element: <Suspense fallback={<LoadingFallback />}><EditCustomerForm /></Suspense> },
-
+          
             //Service Management Routes
             { path: 'service-category', element: <Suspense fallback={<LoadingFallback />}><CategoryTable /></Suspense> },
             { path: 'service-category-form', element: <Suspense fallback={<LoadingFallback />}><ServiceCategoryForm /></Suspense> },
@@ -415,6 +361,11 @@ function App() {
             { path: 'serviceSec3-table', element: <Suspense fallback={<LoadingFallback />}><ServiceSec3Table /></Suspense> },
             { path: 'service-sec3-form', element: <Suspense fallback={<LoadingFallback />}><ServiceSec3Form /></Suspense> },
             { path: 'service-sec3-form/:id', element: <Suspense fallback={<LoadingFallback />}><ServiceSec3Form /></Suspense> },
+
+            // Why Choose Us Management Routes
+            { path: 'whyChooseUs-table', element: <Suspense fallback={<LoadingFallback />}><WhyChooseUsCRUD /></Suspense> },
+            // { path: 'whyChooseUs-form', element: <Suspense fallback={<LoadingFallback />}><WhyChooseUsForm /></Suspense> },
+            // { path: 'edit-whyChooseUs/:id', element: <Suspense fallback={<LoadingFallback />}><WhyChooseUsForm /></Suspense> },
 
             //testimonials Policy Route
             { path: 'add-testimonials', element: <Suspense fallback={<LoadingFallback />}><CreateTestimonials /></Suspense> },

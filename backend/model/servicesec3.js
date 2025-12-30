@@ -27,17 +27,17 @@ const ServiceSec3Schema = new mongoose.Schema({
         type: String,
       },
       photo: {
-    type: String,
-    default: '',
-  },
-  alt: {
-    type: String,
-    default: '',
-  },
-  imgTitle: {
-    type: String,
-    default: '',
-  },
+        type: String,
+        default: '',
+      },
+      alt: {
+        type: String,
+        default: '',
+      },
+      imgTitle: {
+        type: String,
+        default: '',
+      },
     },
   ],
 
@@ -64,13 +64,13 @@ const ServiceSec3Schema = new mongoose.Schema({
   },
 
 }, {
-  timestamps: true,      
+  timestamps: true,
 });
 
 // Compound unique index to ensure only one document per category/subcategory/subsubcategory combo
 ServiceSec3Schema.index(
   { categoryId: 1, subCategoryId: 1, subSubCategoryId: 1 },
-  { 
+  {
     unique: true,
     partialFilterExpression: { // Helps with null values in unique index
       subCategoryId: { $type: "objectId" },
@@ -80,7 +80,7 @@ ServiceSec3Schema.index(
 );
 
 // Pre-save hook to automatically determine the level
-ServiceSec3Schema.pre('save', function(next) {
+ServiceSec3Schema.pre('save', function (next) {
   if (this.subSubCategoryId && this.subSubCategoryId !== null) {
     this.level = 'subsubcategory';
   } else if (this.subCategoryId && this.subCategoryId !== null) {

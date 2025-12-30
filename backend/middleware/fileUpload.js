@@ -21,10 +21,13 @@ const storage = multer.diskStorage({
   destination: function (req, file, cb) {
     if (file.fieldname === 'catalogue') {
       cb(null, catalogueDir);
-    } else if (file.fieldname === 'photo') {
-      cb(null, tempDir); // Save temporarily
     } else if (file.fieldname === 'resume') {
       cb(null, resumeDir);
+    } else if (file.fieldname === 'photo' || file.fieldname.startsWith('cards[')) {
+      // Accept both 'photo' and any 'cards[x][photo]'
+      cb(null, tempDir); // Save temporarily
+    } else {
+      cb(new Error('Unexpected field'));
     }
   },
   filename: function (req, file, cb) {
@@ -32,15 +35,16 @@ const storage = multer.diskStorage({
     if (file.fieldname === 'catalogue') {
       fileName = file.originalname;
       req.fileName = fileName;
-    } else if (file.fieldname === 'photo') {
-      fileName = `${file.fieldname}_${Date.now()}${path.extname(file.originalname)}`;
     } else if (file.fieldname === 'resume') {
       fileName = `resume_${Date.now()}${path.extname(file.originalname)}`;
+    } else {
+      // For both 'photo' and 'cards[x][photo]'
+      fileName = `photo_${Date.now()}_${Math.random().toString(36).substr(2, 9)}${path.extname(file.originalname)}`;
     }
     cb(null, fileName);
   }
 });
- 
+
 const upload = multer({
   storage: storage,
   limits: { fileSize: 50 * 1024 * 1024 }, // Max 50MB
@@ -59,16 +63,16 @@ setInterval(() => {
   const now = Date.now();
   const maxAge = 5 * 60 * 1000; // 5 minutes
   
-  filesToCleanup.forEach(({ path, timestamp }) => {
-    if (now - timestamp > maxAge) {
-      fs.unlink(path, (err) => {
+  for (const item of filesToCleanup) {
+    if (now - item.timestamp > maxAge) {
+      fs.unlink(item.path, (err) => {
         if (!err || err.code === 'ENOENT') {
-          filesToCleanup.delete(path);
+          filesToCleanup.delete(item);
         }
       });
     }
-  });
-}, 5 * 60 * 1000); // Run every 5 minutes
+  }
+}, 5 * 60 * 1000);
 
 const processLogoImage = async (filePath) => {
   const ext = path.extname(filePath).toLowerCase();
@@ -90,7 +94,6 @@ const processLogoImage = async (filePath) => {
       })
       .toFile(webpPath);
 
-    // Schedule file for cleanup instead of deleting immediately
     filesToCleanup.add({
       path: filePath,
       timestamp: Date.now()
@@ -103,54 +106,68 @@ const processLogoImage = async (filePath) => {
   }
 };
 
-// Middleware to move photo files from temp to final directory
+// Middleware to handle all photo uploads (both 'photo' and 'cards[x][photo]')
 const uploadPhoto = (req, res, next) => {
   upload.fields([
     { name: 'catalogue', maxCount: 1 },
-    { name: 'photo', maxCount: 5 },
-    { name: 'resume', maxCount: 1 }
+    { name: 'photo', maxCount: 10 },           // increased a bit for flexibility
+    { name: 'resume', maxCount: 1 },
+    // Allow dynamic card photo fields — Multer supports wildcards via regex or multiple definitions
+    // But easier: just let any field starting with 'cards[' go to temp and process later
   ])(req, res, async function (err) {
     if (err) {
       return res.status(400).send({ error: err.message });
     }
 
-    if (!req.files || !req.files['photo']) {
+    // Collect all photo files: both from 'photo' field and any 'cards[x][photo]'
+    const photoFiles = [];
+
+    if (req.files['photo']) {
+      photoFiles.push(...req.files['photo']);
+    }
+
+    // Find all fields that start with 'cards[' and end with '[photo]'
+    Object.keys(req.files).forEach(fieldName => {
+      if (fieldName.startsWith('cards[') && fieldName.endsWith('][photo]')) {
+        photoFiles.push(...req.files[fieldName]);
+      }
+    });
+
+    if (photoFiles.length === 0) {
       return next();
     }
 
     try {
-      await Promise.all(req.files['photo'].map(async (photo) => {
+      await Promise.all(photoFiles.map(async (photo) => {
         const tempPath = path.join(tempDir, photo.filename);
         if (!fs.existsSync(tempPath)) {
           throw new Error(`Temporary file not found: ${photo.filename}`);
         }
 
-        try {
-          const newPath = await processLogoImage(tempPath);
-          const finalPath = path.join(
-            photoDir,
-            path.basename(photo.filename, path.extname(photo.filename)) + '.webp'
-          );
+        const newPath = await processLogoImage(tempPath);
+        const finalFilename = path.basename(photo.filename, path.extname(photo.filename)) + '.webp';
+        const finalPath = path.join(photoDir, finalFilename);
 
-          // Ensure the target directory exists
-          await fs.promises.mkdir(path.dirname(finalPath), { recursive: true });
-          
-          // Use copy instead of rename
-          await fs.promises.copyFile(newPath, finalPath);
-          photo.filename = path.basename(finalPath);
-          
-          // Schedule the processed file for cleanup
-          if (newPath !== tempPath) {
-            filesToCleanup.add({
-              path: newPath,
-              timestamp: Date.now()
-            });
-          }
-        } catch (processError) {
-          console.error('Error processing file:', processError);
-          throw processError;
+        await fs.promises.mkdir(path.dirname(finalPath), { recursive: true });
+        await fs.promises.copyFile(newPath, finalPath);
+
+        // Update the file object so downstream code sees the final filename
+        photo.filename = finalFilename;
+        photo.path = finalPath;           // optional: full path
+        photo.destination = photoDir;     // optional
+
+        // Schedule processed intermediate file for cleanup
+        if (newPath !== tempPath) {
+          filesToCleanup.add({
+            path: newPath,
+            timestamp: Date.now()
+          });
         }
       }));
+
+      // Optional: make all processed photos available under a consistent key if needed
+      // req.processedPhotos = photoFiles;
+
       next();
     } catch (error) {
       console.error('Error in upload middleware:', error);
