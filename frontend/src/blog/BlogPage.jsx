@@ -1,26 +1,96 @@
-import React, { useState } from 'react';
-import { Table, Button, Popconfirm, Typography, Image } from 'antd';
+import React, { useState, useEffect } from 'react';
+import { Table, Button, Popconfirm, Typography, Image, message } from 'antd';
 import { EditOutlined, PlusOutlined, DeleteOutlined } from '@ant-design/icons';
 import { Link, useNavigate } from 'react-router-dom';
-import { useGetAllBlogsQuery, useDeleteBlogMutation } from '@/slice/blog/blog';
+import {
+  useGetAllBlogsQuery,
+  useDeleteBlogMutation,
+} from '@/slice/blog/blog';
+import axios from 'axios';
 
 const { Text } = Typography;
 
 const BlogTable = () => {
-  const { data: blogs, error, isLoading, refetch } = useGetAllBlogsQuery();
+  const { data: blogs = [], error, isLoading, refetch } = useGetAllBlogsQuery();
   const [deleteBlog, { isLoading: isDeleting }] = useDeleteBlogMutation();
   const navigate = useNavigate();
+
+  // State for expandable details
   const [expandedRows, setExpandedRows] = useState({});
 
-  if (isLoading) return <div>Loading...</div>;
-  if (error) return <div>Error: {error.message || 'An error occurred'}</div>;
+  // State for page headings (current editable values)
+  const [heading, setHeading] = useState('');
+  const [subheading, setSubheading] = useState('');
+
+  // State for original fetched values (to detect changes)
+  const [originalHeading, setOriginalHeading] = useState('');
+  const [originalSubheading, setOriginalSubheading] = useState('');
+
+  // Loading state for heading operations
+  const [loadingHeadings, setLoadingHeadings] = useState(false);
+
+  // Fetch headings on component mount
+  useEffect(() => {
+    fetchHeadings();
+  }, []);
+
+  const fetchHeadings = async () => {
+    setLoadingHeadings(true);
+    try {
+      const response = await axios.get('/api/pageHeading/heading?pageType=blogtitle', {
+        withCredentials: true,
+      });
+      const { heading: fetchedHeading = '', subheading: fetchedSubheading = '' } = response.data || {};
+
+      setHeading(fetchedHeading);
+      setSubheading(fetchedSubheading);
+      setOriginalHeading(fetchedHeading);
+      setOriginalSubheading(fetchedSubheading);
+    } catch (err) {
+      console.error('Failed to fetch headings:', err);
+      message.error('Failed to load page headings');
+    } finally {
+      setLoadingHeadings(false);
+    }
+  };
+
+  const saveHeadings = async () => {
+    setLoadingHeadings(true);
+    try {
+      await axios.put(
+        '/api/pageHeading/updateHeading?pageType=blogtitle',
+        {
+          pageType: 'blogtitle',
+          heading,
+          subheading,
+        },
+        { withCredentials: true }
+      );
+
+      // Update original values after successful save
+      setOriginalHeading(heading);
+      setOriginalSubheading(subheading);
+
+      message.success('Headings saved successfully!');
+    } catch (err) {
+      console.error('Failed to save headings:', err);
+      message.error('Failed to save headings');
+    } finally {
+      setLoadingHeadings(false);
+    }
+  };
+
+  // Detect if there are unsaved changes
+  const hasChanges = heading !== originalHeading || subheading !== originalSubheading;
 
   const handleDelete = async (id) => {
     try {
       await deleteBlog(id).unwrap();
+      message.success('Blog deleted successfully');
       refetch();
-    } catch (error) {
-      console.error('Failed to delete blog:', error);
+    } catch (err) {
+      console.error('Failed to delete blog:', err);
+      message.error('Failed to delete blog');
     }
   };
 
@@ -36,14 +106,14 @@ const BlogTable = () => {
       title: 'Title',
       dataIndex: 'title',
       key: 'title',
-      width: 150, // Increased width (Adjust as needed)
+      width: 200,
       render: (text) => <Text strong>{text}</Text>,
     },
     {
       title: 'Date',
       dataIndex: 'date',
       key: 'date',
-      width: 50,
+      width: 120,
     },
     {
       title: 'Details',
@@ -51,18 +121,22 @@ const BlogTable = () => {
       key: 'details',
       render: (text, record) => (
         <div>
-        <div
-  className={`relative overflow-hidden ${expandedRows[record._id] ? 'max-h-none' : 'max-h-[5em]'}`}
-  dangerouslySetInnerHTML={{ __html: text }}
-/>
-
-          <Button
-            type="link"
-            onClick={() => toggleDetails(record._id)}
-            size="small"
-          >
-            {expandedRows[record._id] ? 'Show Less' : 'Read More'}
-          </Button>
+          <div
+            className={`relative overflow-hidden transition-all duration-300 ${
+              expandedRows[record._id] ? 'max-h-none' : 'max-h-20'
+            }`}
+            dangerouslySetInnerHTML={{ __html: text }}
+          />
+          {text && text.length > 100 && (
+            <Button
+              type="link"
+              onClick={() => toggleDetails(record._id)}
+              size="small"
+              className="p-0 mt-1"
+            >
+              {expandedRows[record._id] ? 'Show Less' : 'Read More'}
+            </Button>
+          )}
         </div>
       ),
     },
@@ -70,19 +144,22 @@ const BlogTable = () => {
       title: 'Images',
       dataIndex: 'image',
       key: 'image',
-      width: 100,
+      width: 150,
       render: (images) =>
         images && images.length > 0 ? (
-          images.map((img, index) => (
-            <Image
-              key={index}
-              src={`/api/image/download/${img}`}
-              alt={`Blog Image ${index + 1}`}
-              width={50}
-              height={50}
-              className='object-cover border-2' 
-            />
-          ))
+          <div className="flex flex-wrap gap-2">
+            {images.map((img, index) => (
+              <Image
+                key={index}
+                src={`/api/image/download/${img}`}
+                alt={`Blog Image ${index + 1}`}
+                width={60}
+                height={60}
+                className="object-cover border-2 border-gray-300 rounded"
+                preview={{ src: `/api/image/download/${img}` }}
+              />
+            ))}
+          </div>
         ) : (
           <Text type="secondary">No Image</Text>
         ),
@@ -90,43 +167,100 @@ const BlogTable = () => {
     {
       title: 'Actions',
       key: 'actions',
-      width: 150,
+      width: 120,
+      fixed: 'right',
       render: (_, record) => (
         <div className="flex space-x-2">
           <Button
             icon={<EditOutlined />}
             onClick={() => navigate(`/edit-blog-form/${record._id}`)}
+            size="small"
           />
           <Popconfirm
             title="Are you sure you want to delete this blog?"
             onConfirm={() => handleDelete(record._id)}
             okText="Yes"
             cancelText="No"
+            disabled={isDeleting}
           >
-            <Button danger icon={<DeleteOutlined />} />
+            <Button danger icon={<DeleteOutlined />} size="small" loading={isDeleting} />
           </Popconfirm>
         </div>
       ),
     },
   ];
-  
+
+  if (isLoading) return <div className="p-8 text-center">Loading blogs...</div>;
+  if (error) return <div className="p-8 text-center text-red-600">Error loading blogs</div>;
+
   return (
-    <div className="space-y-4">
-      <div className="flex justify-between mb-4 p-5">
-        <div>
-          <h2 className='text-2xl font-semibold'>Blogs</h2>
-        </div>
+    <div className="space-y-6 p-4">
+      <div className="flex justify-between items-center mb-6">
+        <h2 className="text-3xl font-bold">Blogs</h2>
         <Link to="/blog-form">
           <Button type="primary" icon={<PlusOutlined />}>
             Add Blog
           </Button>
         </Link>
       </div>
+
+      {/* Page Heading Editor */}
+      <div className="border border-gray-300 shadow-lg rounded-lg p-6 bg-white">
+        <h3 className="text-lg font-semibold mb-4">Edit Page Headings</h3>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div>
+            <label className="block text-gray-700 font-bold mb-2 uppercase tracking-wider">
+              Heading
+            </label>
+            <input
+              type="text"
+              value={heading}
+              onChange={(e) => setHeading(e.target.value)}
+              disabled={loadingHeadings}
+              className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              placeholder="Enter main heading"
+            />
+          </div>
+          <div>
+            <label className="block text-gray-700 font-bold mb-2 uppercase tracking-wider">
+              Subheading
+            </label>
+            <input
+              type="text"
+              value={subheading}
+              onChange={(e) => setSubheading(e.target.value)}
+              disabled={loadingHeadings}
+              className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              placeholder="Enter subheading"
+            />
+          </div>
+        </div>
+
+        <div className="mt-6 flex items-center gap-4">
+          <Button
+            onClick={saveHeadings}
+            type="primary"
+            loading={loadingHeadings}
+            disabled={!hasChanges || loadingHeadings}
+          >
+            {loadingHeadings ? 'Saving...' : 'Save Headings'}
+          </Button>
+
+          {!hasChanges && !loadingHeadings && (
+            <span className="text-gray-500 text-sm">
+              No changes to save
+            </span>
+          )}
+        </div>
+      </div>
+
+      {/* Blogs Table */}
       <Table
         columns={columns}
         dataSource={blogs}
         rowKey="_id"
         pagination={{ pageSize: 5 }}
+        scroll={{ x: 1000 }}
       />
     </div>
   );
