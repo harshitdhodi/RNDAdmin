@@ -364,9 +364,7 @@ function App() {
 
             // Why Choose Us Management Routes
             { path: 'whyChooseUs-table', element: <Suspense fallback={<LoadingFallback />}><WhyChooseUsCRUD /></Suspense> },
-            // { path: 'whyChooseUs-form', element: <Suspense fallback={<LoadingFallback />}><WhyChooseUsForm /></Suspense> },
-            // { path: 'edit-whyChooseUs/:id', element: <Suspense fallback={<LoadingFallback />}><WhyChooseUsForm /></Suspense> },
-
+        
             //testimonials Policy Route
             { path: 'add-testimonials', element: <Suspense fallback={<LoadingFallback />}><CreateTestimonials /></Suspense> },
             { path: 'testimonials', element: <Suspense fallback={<LoadingFallback />}><TestimonialsTable /></Suspense> },
