@@ -4,7 +4,6 @@ const ServiceCategory = require("../model/serviceCategory")
 const path = require('path')
 const fs = require('fs')
 
-
 const insertPortfolio = async (req, res) => {
   try {
     const { title, details, status, link, alt, imgtitle, slug } = req.body;
