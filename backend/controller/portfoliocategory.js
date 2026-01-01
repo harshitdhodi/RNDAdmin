@@ -314,7 +314,7 @@ const updateCategory = async (req, res) => {
 
   try {
     const updatedCategory = await PortfolioCategory.findOneAndUpdate(
-      {slug:categoryId},
+      {_id:categoryId},
       updateData,
       { new: true, runValidators: true }
     );
@@ -359,13 +359,13 @@ const updateSubCategory = async (req, res) => {
 
   try {
     // Find the category based on the categoryId
-    const categoryDoc = await PortfolioCategory.findOne({ slug: categoryId });
+    const categoryDoc = await PortfolioCategory.findOne({ _id: categoryId });
     if (!categoryDoc) {
       return res.status(404).json({ message: "Category not found" });
     }
 
     // Find the subcategory based on the subCategoryId (using `slug` for matching)
-    const subCategory = categoryDoc.subCategories.find(sub => sub.slug === subCategoryId);
+    const subCategory = categoryDoc.subCategories.find(sub => sub._id === subCategoryId);
     if (!subCategory) {
       return res.status(404).json({ message: "Subcategory not found" });
     }
@@ -717,12 +717,12 @@ const getAllCategory = async (req, res) => {
 const getSpecificCategory = async (req, res) => {
   try {
     const { categoryId } = req.query;
-    const category = await PortfolioCategory.findOne({ _id: categoryId });
+    const categories = await PortfolioCategory.findOne({ _id: categoryId });
 
-    if (!category) {
+    if (!categories) {
       return res.status(404).json({ message: "Category not found" });
     }
-    res.status(200).json(category);
+    res.status(200).json(categories);
   } catch (error) {
     res.status(500).json({ message: "Server error", error });
   }
@@ -732,16 +732,18 @@ const getSpecificSubcategory = async (req, res) => {
   const { categoryId, subCategoryId } = req.query;
 
   try {
-    // Find the category by slug
-    const category = await PortfolioCategory.findOne({ slug: categoryId });
+    // Find the category by ID
+    const category = await PortfolioCategory.findOne({ _id: categoryId });
     if (!category) {
       return res.status(404).json({ message: "Category not found" });
     }
 
     // Find the specific subcategory within the category
+    // Compare the _id field of each subcategory object
     const subCategory = category.subCategories.find(
-      (sub) => sub.slug === subCategoryId
+      (sub) => sub._id.toString() === subCategoryId
     );
+    
     if (!subCategory) {
       return res.status(404).json({ message: "Subcategory not found" });
     }
@@ -749,7 +751,7 @@ const getSpecificSubcategory = async (req, res) => {
     // Respond with the found subcategory
     res.status(200).json(subCategory);
   } catch (error) {
-    console.error(error); // Use console.error for error logging
+    console.error(error);
     res.status(500).json({ message: "Server error", error: error.message });
   }
 };

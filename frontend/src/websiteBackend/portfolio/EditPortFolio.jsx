@@ -277,19 +277,19 @@ const EditPortfolio = () => {
   };
 
   const renderCategoryOptions = (category) => (
-    <option key={category._id} value={category.slug}>
+    <option key={category._id} value={category._id}>
       {category.category}
     </option>
   );
 
   const renderSubCategoryOptions = (subCategory) => (
-    <option key={subCategory._id} value={subCategory.slug}>
+    <option key={subCategory._id} value={subCategory._id}>
       {subCategory.category}
     </option>
   );
 
   const renderSubSubCategoryOptions = (subSubCategory) => (
-    <option key={subSubCategory._id} value={subSubCategory.slug}>
+    <option key={subSubCategory._id} value={subSubCategory._id}>
       {subSubCategory.category}
     </option>
   );
@@ -309,13 +309,13 @@ const EditPortfolio = () => {
   };
 
   const getSubCategories = (categoryId) => {
-    const category = categories.find(category => category.slug === categoryId);
+    const category = categories.find(category => category._id === categoryId);
     return category?.subCategories || [];
   };
 
   const getSubSubCategories = (categoryId, subCategoryId) => {
-    const category = categories.find(category => category.slug === categoryId);
-    const subCategory = category?.subCategories.find(sub => sub.slug === subCategoryId);
+    const category = categories.find(category => category._id === categoryId);
+    const subCategory = category?.subCategories.find(sub => sub._id === subCategoryId);
     return subCategory?.subSubCategories || [];
   };
 

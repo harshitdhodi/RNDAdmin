@@ -39,7 +39,7 @@ const PorfolioCategoryTable = () => {
         Cell: ({ row }) => (
           <div
             className="flex items-center gap-2 hover:text-blue-500 cursor-pointer"
-            onClick={() => navigate(`/portfolio-category/${row.original.slug}`)}
+            onClick={() => navigate(`/portfolio-category/${row.original._id}`)}
           >
             {row.original.photo && (
               <img
@@ -57,13 +57,13 @@ const PorfolioCategoryTable = () => {
         Cell: ({ row }) => (
           <div className="flex gap-4">
             <button className="text-blue-500 hover:text-blue-700 transition">
-              <Link to={`/portfolio-category/${row.original.slug}`}>
+              <Link to={`/portfolio-category/${row.original._id}`}>
                 <Edit />
               </Link>
             </button>
             <button
               className="text-red-500 hover:text-red-700 transition"
-              onClick={() => handleDeleteCategory({ id: row.original.slug })}
+              onClick={() => handleDeleteCategory({ id: row.original._id })}
             >
               <Trash2 />
             </button>
@@ -220,7 +220,7 @@ const PorfolioCategoryTable = () => {
                                 className="py-2 px-8 flex gap-2 hover:text-blue-500 cursor-pointer"
                                 onClick={() =>
                                   navigate(
-                                    `/portfolio-category/${row.original.slug}/${subcategory.slug}`
+                                    `/portfolio-category/${row.original._id}/${subcategory.slug}`
                                   )
                                 }
                               >
@@ -238,7 +238,7 @@ const PorfolioCategoryTable = () => {
                                 <div className="flex gap-4">
                                   <button className="text-blue-500 hover:text-blue-700 transition">
                                     <Link
-                                      to={`/portfolio-category/${row.original.slug}/${subcategory.slug}`}
+                                      to={`/portfolio-category/${row.original._id}/${subcategory.slug}`}
                                     >
                                       <Edit />
                                     </Link>
@@ -247,7 +247,7 @@ const PorfolioCategoryTable = () => {
                                     className="text-red-500 hover:text-red-700 transition"
                                     onClick={() =>
                                       handleDeleteCategory({
-                                        categoryId: row.original.slug,
+                                        categoryId: row.original._id,
                                         subCategoryId: subcategory.slug,
                                       })
                                     }
@@ -268,7 +268,7 @@ const PorfolioCategoryTable = () => {
                                     className="py-2 px-12 flex gap-2 hover:text-blue-500 cursor-pointer"
                                     onClick={() =>
                                       navigate(
-                                        `/portfolio-category/${row.original.slug}/${subcategory.slug}/${subSubcategory.slug}`
+                                        `/portfolio-category/${row.original._id}/${subcategory.slug}/${subSubcategory.slug}`
                                       )
                                     }
                                   >
@@ -286,7 +286,7 @@ const PorfolioCategoryTable = () => {
                                     <div className="flex gap-4">
                                       <button className="text-blue-500 hover:text-blue-700 transition">
                                         <Link
-                                          to={`/portfolio-category/${row.original.slug}/${subcategory.slug}/${subSubcategory.slug}`}
+                                          to={`/portfolio-category/${row.original._id}/${subcategory.slug}/${subSubcategory.slug}`}
                                         >
                                           <Edit />
                                         </Link>
@@ -295,7 +295,7 @@ const PorfolioCategoryTable = () => {
                                         className="text-red-500 hover:text-red-700 transition"
                                         onClick={() =>
                                           handleDeleteCategory({
-                                            categoryId: row.original.slug,
+                                            categoryId: row.original._id,
                                             subCategoryId: subcategory.slug,
                                             subSubCategoryId: subSubcategory.slug,
                                           })

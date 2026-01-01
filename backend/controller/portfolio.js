@@ -1,7 +1,7 @@
 const Portfolio = require("../model/portfolio");
 const PortfolioCategory = require("../model/portfoliocategory")
-const ServiceCategory = require("../model/serviceCategory")
-const path = require('path')
+const ServiceCategory = require("../model/serviceCategory");
+const path = require('path');
 const fs = require('fs')
 
 const insertPortfolio = async (req, res) => {
@@ -205,46 +205,58 @@ const updatePortfolio = async (req, res) => {
       return [];
     };
 
-    // Helper function to convert slug to ObjectId
-    const convertSlugToObjectId = async (slug, categoryType) => {
-      if (!slug) return null;
+    // Helper function to convert slug to ObjectId with appropriate model
+    const convertSlugToObjectId = async (slugOrId, modelName) => {
+      if (!slugOrId) return null;
+
+      // Check if the value is already a valid ObjectId
+      const checkForHexRegExp = new RegExp("^[0-9a-fA-F]{24}$");
+      if (checkForHexRegExp.test(slugOrId)) {
+        return slugOrId;
+      }
       
-      // Assuming you have a Category model or similar
-      // Adjust the model name based on your schema
-      const category = await PortfolioCategory.findOne({ slug: slug });
+      let Model;
+      switch(modelName) {
+        case 'PortfolioCategory':
+          Model = PortfolioCategory;
+          break;
+    
+        default:
+          return null;
+      }
+      
+      const category = await Model.findOne({ _id: slugOrId });
       return category ? category._id : null;
     };
 
     // Parse category fields
-    const categoryFields = [
-      'categories', 'subcategories', 'subSubcategories',
-      'servicecategories', 'servicesubcategories', 'servicesubSubcategories',
-      'industrycategories', 'industrysubcategories', 'industrysubSubcategories'
+    const categoryFieldsConfig = [
+      { field: 'categories', model: 'PortfolioCategory' },
+      { field: 'subcategories', model: 'PortfolioCategory' },
+      { field: 'subSubcategories', model: 'PortfolioCategory' },
+  
     ];
 
-    for (const field of categoryFields) {
-      if (Object.prototype.hasOwnProperty.call(updateFields, field)) {
-        const parsedValue = parseField(updateFields[field]);
+    // Parse all category fields
+    for (const config of categoryFieldsConfig) {
+      if (Object.prototype.hasOwnProperty.call(updateFields, config.field)) {
+        const parsedValue = parseField(updateFields[config.field]);
         if (parsedValue !== undefined) {
-          updateFields[field] = parsedValue;
+          updateFields[config.field] = parsedValue;
         }
       }
     }
 
     // Convert category slugs to ObjectIds
-    if (updateFields.categories && updateFields.categories.length > 0) {
-      const categoryId = await convertSlugToObjectId(updateFields.categories[0], 'category');
-      updateFields.categories = categoryId ? [categoryId] : [];
-    }
-
-    if (updateFields.subcategories && updateFields.subcategories.length > 0) {
-      const subCategoryId = await convertSlugToObjectId(updateFields.subcategories[0], 'subcategory');
-      updateFields.subcategories = subCategoryId ? [subCategoryId] : [];
-    }
-
-    if (updateFields.subSubcategories && updateFields.subSubcategories.length > 0) {
-      const subSubCategoryId = await convertSlugToObjectId(updateFields.subSubcategories[0], 'subsubcategory');
-      updateFields.subSubcategories = subSubCategoryId ? [subSubCategoryId] : [];
+    for (const config of categoryFieldsConfig) {
+      if (updateFields[config.field] && updateFields[config.field].length > 0) {
+        const categoryIds = await Promise.all(
+          updateFields[config.field].map(slug => 
+            convertSlugToObjectId(slug, config.model)
+          )
+        );
+        updateFields[config.field] = categoryIds.filter(id => id !== null);
+      }
     }
 
     // Fetch the existing Portfolio item
@@ -290,12 +302,11 @@ const updatePortfolio = async (req, res) => {
   }
 };
 
-
 const deletePortfolio = async (req, res) => {
   try {
     const { slugs } = req.query;
 
-    const portfolio = await Portfolio.findOne({ slug: slugs });
+    const portfolio = await Portfolio.findOne({ _id: slugs });
 
     portfolio.photo.forEach(filename => {
       const filePath = path.join(__dirname, '../images', filename);
@@ -306,7 +317,7 @@ const deletePortfolio = async (req, res) => {
       }
     });
 
-    const deletedPortfolio = await Portfolio.findOneAndDelete({ slug: slugs });
+    const deletedPortfolio = await Portfolio.findOneAndDelete({ _id: slugs });
 
     if (!deletedPortfolio) {
       return res.status(404).send({ message: 'Portfolio not found' });
@@ -323,7 +334,7 @@ const deletePortfolio = async (req, res) => {
 const getPortfolioById = async (req, res) => {
   try {
     const { id } = req.query;
-    const portfolio = await Portfolio.findById(id);
+    const portfolio = await Portfolio.findById(id).populate('categories').populate('subcategories');
    
     if (!portfolio) {
       return res.status(404).json({ message: 'Portfolio not found' });

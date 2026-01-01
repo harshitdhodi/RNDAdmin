@@ -156,6 +156,7 @@ import CreateTestimonials from './websiteBackend/testimonial/CreateTestimonials'
 import TestimonialsTable from './websiteBackend/testimonial/TestimonialTable';
 import EditTestimonial from './websiteBackend/testimonial/EditTestimonial';
 import WhyChooseUsCRUD from './websiteBackend/whychooseus/WhyChooseUsCRUD';
+import EditPortfolioCategory from './websiteBackend/portfolio/EditPortfolioCategory';
 
 // Auth Components
 const PrivateRoute = ({ children }) => {
@@ -260,8 +261,10 @@ function App() {
 
             // Portfolio Management Routes
             { path: 'portfolio-category', element: <Suspense fallback={<LoadingFallback />}><PorfolioCategoryTable /></Suspense> },
+            {path:'/portfolio-category/:categoryId/:subCategoryId?/:subSubCategoryId?',element:<Suspense fallback={<LoadingFallback />}><EditPortfolioCategory /></Suspense>
+          },
             { path: 'portfolio-category-form', element: <Suspense fallback={<LoadingFallback />}><PortfolioCategoryForm /></Suspense> },
-            { path: 'edit-portfolio-category-form/:id', element: <Suspense fallback={<LoadingFallback />}><PortfolioCategoryForm /></Suspense> },
+        
             { path: 'portfolio', element: <Suspense fallback={<LoadingFallback />}><PortfolioTable /></Suspense> },
             { path: 'portfolio-form', element: <Suspense fallback={<LoadingFallback />}><PortfolioForm /></Suspense> },
             { path: 'portfolio/:id', element: <Suspense fallback={<LoadingFallback />}><EditPortfolio /></Suspense> },
