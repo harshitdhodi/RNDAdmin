@@ -7,9 +7,25 @@ const fs = require('fs')
 
 const insertPortfolio = async (req, res) => {
   try {
-
-    const { title, details, status,link, alt, imgtitle, slug, categories, subcategories, subSubcategories, servicecategories, servicesubcategories, servicesubSubcategories, industrycategories,industrysubcategories,industrysubSubcategories } = req.body;
+    const { title, details, status, link, alt, imgtitle, slug } = req.body;
     const photo = req.files['photo'] ? req.files['photo'].map(file => file.filename) : [];
+
+    const parseField = (field) => {
+      if (typeof field === 'string') {
+        try {
+          const parsed = JSON.parse(field);
+          if (Array.isArray(parsed)) {
+            return parsed.filter(item => item && item.toString().trim() !== '');
+          }
+        } catch (e) {
+          return field.split(',').map(s => s.trim()).filter(s => s);
+        }
+      }
+      if (Array.isArray(field)) {
+        return field.filter(item => item && item.toString().trim() !== '');
+      }
+      return [];
+    };
 
     const Portfolios = new Portfolio({
       title,
@@ -17,19 +33,18 @@ const insertPortfolio = async (req, res) => {
       photo,
       imgtitle,
       link,
-      status,
       slug,
       status,
       alt,
-      categories,
-      subcategories,
-      subSubcategories,
-      servicecategories,
-      servicesubcategories,
-      servicesubSubcategories,
-      industrycategories,
-      industrysubcategories,
-      industrysubSubcategories
+      categories: parseField(req.body.categories),
+      subcategories: parseField(req.body.subcategories),
+      subSubcategories: parseField(req.body.subSubcategories),
+      servicecategories: parseField(req.body.servicecategories),
+      servicesubcategories: parseField(req.body.servicesubcategories),
+      servicesubSubcategories: parseField(req.body.servicesubSubcategories),
+      industrycategories: parseField(req.body.industrycategories),
+      industrysubcategories: parseField(req.body.industrysubcategories),
+      industrysubSubcategories: parseField(req.body.industrysubSubcategories)
     });
 
     await Portfolios.save();
@@ -42,28 +57,34 @@ const insertPortfolio = async (req, res) => {
 
 const getPortfolio = async (req, res) => {
   try {
-    const { page = 1 } = req.query;
-    const limit = 5;
+    const { page = 1, } = req.query;
+    const limit = 10;
     const count = await Portfolio.countDocuments();
     
-    // Fetching the portfolio items with pagination
-    const portfolio = await Portfolio.find()
+    // Fetching the portfolio items with pagination and populating the category
+    const portfolios = await Portfolio.find()
+      .populate({
+        path: 'categories',
+        model: PortfolioCategory // Explicitly provide the model to prevent MissingSchemaError
+      })
+      .sort({ createdAt: -1 })
       .skip((page - 1) * limit)
       .limit(limit);
 
-    // Using Promise.all to map over portfolio and fetch category names
-    const PortfolioWithCategoryName = await Promise.all(portfolio.map(async (portfolioItem) => {
-      const category = await PortfolioCategory.findOne({ 'slug': portfolioItem.categories });
-      const categoryName = category ? category.category : 'Uncategorized';
+    // Map over the portfolios and extract the category name from the populated field
+    const portfolioWithCategoryName = portfolios.map(portfolioItem => {
+      const categoryName = (portfolioItem.categories && portfolioItem.categories.length > 0)
+        ? portfolioItem.categories[0].category
+        : 'Uncategorized';
 
       return {
-        ...portfolioItem.toJSON(),  // Correctly reference the individual portfolioItem
+        ...portfolioItem.toJSON(),
         categoryName
       };
-    }));
+    });
 
     res.status(200).json({
-      data: PortfolioWithCategoryName,
+      data: portfolioWithCategoryName,
       total: count,
       currentPage: page,
       hasNextPage: count > page * limit
@@ -83,24 +104,22 @@ const getPortfolio = async (req, res) => {
 const getPortfolioFront = async (req, res) => {
   try {
     // Fetch all Portfolio and sort by date in descending order to get the latest Portfolio first
-    const portfolio = await Portfolio.find().sort({ date: -1 });
+    const portfolio = await Portfolio.find()
+      .populate({ path: 'categories', model: PortfolioCategory })
+      .populate({ path: 'servicecategories', model: ServiceCategory })
+      .sort({ date: -1 });
 
-    // Map over the Portfolio and fetch the associated category and service category names
-    const PortfolioWithCategoryAndService = await Promise.all(portfolio.map(async (PortfolioItem) => {
-      // Fetch Portfolio category name
-      const category = await PortfolioCategory.findOne({ 'slug': PortfolioItem.categories });
-      const categoryName = category ? category.category : 'Uncategorized';
-
-      // Fetch service category name
-      const serviceCategory = await ServiceCategory.findOne({ 'slug': PortfolioItem.servicecategories });
-      const serviceCategoryName = serviceCategory ? serviceCategory.category : 'No Service Category';
+    // Map over the Portfolio and extract the associated category and service category names
+    const PortfolioWithCategoryAndService = portfolio.map((PortfolioItem) => {
+      const categoryName = PortfolioItem.categories && PortfolioItem.categories.length > 0 ? PortfolioItem.categories[0].category : 'Uncategorized';
+      const serviceCategoryName = PortfolioItem.servicecategories && PortfolioItem.servicecategories.length > 0 ? PortfolioItem.servicecategories[0].category : 'No Service Category';
 
       return {
         ...PortfolioItem.toJSON(),
         categoryName,
         serviceCategoryName
       };
-    }));
+    });
 
     // Return the sorted Portfolio with category and service category names
     res.status(200).json({
@@ -155,15 +174,82 @@ const getPortfolioBySlug = async (req, res) => {
 };
 
 
-
-
 const updatePortfolio = async (req, res) => {
-  const { slugs } = req.query;
+  const { id } = req.query;
   const updateFields = req.body;
 
   try {
-    // Fetch the existing Portfolio item to get its current photos
-    const existingPortfolio = await Portfolio.findOne({ slug: slugs });
+    const parseField = (field) => {
+      if (field === undefined) {
+        return undefined;
+      }
+      if (field === '' || (Array.isArray(field) && field.length === 0)) {
+        return [];
+      }
+
+      if (typeof field === 'string') {
+        const sanitized = field.trim().replace(/^\[|\]$/g, '');
+        
+        if (sanitized === '') {
+          return [];
+        }
+
+        return sanitized
+          .split(',')
+          .map(s => s.trim().replace(/^['"]|['"]$/g, '').trim())
+          .filter(item => item);
+      }
+
+      if (Array.isArray(field)) {
+        return field.filter(item => item && item.toString().trim() !== '');
+      }
+      return [];
+    };
+
+    // Helper function to convert slug to ObjectId
+    const convertSlugToObjectId = async (slug, categoryType) => {
+      if (!slug) return null;
+      
+      // Assuming you have a Category model or similar
+      // Adjust the model name based on your schema
+      const category = await PortfolioCategory.findOne({ slug: slug });
+      return category ? category._id : null;
+    };
+
+    // Parse category fields
+    const categoryFields = [
+      'categories', 'subcategories', 'subSubcategories',
+      'servicecategories', 'servicesubcategories', 'servicesubSubcategories',
+      'industrycategories', 'industrysubcategories', 'industrysubSubcategories'
+    ];
+
+    for (const field of categoryFields) {
+      if (Object.prototype.hasOwnProperty.call(updateFields, field)) {
+        const parsedValue = parseField(updateFields[field]);
+        if (parsedValue !== undefined) {
+          updateFields[field] = parsedValue;
+        }
+      }
+    }
+
+    // Convert category slugs to ObjectIds
+    if (updateFields.categories && updateFields.categories.length > 0) {
+      const categoryId = await convertSlugToObjectId(updateFields.categories[0], 'category');
+      updateFields.categories = categoryId ? [categoryId] : [];
+    }
+
+    if (updateFields.subcategories && updateFields.subcategories.length > 0) {
+      const subCategoryId = await convertSlugToObjectId(updateFields.subcategories[0], 'subcategory');
+      updateFields.subcategories = subCategoryId ? [subCategoryId] : [];
+    }
+
+    if (updateFields.subSubcategories && updateFields.subSubcategories.length > 0) {
+      const subSubCategoryId = await convertSlugToObjectId(updateFields.subSubcategories[0], 'subsubcategory');
+      updateFields.subSubcategories = subSubCategoryId ? [subSubCategoryId] : [];
+    }
+
+    // Fetch the existing Portfolio item
+    const existingPortfolio = await Portfolio.findOne({ _id: id });
 
     if (!existingPortfolio) {
       return res.status(404).json({ message: 'Portfolio item not found' });
@@ -171,27 +257,33 @@ const updatePortfolio = async (req, res) => {
 
     // Process new uploaded photos
     if (req.files && req.files['photo'] && req.files['photo'].length > 0) {
-      // If there are existing photos, append new ones
       if (existingPortfolio.photo && existingPortfolio.photo.length > 0) {
         const newPhotoPaths = req.files['photo'].map(file => file.filename);
         updateFields.photo = [...existingPortfolio.photo, ...newPhotoPaths];
-      } 
-      // If no existing photos, use the new ones
-      else {
+      } else {
         updateFields.photo = req.files['photo'].map(file => file.filename);
       }
     } else {
-      updateFields.photo = existingPortfolio.photo; // Keep existing photos if no new photos are uploaded
+      if (updateFields.photo === undefined) {
+        updateFields.photo = existingPortfolio.photo;
+      }
+    }
+
+    // Process alt and imgtitle arrays
+    if (updateFields.alt !== undefined) {
+      updateFields.alt = parseField(updateFields.alt);
+    }
+    if (updateFields.imgtitle !== undefined) {
+      updateFields.imgtitle = parseField(updateFields.imgtitle);
     }
 
     // Perform the update operation
     const updatedPortfolio = await Portfolio.findOneAndUpdate(
-      { slug: slugs },
-      updateFields,
+      { _id: id },
+      { $set: updateFields },
       { new: true, runValidators: true }
     );
 
-    // Send the updated portfolio back as the response
     res.status(200).json(updatedPortfolio);
   } catch (error) {
     console.error("Error updating Portfolio:", error);
@@ -231,9 +323,9 @@ const deletePortfolio = async (req, res) => {
 
 const getPortfolioById = async (req, res) => {
   try {
-    const { slugs } = req.query;
-
-    const portfolio = await Portfolio.findOne({ slug: slugs });
+    const { id } = req.query;
+    const portfolio = await Portfolio.findById(id);
+   
     if (!portfolio) {
       return res.status(404).json({ message: 'Portfolio not found' });
     }
@@ -256,12 +348,12 @@ const countPortfolio = async (req, res) => {
 
 const deletePhotoAndAltText = async (req, res) => {
 
-  const { slugs, imageFilename, index } = req.params;
+  const { id, imageFilename, index } = req.params;
 console.log(req.params)
 
   try {
 
-    const portfolio = await Portfolio.findOne({ slug: slugs });
+    const portfolio = await Portfolio.findById({ id });
 
     if (!portfolio) {
       return res.status(404).json({ message: 'Portfolio not found' });

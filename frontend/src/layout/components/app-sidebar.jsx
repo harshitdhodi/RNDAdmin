@@ -19,7 +19,7 @@ const menuData = [
     title: "Services",
     icon: FlaskConical,
     children: [
-      { title: "ServiceList", icon: List, url: "/chemical-table" },
+      // { title: "ServiceList", icon: List, url: "/chemical-table" },
       { title: "ServiceSec1 Table", icon: PlusSquare, url: "/serviceSec1-table" },
       { title: "ServiceSec2 Table", icon: PlusSquare, url: "/serviceSec2-table" },
 
@@ -33,9 +33,9 @@ const menuData = [
     title: "Portfolio",
     icon: ShoppingCart,
     children: [
-      { title: "Portfolio List", icon: List, url: "/portfolio-table" },
+      { title: "Portfolio List", icon: List, url: "/portfolio" },
       { title: "Add New", icon: PlusSquare, url: "/portfolio-form" },
-      { title: "Category", icon: GanttChart, url: "/portfolio-category-table" },
+      { title: "Category", icon: GanttChart, url: "/portfolio-category" },
     ]
   },
 

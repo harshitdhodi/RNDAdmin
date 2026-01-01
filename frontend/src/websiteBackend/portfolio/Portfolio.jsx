@@ -56,7 +56,7 @@ const PortfolioTable = () => {
         Cell: ({ row }) => (
           <span
             className="hover:text-blue-500 cursor-pointer"
-            onClick={() => navigate(`/portfolio/${row.original.slug || ''}`)}
+            onClick={() => navigate(`/portfolio/${row.original._id || ''}`)}
           >
             {row.original.categoryName || 'N/A'}
           </span>
@@ -68,7 +68,7 @@ const PortfolioTable = () => {
         Cell: ({ row }) => (
           <span
             className="hover:text-blue-500 cursor-pointer"
-            onClick={() => navigate(`/portfolio/${row.original.slug || ''}`)}
+            onClick={() => navigate(`/portfolio/${row.original._id || ''}`)}
           >
             {row.original.title || 'N/A'}
           </span>
@@ -108,14 +108,14 @@ const PortfolioTable = () => {
               <FaEye />
             </button>
             <button className="text-blue-500 hover:text-blue-700 transition">
-              <Link to={`/portfolio/${row.original.slug || ''}`}>
+              <Link to={`/portfolio/${row.original._id || ''}`}>
                 <FaEdit />
               </Link>
             </button>
             <button
               className="text-red-500 hover:text-red-700 transition"
               onClick={() => {
-                setPortfolioToDelete(row.original.slug);
+                setPortfolioToDelete(row.original._id);
                 setIsDeleteModalOpen(true);
               }}
             >

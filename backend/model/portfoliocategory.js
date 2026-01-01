@@ -66,5 +66,5 @@ const PortfoliocategorySchema = new mongoose.Schema({
   }]
 });
 
-module.exports = mongoose.models.PortFolioCategory || mongoose.model('PortFolioCategory', PortfoliocategorySchema);
+module.exports = mongoose.models.PortfolioCategory || mongoose.model('PortfolioCategory', PortfoliocategorySchema);
 

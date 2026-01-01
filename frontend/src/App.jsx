@@ -262,9 +262,9 @@ function App() {
             { path: 'portfolio-category', element: <Suspense fallback={<LoadingFallback />}><PorfolioCategoryTable /></Suspense> },
             { path: 'portfolio-category-form', element: <Suspense fallback={<LoadingFallback />}><PortfolioCategoryForm /></Suspense> },
             { path: 'edit-portfolio-category-form/:id', element: <Suspense fallback={<LoadingFallback />}><PortfolioCategoryForm /></Suspense> },
-            { path: 'portfolio   ', element: <Suspense fallback={<LoadingFallback />}><PortfolioTable /></Suspense> },
+            { path: 'portfolio', element: <Suspense fallback={<LoadingFallback />}><PortfolioTable /></Suspense> },
             { path: 'portfolio-form', element: <Suspense fallback={<LoadingFallback />}><PortfolioForm /></Suspense> },
-            { path: 'edit-portfolio-form/:id', element: <Suspense fallback={<LoadingFallback />}><EditPortfolio /></Suspense> },
+            { path: 'portfolio/:id', element: <Suspense fallback={<LoadingFallback />}><EditPortfolio /></Suspense> },
 
             // Blog Management Routes
             { path: 'blog-category-table', element: <Suspense fallback={<LoadingFallback />}><BlogCategory /></Suspense> },

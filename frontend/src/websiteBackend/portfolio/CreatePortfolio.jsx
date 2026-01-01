@@ -223,7 +223,7 @@ const PortfolioForm = () => {
   };
 
   const renderCategoryOptions = (category) => (
-    <option key={category._id} value={category.slug}>
+    <option key={category._id} value={category._id}>
       {category.category}
     </option>
   );
@@ -249,7 +249,7 @@ const PortfolioForm = () => {
 
   const findCategoryById = (categories, id) => {
     for (const category of categories) {
-      if (category.slug === id) return category;
+      if (category._id === id) return category;
       if (category.subCategories) {
         const subCategory = findCategoryById(category.subCategories, id);
         if (subCategory) return subCategory;
@@ -374,7 +374,7 @@ const PortfolioForm = () => {
           >
             <option value="">Select Subcategory</option>
             {subCategories.map((subCategory) => (
-              <option key={subCategory._id} value={subCategory.slug}>
+              <option key={subCategory._id} value={subCategory._id}>
                 {subCategory.category}
               </option>
             ))}
@@ -395,7 +395,7 @@ const PortfolioForm = () => {
           >
             <option value="">Select Sub-Subcategory</option>
             {subSubCategories.map((subSubCategory) => (
-              <option key={subSubCategory._id} value={subSubCategory.slug}>
+              <option key={subSubCategory._id} value={subSubCategory._id}>
                 {subSubCategory.category}
               </option>
             ))}

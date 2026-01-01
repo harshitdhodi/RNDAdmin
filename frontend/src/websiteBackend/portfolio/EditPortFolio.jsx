@@ -25,7 +25,7 @@ const EditPortfolio = () => {
   const [errors, setErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const { slugs } = useParams();
+  const { id } = useParams();
   const navigate = useNavigate();
 
   const validationRules = {
@@ -145,7 +145,7 @@ const EditPortfolio = () => {
 
   const fetchPortfolio = async () => {
     try {
-      const response = await axios.get(`/api/Portfolio/getPortfolioById?slugs=${slugs}`, { withCredentials: true });
+      const response = await axios.get(`/api/Portfolio/getPortfolioById?id=${id}`, { withCredentials: true });
       const portfolio = response.data.data;
       setTitle(portfolio.title);
       setDetails(portfolio.details);
@@ -188,7 +188,7 @@ const EditPortfolio = () => {
   useEffect(() => {
     fetchPortfolio();
     fetchCategories();
-  }, [slugs]);
+  }, [id]);
 
   const handlePhotoChange = (e) => {
     const file = e.target.files[0];
@@ -201,15 +201,7 @@ const EditPortfolio = () => {
       return;
     }
 
-    // if (photo || initialPhoto) {
-    //   const shouldReplace = window.confirm("An image already exists. Do you want to replace it with the new image?");
-    //   if (!shouldReplace) {
-    //     e.target.value = '';
-    //     return;
-    //   }
-    //   handleDeletePhoto();
-    // }
-
+  
     setPhoto(file);
     setPhotoAlt("");
     setImgtitle("");
@@ -218,7 +210,7 @@ const EditPortfolio = () => {
 
   const handleDeletePhoto = () => {
     if (initialPhoto) {
-      axios.delete(`/api/Portfolio/${slugs}/image/${initialPhoto}/0`, { withCredentials: true })
+      axios.delete(`/api/Portfolio/${id}/image/${initialPhoto}/0`, { withCredentials: true })
         .then(() => {
           setInitialPhoto(null);
           setInitialPhotoAlt("");
@@ -267,7 +259,7 @@ const EditPortfolio = () => {
         formData.append('imgtitle', initialImgtitle);
       }
 
-      await axios.put(`/api/portfolio/updatePortfolio?slugs=${slugs}`, formData, {
+      await axios.put(`/api/portfolio/updatePortfolio?id=${id}`, formData, {
         headers: {
           'Content-Type': 'multipart/form-data'
         },
