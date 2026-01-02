@@ -267,7 +267,7 @@ function App() {
         
             { path: 'portfolio', element: <Suspense fallback={<LoadingFallback />}><PortfolioTable /></Suspense> },
             { path: 'portfolio-form', element: <Suspense fallback={<LoadingFallback />}><PortfolioForm /></Suspense> },
-            { path: 'portfolio/:id', element: <Suspense fallback={<LoadingFallback />}><EditPortfolio /></Suspense> },
+            { path: 'portfolio/:categoryId/:subCategoryId?/:subSubCategoryId?', element: <Suspense fallback={<LoadingFallback />}><EditPortfolio /></Suspense> },
 
             // Blog Management Routes
             { path: 'blog-category-table', element: <Suspense fallback={<LoadingFallback />}><BlogCategory /></Suspense> },

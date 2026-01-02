@@ -108,7 +108,7 @@ const PortfolioTable = () => {
               <FaEye />
             </button>
             <button className="text-blue-500 hover:text-blue-700 transition">
-              <Link to={`/portfolio/${row.original._id || ''}`}>
+              <Link to={`/portfolio/${row.original._id || ''}${row.original.subcategories?.[0] ? `/${row.original.subcategories[0]}` : ''}`}>
                 <FaEdit />
               </Link>
             </button>

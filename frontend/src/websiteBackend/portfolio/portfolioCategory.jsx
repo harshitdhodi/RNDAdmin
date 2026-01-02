@@ -238,7 +238,7 @@ const PorfolioCategoryTable = () => {
                                 <div className="flex gap-4">
                                   <button className="text-blue-500 hover:text-blue-700 transition">
                                     <Link
-                                      to={`/portfolio-category/${row.original._id}/${subcategory.slug}`}
+                                      to={`/portfolio-category/${row.original._id}/${subcategory._id}`}
                                     >
                                       <Edit />
                                     </Link>
@@ -286,7 +286,7 @@ const PorfolioCategoryTable = () => {
                                     <div className="flex gap-4">
                                       <button className="text-blue-500 hover:text-blue-700 transition">
                                         <Link
-                                          to={`/portfolio-category/${row.original._id}/${subcategory.slug}/${subSubcategory.slug}`}
+                                          to={`/portfolio-category/${row.original._id}/${subcategory._id}/${subSubcategory._id}`}
                                         >
                                           <Edit />
                                         </Link>
@@ -296,8 +296,8 @@ const PorfolioCategoryTable = () => {
                                         onClick={() =>
                                           handleDeleteCategory({
                                             categoryId: row.original._id,
-                                            subCategoryId: subcategory.slug,
-                                            subSubCategoryId: subSubcategory.slug,
+                                            subCategoryId: subcategory._id,
+                                            subSubCategoryId: subSubcategory._id,
                                           })
                                         }
                                       >
