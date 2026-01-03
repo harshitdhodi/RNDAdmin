@@ -157,6 +157,9 @@ import TestimonialsTable from './websiteBackend/testimonial/TestimonialTable';
 import EditTestimonial from './websiteBackend/testimonial/EditTestimonial';
 import WhyChooseUsCRUD from './websiteBackend/whychooseus/WhyChooseUsCRUD';
 import EditPortfolioCategory from './websiteBackend/portfolio/EditPortfolioCategory';
+import CareerOptionForm from './websiteBackend/careerOption/CareerOptionForm';
+import CareerOptionTable from './websiteBackend/careerOption/CareerOptionTable';
+import EditCareerOptionForm from './websiteBackend/careerOption/EditCareerOptionForm';
 
 // Auth Components
 const PrivateRoute = ({ children }) => {
@@ -296,8 +299,9 @@ function App() {
 
             // Career Management Routes
             { path: 'career-table', element: <Suspense fallback={<LoadingFallback />}><CareerTable /></Suspense> },
-            { path: 'career/add', element: <Suspense fallback={<LoadingFallback />}><CareerAdminForm /></Suspense> },
-            { path: 'career/edit/:id', element: <Suspense fallback={<LoadingFallback />}><CareerAdminForm /></Suspense> },
+              { path: 'JobApplication', element: <Suspense fallback={<LoadingFallback />}><CareerOptionTable /></Suspense> },
+            { path: 'career/add', element: <Suspense fallback={<LoadingFallback />}><CareerOptionForm /></Suspense> },
+            { path: 'careeroption/editCareerOption/:id', element: <Suspense fallback={<LoadingFallback />}><EditCareerOptionForm /></Suspense> },
             { path: 'career-info-form', element: <Suspense fallback={<LoadingFallback />}><CareerInfoForm /></Suspense> },
 
             // Logo Management Routes
@@ -367,7 +371,11 @@ function App() {
 
             // Why Choose Us Management Routes
             { path: 'whyChooseUs-table', element: <Suspense fallback={<LoadingFallback />}><WhyChooseUsCRUD /></Suspense> },
-        
+
+            // Career Option 
+            { path: '/createCareerOption', element: <Suspense fallback={<LoadingFallback />}><CareerAdminForm /></Suspense> },
+
+
             //testimonials Policy Route
             { path: 'add-testimonials', element: <Suspense fallback={<LoadingFallback />}><CreateTestimonials /></Suspense> },
             { path: 'testimonials', element: <Suspense fallback={<LoadingFallback />}><TestimonialsTable /></Suspense> },

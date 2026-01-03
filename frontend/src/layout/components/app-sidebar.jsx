@@ -144,6 +144,7 @@ const menuData = [
         children: [
           { title: "List", icon: List, url: "/career-table" },
           { title: "Career Info", icon: PlusSquare, url: "/career-info-form" },
+          {title:"Career Option",icon:PlusSquare,url:"/JobApplication"},
         ]
       },
       {

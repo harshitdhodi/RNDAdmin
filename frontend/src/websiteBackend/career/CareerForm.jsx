@@ -68,7 +68,7 @@ const CareerAdminForm = () => {
                 await submitApplication(formData).unwrap();
                 message.success('Application submitted successfully!');
             }
-            navigate('/career-table');
+            navigate('/JobApplication');
         } catch (error) {
             message.error(error.message || 'Something went wrong');
         }

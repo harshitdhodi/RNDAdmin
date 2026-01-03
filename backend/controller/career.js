@@ -377,58 +377,65 @@ const getApplicationById = async (req, res) => {
 
 const updateApplication = async (req, res) => {
   try {
-    const { name, address, email, contactNo, postAppliedFor } = req.body;
+    const { id } = req.query;
+    const { name, address, email, contactNo, postAppliedFor, url } = req.body;
 
-    // Find existing application
-    const application = await Career.findById(req.query.id);
-    if (!application) {
+    const updateData = {};
+    if (name) updateData.name = name;
+    if (address) updateData.address = address;
+    if (email) {
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(email)) {
+        return res.status(400).json({ message: 'Invalid email format' });
+      }
+      updateData.email = email;
+    }
+    if (contactNo) {
+      const phoneRegex = /^\+?[\d\s-]{10,}$/;
+      if (!phoneRegex.test(contactNo)) {
+        return res.status(400).json({ message: 'Invalid phone number format' });
+      }
+      updateData.contactNo = contactNo;
+    }
+    if (postAppliedFor) updateData.postAppliedFor = postAppliedFor;
+    if (url) updateData.url = url;
+
+    // Handle resume file update
+    if (req.files && req.files.resumeFile && req.files.resumeFile[0]) {
+      const application = await Career.findById(id);
+      if (application && application.resumeFile) {
+        try {
+          // Correctly construct the path to the old resume file
+          const oldResumePath = `resumes/${application.resumeFile}`;
+          if (fs.existsSync(oldResumePath)) {
+            fs.unlinkSync(oldResumePath);
+          }
+        } catch (err) {
+          console.error('Error deleting old resume:', err);
+        }
+      }
+      // Get just the filename instead of the full path
+      updateData.resumeFile = req.files.resumeFile[0].filename;
+    }
+
+
+    const updatedApplication = await Career.findByIdAndUpdate(
+      id,
+      { $set: updateData },
+      { new: true, runValidators: true }
+    );
+
+    if (!updatedApplication) {
       return res.status(404).json({
         success: false,
         message: 'Application not found'
       });
     }
 
-    // Update fields if provided
-    if (name) application.name = name;
-    if (address) application.address = address;
-    if (email) {
-      // Validate email if provided
-      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-      if (!emailRegex.test(email)) {
-        return res.status(400).json({ message: 'Invalid email format' });
-      }
-      application.email = email;
-    }
-    if (contactNo) {
-      // Validate phone if provided
-      const phoneRegex = /^\+?[\d\s-]{10,}$/;
-      if (!phoneRegex.test(contactNo)) {
-        return res.status(400).json({ message: 'Invalid phone number format' });
-      }
-      application.contactNo = contactNo;
-    }
-    if (postAppliedFor) application.postAppliedFor = postAppliedFor;
-
-    // Handle resume file update if provided
-    if (req.files && req.files.resumeFile && req.files.resumeFile[0]) {
-      // Delete old resume file
-      if (application.resumeFile) {
-        try {
-          fs.unlinkSync(application.resumeFile);
-        } catch (err) {
-          console.error('Error deleting old resume:', err);
-        }
-      }
-      // Update with new resume file
-      application.resumeFile = req.files.resumeFile[0].path;
-    }
-
-    await application.save();
-
     res.status(200).json({
       success: true,
       message: 'Application updated successfully',
-      data: application
+      data: updatedApplication
     });
   } catch (error) {
     res.status(500).json({
@@ -453,7 +460,10 @@ const deleteApplication = async (req, res) => {
     // Delete resume file from storage
     if (application.resumeFile) {
       try {
-        fs.unlinkSync(application.resumeFile);
+        const resumePath = `resumes/${application.resumeFile}`;
+        if (fs.existsSync(resumePath)) {
+          fs.unlinkSync(resumePath);
+        }
       } catch (err) {
         console.error('Error deleting resume file:', err);
       }
