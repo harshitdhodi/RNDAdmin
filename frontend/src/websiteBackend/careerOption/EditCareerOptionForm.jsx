@@ -99,7 +99,7 @@ const EditCareerOptionForm = () => {
         withCredentials: true
       });
 
-      navigate('/careeroption');
+      navigate('/JobApplication');
     } catch (error) {
       console.error(error);
     }
