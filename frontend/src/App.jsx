@@ -160,6 +160,9 @@ import EditPortfolioCategory from './websiteBackend/portfolio/EditPortfolioCateg
 import CareerOptionForm from './websiteBackend/careerOption/CareerOptionForm';
 import CareerOptionTable from './websiteBackend/careerOption/CareerOptionTable';
 import EditCareerOptionForm from './websiteBackend/careerOption/EditCareerOptionForm';
+import CounterTable from './websiteBackend/counter/counterTable';
+import AddCounter from './websiteBackend/counter/AddCounter';
+import EditCounter from './websiteBackend/counter/EditCounter';
 
 // Auth Components
 const PrivateRoute = ({ children }) => {
@@ -382,6 +385,10 @@ function App() {
             { path: 'testimonials/editTestimonials/:id', element: <Suspense fallback={<LoadingFallback />}><EditTestimonial /></Suspense> },
             // Cookies Policy Route 
             { path: 'cookies', element: <Suspense fallback={<LoadingFallback />}><CookiesForm /></Suspense> },
+            // Counter Routes
+            { path: 'counter', element: <Suspense fallback={<LoadingFallback />}><CounterTable /></Suspense> },
+            { path: 'add-counter', element: <Suspense fallback={<LoadingFallback />}><AddCounter /></Suspense> },
+            { path: 'edit-counter/:id', element: <Suspense fallback={<LoadingFallback />}><EditCounter /></Suspense> },
           ]
         }
       ]

@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Sidebar, SidebarContent, SidebarGroup, SidebarGroupLabel, SidebarMenu, SidebarMenuItem, SidebarMenuButton } from "@/components/ui/sidebar";
 import { Collapsible, CollapsibleTrigger, CollapsibleContent } from "@/components/ui/collapsible";
-import { ChevronDown, LayoutDashboard, PlusSquare, List, Settings, ArrowLeftRightIcon, UsersRoundIcon, Truck, Mail, FileQuestion, GanttChart, FlaskConical, Globe, Image, Menu, Newspaper, Contact, Briefcase, Info, Search, FileText, Send, SlidersHorizontal, FileType, Building, Handshake, ShoppingCart, ShieldQuestion, FileCheck, KeyRound, Link as LinkIcon, BookCopy, Lock, FileLock, MessageSquareQuote, Users, Edit3 } from "lucide-react";
+import { ChevronDown, LayoutDashboard, PlusSquare, List, Settings, ArrowLeftRightIcon, UsersRoundIcon, Truck, Mail, FileQuestion, GanttChart, FlaskConical, Globe, Image, Menu, Newspaper, Contact, Briefcase, Info, Search, FileText, Send, SlidersHorizontal, FileType, Building, Handshake, ShoppingCart, ShieldQuestion, FileCheck, KeyRound, Link as LinkIcon, BookCopy, Lock, FileLock, MessageSquareQuote, Users, Edit3, Calculator } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Link, useLocation } from "react-router-dom";
 import axios from "axios";
@@ -130,6 +130,14 @@ const menuData = [
           },
           { title: "Add New", icon: PlusSquare, url: "/add-banner" },
 
+        ]
+      },
+      {
+        title: "Counter",
+        icon: Calculator,
+        children: [
+          { title: "List", icon: List, url: "/counter" },
+          { title: "Add New", icon: PlusSquare, url: "/add-counter" },
         ]
       },
       {

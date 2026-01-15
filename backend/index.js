@@ -111,7 +111,8 @@ const apiRoutes = [
   ['/api/serviceSec3', require('./route/serviceSec3.js')],
   ['/api/testimonial', require('./route/testimonial')],
   ['/api/why-choose-us', require('./route/whyChooseUs')],
-  ['/api/career-option', require('./route/careerOption')]
+  ['/api/career-option', require('./route/careerOption')],
+  ['/api/counter', require('./route/counter')]
 ];
 
 // Apply cache middleware to all API routes

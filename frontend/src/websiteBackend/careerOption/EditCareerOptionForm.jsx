@@ -141,8 +141,7 @@ const EditCareerOptionForm = () => {
 
   const handleDeleteInitialPhoto = (e, photoFilename, index) => {
     e.preventDefault();
-    axios.delete(`/api/career-
-      option/${id}/image/${photoFilename}/${index}`, { withCredentials: true })
+    axios.delete(`/api/career-option/${id}/image/${photoFilename}/${index}`, { withCredentials: true })
       .then(response => {
         const updatedPhotos = initialPhotos.filter(photo => photo !== photoFilename);
         setInitialPhotos(updatedPhotos);
