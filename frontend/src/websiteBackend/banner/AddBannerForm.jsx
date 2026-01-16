@@ -8,6 +8,7 @@ import { UploadOutlined, HomeOutlined } from '@ant-design/icons';
 import axios from 'axios';
 
 const { Option } = Select;
+const { TextArea } = Input;
 
 const AddBannerForm = () => {
   const navigate = useNavigate();
@@ -52,6 +53,10 @@ const AddBannerForm = () => {
       formData.append('altName', values.altName);
       formData.append('details', values.details);
       formData.append('pageSlug', values.pageSlug);
+      formData.append('heading', values.heading || '');
+      formData.append('subheading', values.subheading || '');
+      formData.append('description', values.description || '');
+      formData.append('marque', values.marque || '');
 
       await createBanner(formData);
       message.success('Banner created successfully');
@@ -136,6 +141,22 @@ const AddBannerForm = () => {
 
           <Form.Item name="altName" label="Alt Name" rules={[{ required: true, message: 'Please input alt name!' }]}>
             <Input />
+          </Form.Item>
+
+          <Form.Item name="heading" label="Heading">
+            <Input />
+          </Form.Item>
+
+          <Form.Item name="subheading" label="Subheading">
+            <Input />
+          </Form.Item>
+
+          <Form.Item name="marque" label="Marque Text">
+            <Input />
+          </Form.Item>
+
+          <Form.Item name="description" label="Description">
+            <TextArea rows={4} />
           </Form.Item>
 
           <Form.Item name="details" label="Details">
