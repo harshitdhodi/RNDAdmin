@@ -22,7 +22,7 @@ app.use(compression({ threshold: 1024 }));
 app.get('/images/:filename', async (req, res) => {
   const { filename } = req.params;
   const { w = 1200, q = 80, device = 'desktop' } = req.query;
-  const imagePath = path.join(__dirname, 'public', 'download', filename);
+  const imagePath = path.join(__dirname, 'uploads', filename);
 
   try {
     if (!fs.existsSync(imagePath)) return res.status(404).send('Image not found');

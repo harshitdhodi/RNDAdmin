@@ -65,7 +65,7 @@ const VideoTable = () => {
                   <td className="px-6 py-4">
                     {video.image ? (
                       <img
-                        src={`/uploads/${video.image}`}
+                        src={`/api/uploads/${video.image}`}
                         alt={video.alt || "Video Thumbnail"}
                         className="h-16 w-24 object-cover rounded"
                       />
@@ -76,9 +76,10 @@ const VideoTable = () => {
                   <td className="px-6 py-4">
                     {video.video ? (
                       <video
-                        src={`/uploads/${video.video}`}
+                        src={`/api/video/download/${video.video}`}
                         className="h-16 w-24 object-cover rounded"
                         controls
+                        preload="metadata"
                       />
                     ) : (
                       <span className="text-gray-400">No Video</span>
