@@ -11,7 +11,11 @@ exports.createBanner = async (req, res) => {
             altName: req.body.altName,
             title: req.body.title,
             details: req.body.details,
-            pageSlug: req.body.pageSlug
+            pageSlug: req.body.pageSlug,
+            heading: req.body.heading,
+            subheading: req.body.subheading,
+            description: req.body.description,
+            marque: req.body.marque
         });
 
         const savedBanner = await banner.save();
