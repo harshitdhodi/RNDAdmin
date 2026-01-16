@@ -87,6 +87,8 @@ const AddBannerForm = lazy(() => import('./websiteBackend/banner/AddBannerForm')
 const EditBannerForm = lazy(() => import('./websiteBackend/banner/EditBannerForm'));
 const VideoTable = lazy(() => import('./components/ui/VideoTable'));
 const VideoForm = lazy(() => import('./components/ui/VideoForm'));
+const FooterTable = lazy(() => import('./websiteBackend/footer/FooterTable'));
+const FooterForm = lazy(() => import('./websiteBackend/footer/FooterForm'));
 const AboutDescription = lazy(() => import('./website/componets/home/AboutUs'));
 const Introduction = lazy(() => import('./website/pages/Introduction'));
 const MainContent = lazy(() => import('./website/componets/Introduction/MainContent'));
@@ -301,6 +303,11 @@ function App() {
             // Video Routes
             { path: 'video-table', element: <Suspense fallback={<LoadingFallback />}><VideoTable /></Suspense> },
             { path: 'video-form', element: <Suspense fallback={<LoadingFallback />}><VideoForm /></Suspense> },
+
+            // Footer Routes
+            { path: 'footer-table', element: <Suspense fallback={<LoadingFallback />}><FooterTable /></Suspense> },
+            { path: 'footer-form', element: <Suspense fallback={<LoadingFallback />}><FooterForm /></Suspense> },
+            { path: 'edit-footer/:id', element: <Suspense fallback={<LoadingFallback />}><FooterForm /></Suspense> },
 
             { path: 'worldwide-table', element: <Suspense fallback={<LoadingFallback />}><WorldWideBackend /></Suspense> },
             { path: 'worldwide/add', element: <Suspense fallback={<LoadingFallback />}><WorldwideForm /></Suspense> },

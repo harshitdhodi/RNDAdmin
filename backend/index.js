@@ -114,7 +114,8 @@ const apiRoutes = [
   ['/api/why-choose-us', require('./route/whyChooseUs')],
   ['/api/career-option', require('./route/careerOption')],
   ['/api/counter', require('./route/counter')],
-  ['/api/video', require('./route/video')]
+  ['/api/video', require('./route/video')],
+  ['/api/footer', require('./route/footer')]
 ];
 
 // Apply cache middleware to all API routes
