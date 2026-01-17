@@ -85,6 +85,10 @@ const AboutUsForm = lazy(() => import('./websiteBackend/aboutus/AboutUsForm'));
 const BannerTable = lazy(() => import('./websiteBackend/banner/BannerTable'));
 const AddBannerForm = lazy(() => import('./websiteBackend/banner/AddBannerForm'));
 const EditBannerForm = lazy(() => import('./websiteBackend/banner/EditBannerForm'));
+const VideoTable = lazy(() => import('./components/ui/VideoTable'));
+const VideoForm = lazy(() => import('./components/ui/VideoForm'));
+const FooterTable = lazy(() => import('./websiteBackend/footer/FooterTable'));
+const FooterForm = lazy(() => import('./websiteBackend/footer/FooterForm'));
 const AboutDescription = lazy(() => import('./website/componets/home/AboutUs'));
 const Introduction = lazy(() => import('./website/pages/Introduction'));
 const MainContent = lazy(() => import('./website/componets/Introduction/MainContent'));
@@ -160,6 +164,9 @@ import EditPortfolioCategory from './websiteBackend/portfolio/EditPortfolioCateg
 import CareerOptionForm from './websiteBackend/careerOption/CareerOptionForm';
 import CareerOptionTable from './websiteBackend/careerOption/CareerOptionTable';
 import EditCareerOptionForm from './websiteBackend/careerOption/EditCareerOptionForm';
+import CounterTable from './websiteBackend/counter/counterTable';
+import AddCounter from './websiteBackend/counter/AddCounter';
+import EditCounter from './websiteBackend/counter/EditCounter';
 
 // Auth Components
 const PrivateRoute = ({ children }) => {
@@ -293,6 +300,15 @@ function App() {
             { path: 'add-banner', element: <Suspense fallback={<LoadingFallback />}><AddBannerForm /></Suspense> },
             { path: 'edit-banner-form/:id', element: <Suspense fallback={<LoadingFallback />}><EditBannerForm /></Suspense> },
 
+            // Video Routes
+            { path: 'video-table', element: <Suspense fallback={<LoadingFallback />}><VideoTable /></Suspense> },
+            { path: 'video-form', element: <Suspense fallback={<LoadingFallback />}><VideoForm /></Suspense> },
+
+            // Footer Routes
+            { path: 'footer-table', element: <Suspense fallback={<LoadingFallback />}><FooterTable /></Suspense> },
+            { path: 'footer-form', element: <Suspense fallback={<LoadingFallback />}><FooterForm /></Suspense> },
+            { path: 'edit-footer/:id', element: <Suspense fallback={<LoadingFallback />}><FooterForm /></Suspense> },
+
             { path: 'worldwide-table', element: <Suspense fallback={<LoadingFallback />}><WorldWideBackend /></Suspense> },
             { path: 'worldwide/add', element: <Suspense fallback={<LoadingFallback />}><WorldwideForm /></Suspense> },
             { path: 'worldwide/edit/:id', element: <Suspense fallback={<LoadingFallback />}><WorldwideForm /></Suspense> },
@@ -382,6 +398,10 @@ function App() {
             { path: 'testimonials/editTestimonials/:id', element: <Suspense fallback={<LoadingFallback />}><EditTestimonial /></Suspense> },
             // Cookies Policy Route 
             { path: 'cookies', element: <Suspense fallback={<LoadingFallback />}><CookiesForm /></Suspense> },
+            // Counter Routes
+            { path: 'counter', element: <Suspense fallback={<LoadingFallback />}><CounterTable /></Suspense> },
+            { path: 'add-counter', element: <Suspense fallback={<LoadingFallback />}><AddCounter /></Suspense> },
+            { path: 'edit-counter/:id', element: <Suspense fallback={<LoadingFallback />}><EditCounter /></Suspense> },
           ]
         }
       ]

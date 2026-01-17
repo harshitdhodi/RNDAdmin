@@ -24,6 +24,22 @@ const bannerSchema = new mongoose.Schema({
     details: { 
         type: String,
        default: "" 
+    },
+    heading: { 
+        type: String,
+       default: "" 
+    },
+    subheading: { 
+        type: String,
+       default: "" 
+    },
+    description: { 
+        type: String,
+       default: "" 
+    },
+    marque: { 
+        type: String,
+       default: "" 
     }
 }, { timestamps: true });
 

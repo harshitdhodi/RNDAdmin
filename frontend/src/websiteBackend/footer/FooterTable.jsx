@@ -1,0 +1,87 @@
+import React, { useEffect, useState } from 'react';
+import axios from 'axios';
+import { Button } from "@/components/ui/button";
+import { Edit, Trash2, Plus } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+
+const FooterTable = () => {
+  const [footers, setFooters] = useState([]);
+  const navigate = useNavigate();
+
+  const fetchFooters = async () => {
+    try {
+      const response = await axios.get('/api/footer/get');
+      setFooters(response.data.data);
+    } catch (error) {
+      console.error("Error fetching footers:", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchFooters();
+  }, []);
+
+  const handleDelete = async (id) => {
+    if (window.confirm("Are you sure you want to delete this footer?")) {
+      try {
+        await axios.delete(`/api/footer/delete?id=${id}`);
+        fetchFooters();
+      } catch (error) {
+        console.error("Error deleting footer:", error);
+      }
+    }
+  };
+
+  const handleEdit = (id) => {
+    navigate(`/edit-footer/${id}`);
+  };
+
+  return (
+    <div className="p-6">
+      <div className="flex justify-between items-center mb-6">
+        <h1 className="text-2xl font-bold">Footer Management</h1>
+        <Button onClick={() => navigate('/footer-form')}>
+          <Plus className="mr-2 h-4 w-4" /> Add New Footer
+        </Button>
+      </div>
+
+      <div className="overflow-x-auto border rounded-lg shadow bg-white">
+        <table className="w-full text-sm text-left">
+          <thead className="bg-gray-100 text-gray-700 uppercase">
+            <tr>
+              <th className="px-6 py-3">Link Heading</th>
+              <th className="px-6 py-3">Description</th>
+              <th className="px-6 py-3">Contact Email</th>
+              <th className="px-6 py-3">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {footers.length > 0 ? (
+              footers.map((footer) => (
+                <tr key={footer._id} className="border-b hover:bg-gray-50">
+                  <td className="px-6 py-4 font-medium">{footer.linkHeading}</td>
+                  <td className="px-6 py-4 truncate max-w-xs">{footer.description}</td>
+                  <td className="px-6 py-4">{footer.contactInfo?.email}</td>
+                  <td className="px-6 py-4 flex gap-2">
+                    <Button variant="outline" size="sm" onClick={() => handleEdit(footer._id)}>
+                      <Edit className="h-4 w-4 text-blue-600" />
+                    </Button>
+                    <Button variant="outline" size="sm" onClick={() => handleDelete(footer._id)}>
+                      <Trash2 className="h-4 w-4 text-red-600" />
+                    </Button>
+                  </td>
+                </tr>
+              ))
+            ) : (
+              <tr>
+                <td colSpan="4" className="px-6 py-4 text-center text-gray-500">No footers found.</td>
+              </tr>
+            )}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  );
+};
+
+export default FooterTable;
