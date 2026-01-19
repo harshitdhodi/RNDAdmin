@@ -8,12 +8,15 @@ import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import UseAnimations from "react-useanimations";
 import loading from "react-useanimations/lib/loading";
+import ReactQuill from 'react-quill';
+import 'react-quill/dist/quill.snow.css';
 
 const CategoryTable = () => {
   const [categories, setCategories] = useState([]);
   const [loadings, setLoading] = useState(true);
   const [heading, setHeading] = useState("");
   const [subheading, setSubheading] = useState("");
+  const [detail, setDetail] = useState("");
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [itemToDelete, setItemToDelete] = useState(null);
   const navigate = useNavigate();
@@ -177,9 +180,10 @@ const CategoryTable = () => {
   const fetchHeadings = async () => {
     try {
       const response = await axios.get('/api/pageHeading/heading?pageType=main-services', { withCredentials: true });
-      const { heading, subheading } = response.data;
+      const { heading, subheading, detail } = response.data;
       setHeading(heading || '');
       setSubheading(subheading || '');
+      setDetail(detail || '');
     } catch (error) {
       console.error(error);
     }
@@ -190,6 +194,7 @@ const CategoryTable = () => {
       await axios.put('/api/pageHeading/updateHeading?pageType=main-services', {
         heading,
         subheading,
+        detail,
       }, { withCredentials: true });
       toast.success('Headings updated successfully!', {
         position: "top-right",
@@ -218,6 +223,7 @@ const CategoryTable = () => {
 
   const handleHeadingChange = (e) => setHeading(e.target.value);
   const handleSubheadingChange = (e) => setSubheading(e.target.value);
+
   return (
     <div className="p-4 overflow-x-auto">
       <ToastContainer />
@@ -242,9 +248,18 @@ const CategoryTable = () => {
             />
           </div>
         </div>
+          <div className="mb-6">
+            <label className="block text-gray-700 font-bold mb-2 uppercase font-serif">Detail</label>
+            <ReactQuill
+              theme="snow"
+              value={detail}
+              onChange={setDetail}
+              className="w-full h-40 mb-12"
+            />
+          </div>
         <button
           onClick={saveHeadings}
-          className="px-4 py-2 bg-slate-700 text-white rounded hover:bg-slate-900 transition duration-300 font-serif"
+          className="px-4 py-2 mt-6 bg-slate-700 text-white rounded hover:bg-slate-900 transition duration-300 font-serif"
         >
           Save
         </button>
