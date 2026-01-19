@@ -8,7 +8,7 @@ const ServiceSec1Form = () => {
   const [subCategories, setSubCategories] = useState([]);
   const [subSubCategories, setSubSubCategories] = useState([]);
   const navigate = useNavigate();
-  const { id } = useParams(); // Get ID from URL params
+  const { id } = useParams();
   const [formData, setFormData] = useState({
     categoryId: '',
     subCategoryId: '',
@@ -26,16 +26,30 @@ const ServiceSec1Form = () => {
   const [message, setMessage] = useState({ type: '', text: '' });
   const [isLoadingCategories, setIsLoadingCategories] = useState(true);
   const [isEditMode, setIsEditMode] = useState(false);
+  const [selectedFile, setSelectedFile] = useState(null);
+  const [imagePreview, setImagePreview] = useState('');
 
   useEffect(() => {
     fetchCategories();
     
-    // If ID exists in params, switch to edit mode and load data
     if (id) {
       setIsEditMode(true);
       fetchDataById(id);
     }
   }, [id]);
+
+  useEffect(() => {
+    if (isEditMode && categories.length > 0 && formData.categoryId) {
+      loadSubCategoriesForEdit(formData);
+    }
+  }, [categories, isEditMode]);
+
+  // Set image preview when photo URL is loaded in edit mode
+  useEffect(() => {
+    if (isEditMode && formData.photo && !selectedFile) {
+      setImagePreview(`/api/image/download/${formData.photo}`);
+    }
+  }, [formData.photo, isEditMode, selectedFile]);
 
   const fetchCategories = async () => {
     try {
@@ -62,7 +76,6 @@ const ServiceSec1Form = () => {
       if (data.success && data.data) {
         const fetchedData = data.data;
         
-        // Set form data
         setFormData({
           categoryId: fetchedData.categoryId || '',
           subCategoryId: fetchedData.subCategoryId || '',
@@ -75,7 +88,6 @@ const ServiceSec1Form = () => {
           imgTitle: fetchedData.imgTitle || ''
         });
         
-        // Determine the level based on what IDs are present
         if (fetchedData.subSubCategoryId) {
           setSelectedLevel('subsubcategory');
         } else if (fetchedData.subCategoryId) {
@@ -96,13 +108,6 @@ const ServiceSec1Form = () => {
       setLoading(false);
     }
   };
-
-  // Load subcategories when editing
-  useEffect(() => {
-    if (isEditMode && categories.length > 0 && formData.categoryId) {
-      loadSubCategoriesForEdit(formData);
-    }
-  }, [categories, isEditMode]);
 
   const loadSubCategoriesForEdit = (data) => {
     if (data.categoryId) {
@@ -181,6 +186,35 @@ const ServiceSec1Form = () => {
     }));
   };
 
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setSelectedFile(file);
+      
+      // Create preview URL for the selected file
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setImagePreview(reader.result);
+      };
+      reader.readAsDataURL(file);
+      
+      // Store filename in formData
+      setFormData(prev => ({
+        ...prev,
+        photo: file.name
+      }));
+    }
+  };
+
+  const clearImage = () => {
+    setSelectedFile(null);
+    setImagePreview('');
+    setFormData(prev => ({
+      ...prev,
+      photo: ''
+    }));
+  };
+
   const handleSubmit = async () => {
     setLoading(true);
     setMessage({ type: '', text: '' });
@@ -203,7 +237,6 @@ const ServiceSec1Form = () => {
         submitData.subSubCategoryId = formData.subSubCategoryId;
       }
 
-      // Both use PUT method, but different URLs based on whether ID exists
       const url = id ? `/api/servicesec1/${id}` : '/api/servicesec1';
       
       const response = await fetch(url, {
@@ -222,7 +255,6 @@ const ServiceSec1Form = () => {
           text: id ? 'Data updated successfully!' : 'Data created successfully!' 
         });
         
-        // Navigate after a short delay to show success message
         setTimeout(() => {
           navigate('/serviceSec1-table');
         }, 1000);
@@ -238,7 +270,6 @@ const ServiceSec1Form = () => {
 
   const handleLevelChange = (level) => {
     if (isEditMode) {
-      // In edit mode, don't allow level changes
       setMessage({ type: 'warning', text: 'Cannot change level in edit mode' });
       return;
     }
@@ -255,6 +286,8 @@ const ServiceSec1Form = () => {
       alt: '',
       imgTitle: ''
     });
+    setSelectedFile(null);
+    setImagePreview('');
   };
 
   return (
@@ -434,16 +467,39 @@ const ServiceSec1Form = () => {
 
             <div>
               <label className="block text-sm font-semibold text-gray-700 mb-2">
-                Photo URL
+                Photo Upload
               </label>
               <input
                 type="file"
-                name="photo"
-                onChange={handleInputChange}
+                accept="image/*"
+                onChange={handleFileChange}
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               />
-              {isEditMode && formData.photo && (
-                <p className="text-sm text-gray-500 mt-1">Current: {formData.photo}</p>
+              {isEditMode && formData.photo && !selectedFile && (
+                <p className="text-sm text-gray-500 mt-1">Current file: {formData.photo}</p>
+              )}
+              
+              {imagePreview && (
+                <div className="mt-4 relative">
+                  <p className="text-sm font-semibold text-gray-700 mb-2">Image Preview:</p>
+                  <div className="relative inline-block">
+                    <img 
+                      src={imagePreview} 
+                      alt="Preview" 
+                      className="max-w-sm max-h-64 rounded-lg border-2 border-gray-300 shadow-md object-contain"
+                    />
+                    <button
+                      type="button"
+                      onClick={clearImage}
+                      className="absolute top-2 right-2 bg-red-500 text-white rounded-full p-2 hover:bg-red-600 transition shadow-lg"
+                      title="Remove image"
+                    >
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                      </svg>
+                    </button>
+                  </div>
+                </div>
               )}
             </div>
 

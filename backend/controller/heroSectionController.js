@@ -3,6 +3,17 @@ const HeroSection = require('../model/heroSection');
 // Create a new hero section
 exports.createHeroSection = async (req, res) => {
     try {
+        if (req.file) {
+            req.body.imageUrl = req.file.filename;
+        }
+        // Parse JSON fields if they come as strings (from FormData)
+        if (req.body.marquee && typeof req.body.marquee === 'string') {
+            req.body.marquee = JSON.parse(req.body.marquee);
+        }
+        if (req.body.socialMediaLinks && typeof req.body.socialMediaLinks === 'string') {
+            req.body.socialMediaLinks = JSON.parse(req.body.socialMediaLinks);
+        }
+
         const heroSection = new HeroSection(req.body);
         await heroSection.save();
         res.status(201).json({ success: true, data: heroSection });
@@ -37,6 +48,17 @@ exports.getHeroSectionById = async (req, res) => {
 // Update hero section
 exports.updateHeroSection = async (req, res) => {
     try {
+        if (req.file) {
+            req.body.imageUrl = req.file.filename;
+        }
+        // Parse JSON fields if they come as strings (from FormData)
+        if (req.body.marquee && typeof req.body.marquee === 'string') {
+            req.body.marquee = JSON.parse(req.body.marquee);
+        }
+        if (req.body.socialMediaLinks && typeof req.body.socialMediaLinks === 'string') {
+            req.body.socialMediaLinks = JSON.parse(req.body.socialMediaLinks);
+        }
+
         const heroSection = await HeroSection.findByIdAndUpdate(
             req.params.id,
             { ...req.body, updatedAt: Date.now() },

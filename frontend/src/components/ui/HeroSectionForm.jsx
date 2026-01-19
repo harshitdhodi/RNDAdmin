@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useForm } from "react-hook-form";
+import { useForm, useFieldArray } from "react-hook-form";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -14,6 +14,7 @@ import {
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
+import { Trash2, Plus } from "lucide-react";
 
 const HeroSectionForm = () => {
   const { id } = useParams();
@@ -29,7 +30,19 @@ const HeroSectionForm = () => {
       buttonText: "",
       buttonLink: "",
       image: null,
+      marquee: [],
+      socialMediaLinks: [],
     },
+  });
+
+  const { fields: marqueeFields, append: appendMarquee, remove: removeMarquee } = useFieldArray({
+    control: form.control,
+    name: "marquee",
+  });
+
+  const { fields: socialFields, append: appendSocial, remove: removeSocial } = useFieldArray({
+    control: form.control,
+    name: "socialMediaLinks",
   });
 
   useEffect(() => {
@@ -44,9 +57,11 @@ const HeroSectionForm = () => {
             description: data.description || "",
             buttonText: data.buttonText || "",
             buttonLink: data.buttonLink || "",
+            marquee: data.marquee || [],
+            socialMediaLinks: data.socialMediaLinks || [],
           });
-          if (data.image) {
-            setImagePreview(`/uploads/${data.image}`);
+          if (data.imageUrl) {
+            setImagePreview(`/api/image/download/${data.imageUrl}`);
           }
         } catch (error) {
           console.error("Error fetching data:", error);
@@ -64,8 +79,13 @@ const HeroSectionForm = () => {
     formData.append("description", values.description);
     formData.append("buttonText", values.buttonText);
     formData.append("buttonLink", values.buttonLink);
+    
+    // Append complex arrays as JSON strings
+    formData.append("marquee", JSON.stringify(values.marquee));
+    formData.append("socialMediaLinks", JSON.stringify(values.socialMediaLinks));
+
     if (values.image && values.image[0]) {
-      formData.append("image", values.image[0]);
+      formData.append("photo", values.image[0]);
     }
 
     try {
@@ -162,6 +182,86 @@ const HeroSectionForm = () => {
                   )}
                 />
               </div>
+
+              {/* Marquee Section */}
+              <div className="space-y-4 border p-4 rounded-md">
+                <div className="flex justify-between items-center">
+                  <h3 className="text-lg font-medium">Marquee Items</h3>
+                  <Button type="button" variant="outline" size="sm" onClick={() => appendMarquee({ title: "" })}>
+                    <Plus className="h-4 w-4 mr-2" /> Add Item
+                  </Button>
+                </div>
+                {marqueeFields.map((field, index) => (
+                  <div key={field.id} className="flex gap-2 items-end">
+                    <FormField
+                      control={form.control}
+                      name={`marquee.${index}.title`}
+                      render={({ field }) => (
+                        <FormItem className="flex-1">
+                          <FormLabel className={index !== 0 ? "sr-only" : ""}>Text</FormLabel>
+                          <FormControl>
+                            <Input placeholder="Marquee text" {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <Button type="button" variant="destructive" size="icon" onClick={() => removeMarquee(index)}>
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
+                  </div>
+                ))}
+              </div>
+
+              {/* Social Media Links Section */}
+              <div className="space-y-4 border p-4 rounded-md">
+                <div className="flex justify-between items-center">
+                  <h3 className="text-lg font-medium">Social Media Links</h3>
+                  <Button type="button" variant="outline" size="sm" onClick={() => appendSocial({ platform: "", url: "" })}>
+                    <Plus className="h-4 w-4 mr-2" /> Add Link
+                  </Button>
+                </div>
+                {socialFields.map((field, index) => (
+                  <div key={field.id} className="grid grid-cols-2 gap-4 items-end relative pr-12">
+                    <FormField
+                      control={form.control}
+                      name={`socialMediaLinks.${index}.platform`}
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className={index !== 0 ? "sr-only" : ""}>Platform</FormLabel>
+                          <FormControl>
+                            <Input placeholder="e.g. Facebook" {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name={`socialMediaLinks.${index}.url`}
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className={index !== 0 ? "sr-only" : ""}>URL</FormLabel>
+                          <FormControl>
+                            <Input placeholder="https://..." {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <Button 
+                      type="button" 
+                      variant="destructive" 
+                      size="icon" 
+                      className="absolute right-0 bottom-0"
+                      onClick={() => removeSocial(index)}
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
+                  </div>
+                ))}
+              </div>
+
               <FormField
                 control={form.control}
                 name="image"

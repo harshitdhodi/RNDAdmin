@@ -1,12 +1,13 @@
 const express = require('express');
 const router = express.Router();
 const heroSectionController = require('../controller/heroSectionController');
+const { uploadPhoto } = require('../middleware/fileUpload');
 
 // Hero Section CRUD Routes
-router.post('/', heroSectionController.createHeroSection);
+router.post('/', uploadPhoto, heroSectionController.createHeroSection);
 router.get('/', heroSectionController.getHeroSections);
 router.get('/:id', heroSectionController.getHeroSectionById);
-router.put('/:id', heroSectionController.updateHeroSection);
+router.put('/:id', uploadPhoto, heroSectionController.updateHeroSection);
 router.delete('/:id', heroSectionController.deleteHeroSection);
 
 // Marquee Routes
