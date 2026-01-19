@@ -5,6 +5,10 @@ const videoSchema = new mongoose.Schema({
     type: String,
     required: true
   },
+  slug: {
+    type: String,
+    required: true
+  },
   subheading: {
     type: String,
     required: true

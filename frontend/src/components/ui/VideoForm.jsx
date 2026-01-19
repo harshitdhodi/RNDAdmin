@@ -2,9 +2,10 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { useNavigate, useSearchParams } from 'react-router-dom';
+import ReactQuill from 'react-quill';
+import 'react-quill/dist/quill.snow.css';
 
 const VideoForm = () => {
   const navigate = useNavigate();
@@ -13,6 +14,7 @@ const VideoForm = () => {
 
   const [formData, setFormData] = useState({
     heading: '',
+    slug: '',
     subheading: '',
     description: '',
     alt: '',
@@ -34,6 +36,7 @@ const VideoForm = () => {
           const data = response.data;
           setFormData({
             heading: data.heading,
+            slug: data.slug || '',
             subheading: data.subheading,
             description: data.description,
             alt: data.alt,
@@ -55,7 +58,17 @@ const VideoForm = () => {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
+    setFormData(prev => {
+      const newData = { ...prev, [name]: value };
+      if (name === 'heading' && !id) {
+        newData.slug = value.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '');
+      }
+      return newData;
+    });
+  };
+
+  const handleDescriptionChange = (value) => {
+    setFormData(prev => ({ ...prev, description: value }));
   };
 
   const handleFileChange = (e) => {
@@ -70,6 +83,7 @@ const VideoForm = () => {
     e.preventDefault();
     const data = new FormData();
     data.append('heading', formData.heading);
+    data.append('slug', formData.slug);
     data.append('subheading', formData.subheading);
     data.append('description', formData.description);
     data.append('alt', formData.alt);
@@ -107,13 +121,23 @@ const VideoForm = () => {
         </div>
 
         <div>
+          <Label htmlFor="slug">Slug</Label>
+          <Input id="slug" name="slug" value={formData.slug} onChange={handleChange} required />
+        </div>
+
+        <div>
           <Label htmlFor="subheading">Subheading</Label>
           <Input id="subheading" name="subheading" value={formData.subheading} onChange={handleChange} required />
         </div>
 
         <div>
           <Label htmlFor="description">Description</Label>
-          <Textarea id="description" name="description" value={formData.description} onChange={handleChange} required />
+          <ReactQuill
+            theme="snow"
+            value={formData.description}
+            onChange={handleDescriptionChange}
+            className="h-60 mb-12"
+          />
         </div>
 
         <div className="grid grid-cols-2 gap-4">

@@ -50,6 +50,7 @@ const VideoTable = () => {
           <thead className="bg-gray-100 text-gray-700 uppercase">
             <tr>
               <th className="px-6 py-3">Heading</th>
+              <th className="px-6 py-3">Slug</th>
               <th className="px-6 py-3">Subheading</th>
               <th className="px-6 py-3">Image</th>
               <th className="px-6 py-3">Video</th>
@@ -61,6 +62,7 @@ const VideoTable = () => {
               videos.map((video) => (
                 <tr key={video._id} className="bg-white border-b hover:bg-gray-50">
                   <td className="px-6 py-4 font-medium">{video.heading}</td>
+                  <td className="px-6 py-4">{video.slug}</td>
                   <td className="px-6 py-4">{video.subheading}</td>
                   <td className="px-6 py-4">
                     {video.image ? (
