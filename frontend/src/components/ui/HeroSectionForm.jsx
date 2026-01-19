@@ -1,36 +1,52 @@
-import React, { useState, useEffect } from 'react';
-import axios from 'axios';
-import { useNavigate, useSearchParams } from 'react-router-dom';
+import React, { useEffect, useState } from "react";
+import { useForm } from "react-hook-form";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { useNavigate, useParams } from "react-router-dom";
+import axios from "axios";
 
-export default function HeroSectionForm() {
+const HeroSectionForm = () => {
+  const { id } = useParams();
   const navigate = useNavigate();
-  const [searchParams] = useSearchParams();
-  const id = searchParams.get("id");
-
-  const [formData, setFormData] = useState({
-    title: "",
-    subtitle: "",
-    image: null,
-  });
-  const [preview, setPreview] = useState("");
   const [loading, setLoading] = useState(false);
+  const [imagePreview, setImagePreview] = useState(null);
+
+  const form = useForm({
+    defaultValues: {
+      title: "",
+      subtitle: "",
+      description: "",
+      buttonText: "",
+      buttonLink: "",
+      image: null,
+    },
+  });
 
   useEffect(() => {
     if (id) {
       const fetchData = async () => {
         try {
           const response = await axios.get(`/api/heroSection/${id}`);
-          const data = response.data.data;
-          setFormData({
+          const data = response.data.data || response.data;
+          form.reset({
             title: data.title || "",
             subtitle: data.subtitle || "",
-            image: data.image || null,
+            description: data.description || "",
+            buttonText: data.buttonText || "",
+            buttonLink: data.buttonLink || "",
           });
           if (data.image) {
-            setPreview(`/api/logo/download/${data.image}`);
+            setImagePreview(`/uploads/${data.image}`);
           }
         } catch (error) {
           console.error("Error fetching data:", error);
@@ -38,77 +54,165 @@ export default function HeroSectionForm() {
       };
       fetchData();
     }
-  }, [id]);
+  }, [id, form]);
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
-  };
-
-  const handleFileChange = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      setFormData((prev) => ({ ...prev, image: file }));
-      setPreview(URL.createObjectURL(file));
-    }
-  };
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  const onSubmit = async (values) => {
     setLoading(true);
-
-    const data = new FormData();
-    data.append("title", formData.title);
-    data.append("subtitle", formData.subtitle);
-    // Only append image if it's a new file (object), not if it's an existing string URL
-    if (formData.image instanceof File) {
-      data.append("image", formData.image);
+    const formData = new FormData();
+    formData.append("title", values.title);
+    formData.append("subtitle", values.subtitle);
+    formData.append("description", values.description);
+    formData.append("buttonText", values.buttonText);
+    formData.append("buttonLink", values.buttonLink);
+    if (values.image && values.image[0]) {
+      formData.append("image", values.image[0]);
     }
 
     try {
       if (id) {
-        await axios.put(`/api/heroSection/${id}`, data, {
+        await axios.put(`/api/heroSection/${id}`, formData, {
           headers: { "Content-Type": "multipart/form-data" },
         });
       } else {
-        await axios.post("/api/heroSection", data, {
+        await axios.post("/api/heroSection", formData, {
           headers: { "Content-Type": "multipart/form-data" },
         });
       }
       navigate("/hero-section-table");
     } catch (error) {
-      console.error("Error saving hero section:", error);
-      alert("Failed to save. Please try again.");
+      console.error("Error saving data:", error);
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="max-w-2xl mx-auto mt-10 p-6 bg-white rounded-lg shadow-md">
-      <h2 className="text-2xl font-bold mb-6">{id ? "Edit" : "Add"} Hero Section</h2>
-      <form onSubmit={handleSubmit} className="space-y-6">
-        <div className="space-y-2">
-          <Label htmlFor="title">Title</Label>
-          <Input id="title" name="title" value={formData.title} onChange={handleChange} placeholder="Enter title" required />
-        </div>
-
-        <div className="space-y-2">
-          <Label htmlFor="subtitle">Subtitle</Label>
-          <Input id="subtitle" name="subtitle" value={formData.subtitle} onChange={handleChange} placeholder="Enter subtitle" />
-        </div>
-
-        <div className="space-y-2">
-          <Label htmlFor="image">Background Image</Label>
-          <Input id="image" type="file" onChange={handleFileChange} accept="image/*" className="cursor-pointer" />
-          {preview && <div className="mt-4"><p className="text-sm text-gray-500 mb-2">Preview:</p><img src={preview} alt="Preview" className="w-full h-48 object-cover rounded-md border" /></div>}
-        </div>
-
-        <div className="flex justify-end gap-4 pt-4">
-          <Button type="button" variant="outline" onClick={() => navigate("/hero-section-table")}>Cancel</Button>
-          <Button type="submit" disabled={loading}>{loading ? "Saving..." : "Save Hero Section"}</Button>
-        </div>
-      </form>
+    <div className="p-4">
+      <Card className="max-w-2xl mx-auto">
+        <CardHeader>
+          <CardTitle>{id ? "Edit Hero Section" : "Add Hero Section"}</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+              <FormField
+                control={form.control}
+                name="title"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Title</FormLabel>
+                    <FormControl>
+                      <Input placeholder="Enter title" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="subtitle"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Subtitle</FormLabel>
+                    <FormControl>
+                      <Input placeholder="Enter subtitle" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="description"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Description</FormLabel>
+                    <FormControl>
+                      <Textarea placeholder="Enter description" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <div className="grid grid-cols-2 gap-4">
+                <FormField
+                  control={form.control}
+                  name="buttonText"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Button Text</FormLabel>
+                      <FormControl>
+                        <Input placeholder="Learn More" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="buttonLink"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Button Link</FormLabel>
+                      <FormControl>
+                        <Input placeholder="/about-us" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+              <FormField
+                control={form.control}
+                name="image"
+                render={({ field: { onChange, value, ...rest } }) => (
+                  <FormItem>
+                    <FormLabel>Background Image</FormLabel>
+                    <FormControl>
+                      <Input
+                        type="file"
+                        accept="image/*"
+                        onChange={(e) => {
+                          const file = e.target.files[0];
+                          if (file) {
+                            onChange(e.target.files);
+                            setImagePreview(URL.createObjectURL(file));
+                          }
+                        }}
+                        {...rest}
+                      />
+                    </FormControl>
+                    {imagePreview && (
+                      <div className="mt-2">
+                        <img
+                          src={imagePreview}
+                          alt="Preview"
+                          className="h-40 w-auto object-cover rounded border"
+                        />
+                      </div>
+                    )}
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <div className="flex justify-end gap-2">
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => navigate("/hero-section-table")}
+                >
+                  Cancel
+                </Button>
+                <Button type="submit" disabled={loading}>
+                  {loading ? "Saving..." : "Save"}
+                </Button>
+              </div>
+            </form>
+          </Form>
+        </CardContent>
+      </Card>
     </div>
   );
-}
+};
+
+export default HeroSectionForm;

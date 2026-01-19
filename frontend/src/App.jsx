@@ -87,6 +87,8 @@ const AddBannerForm = lazy(() => import('./websiteBackend/banner/AddBannerForm')
 const EditBannerForm = lazy(() => import('./websiteBackend/banner/EditBannerForm'));
 const VideoTable = lazy(() => import('./components/ui/VideoTable'));
 const VideoForm = lazy(() => import('./components/ui/VideoForm'));
+const HeroSectionTable = lazy(() => import('./components/ui/HeroSectionTable'));
+const HeroSectionForm = lazy(() => import('./components/ui/HeroSectionForm'));
 const FooterTable = lazy(() => import('./websiteBackend/footer/FooterTable'));
 const FooterForm = lazy(() => import('./websiteBackend/footer/FooterForm'));
 const AboutDescription = lazy(() => import('./website/componets/home/AboutUs'));
@@ -303,6 +305,11 @@ function App() {
             // Video Routes
             { path: 'video-table', element: <Suspense fallback={<LoadingFallback />}><VideoTable /></Suspense> },
             { path: 'video-form', element: <Suspense fallback={<LoadingFallback />}><VideoForm /></Suspense> },
+
+            // Hero Section Routes
+            { path: 'hero-section-table', element: <Suspense fallback={<LoadingFallback />}><HeroSectionTable /></Suspense> },
+            { path: 'hero-section-form', element: <Suspense fallback={<LoadingFallback />}><HeroSectionForm /></Suspense> },
+            { path: 'hero-section-form/:id', element: <Suspense fallback={<LoadingFallback />}><HeroSectionForm /></Suspense> },
 
             // Footer Routes
             { path: 'footer-table', element: <Suspense fallback={<LoadingFallback />}><FooterTable /></Suspense> },
