@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Trash2, Edit, Eye, EyeOff, Search } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 const ServiceSec1Table = () => {
     const [data, setData] = useState([]);
@@ -11,6 +11,7 @@ const ServiceSec1Table = () => {
     const [searchTerm, setSearchTerm] = useState('');
     const [filterLevel, setFilterLevel] = useState('all');
     const [expandedRows, setExpandedRows] = useState(new Set());
+    const navigate = useNavigate();
 
     useEffect(() => {
         fetchData();
@@ -135,16 +136,7 @@ const ServiceSec1Table = () => {
     };
 
     const handleEdit = (item) => {
-        // You can emit an event or use a callback to open the form with this data
-        // For now, we'll just show an alert with the IDs needed
-        const editInfo = {
-            categoryId: item.categoryId?._id || item.categoryId,
-            subCategoryId: item.subCategoryId?._id || item.subCategoryId,
-            subSubCategoryId: item.subSubCategoryId?._id || item.subSubCategoryId,
-            level: getItemLevel(item)
-        };
-
-        alert(`Edit functionality: Open form with these IDs\n${JSON.stringify(editInfo, null, 2)}\n\nYou can integrate this with your form component.`);
+        navigate(`/edit-serviceSec1/${item._id}`);
     };
 
     const toggleRowExpansion = (id) => {

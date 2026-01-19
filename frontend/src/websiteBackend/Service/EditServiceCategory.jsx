@@ -36,7 +36,7 @@ const EditServiceCategory = () => {
       if (categoryId && subCategoryId && subSubCategoryId) {
         urls = `/api/services/getSpecificSubSubcategory?categoryId=${categoryId}&subCategoryId=${subCategoryId}&subSubCategoryId=${subSubCategoryId}`;
       } else if (categoryId && subCategoryId) {
-        urls = `/api/services/getSpecificSubcategory?categoryId=${categoryId}&subCategoryId=${subCategoryId}`;
+        urls = `/api/service/getSpecificSubcategory?categoryId=${categoryId}&subCategoryId=${subCategoryId}`;
       } else if (categoryId) {
         urls = `/api/services/getSpecificCategory?categoryId=${categoryId}`;
       }

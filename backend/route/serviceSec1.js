@@ -19,6 +19,7 @@ router.get('/find', getServiceSec1);
 
 // PUT (update or create) data
 router.put('/', updateOrCreateServiceSec1);
+router.put('/:id', updateOrCreateServiceSec1);
 
 // DELETE data by query params
 router.delete('/', deleteServiceSec1);
