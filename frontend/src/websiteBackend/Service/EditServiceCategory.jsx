@@ -154,10 +154,8 @@ const EditServiceCategory = () => {
     formData.append('priority', priority);
     formData.append('status', status);
 
-    if (photo) {
+    if (photo instanceof File) {
       formData.append("photo", photo);
-    } else {
-      formData.append("photo", currentPhoto);
     }
 
     if (categoryId && subCategoryId && subSubCategoryId) {
@@ -297,7 +295,7 @@ const EditServiceCategory = () => {
         {(photo || currentPhoto) && (
           <div className="mt-2 w-56 relative group">
             <img
-              src={photo ? URL.createObjectURL(photo) : `/api/logo/download/${currentPhoto}`}
+              src={photo instanceof File ? URL.createObjectURL(photo) : `/api/logo/download/${currentPhoto}`}
               alt={altText}
               className="h-32 w-56 object-cover"
             />

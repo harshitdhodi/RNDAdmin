@@ -348,7 +348,7 @@ const ServiceSec1Table = () => {
                                                                     <div className="md:col-span-2">
                                                                         <p className="text-sm font-medium text-gray-500 mb-2">Image Preview:</p>
                                                                         <img
-                                                                            src={item.photo}
+                                                                            src={`/api/image/download/${item.photo}`}
                                                                             alt={item.alt || 'Preview'}
                                                                             className="max-w-xs h-auto rounded-lg border border-gray-300"
                                                                             onError={(e) => {
