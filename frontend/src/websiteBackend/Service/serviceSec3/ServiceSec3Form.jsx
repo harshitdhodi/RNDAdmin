@@ -63,16 +63,17 @@ const ServiceSec3Form = () => {
     }
   };
 
-  const loadSubCategoriesForEdit = (data) => {
-    if (data.categoryId) {
-      const category = categories.find(cat => cat._id === data.categoryId);
-      if (category) {
-        setSubCategories(category.subCategories || []);
+  // FIXED: Updated to properly handle object IDs
+  const loadSubCategoriesForEdit = (categoryIdStr, subCategoryIdStr) => {
+    if (categoryIdStr) {
+      const category = categories.find(cat => cat._id === categoryIdStr);
+      if (category && category.subCategories) {
+        setSubCategories(category.subCategories);
         
-        if (data.subCategoryId) {
-          const subCategory = category.subCategories?.find(sub => sub._id === data.subCategoryId);
-          if (subCategory) {
-            setSubSubCategories(subCategory.subSubCategory || []);
+        if (subCategoryIdStr) {
+          const subCategory = category.subCategories.find(sub => sub._id === subCategoryIdStr);
+          if (subCategory && subCategory.subSubCategory) {
+            setSubSubCategories(subCategory.subSubCategory);
           }
         }
       }
@@ -84,21 +85,41 @@ const ServiceSec3Form = () => {
       setLoading(true);
       const res = await axios.get(`/api/serviceSec3/${dataId}`);
       const item = res.data.data;
+      console.log('Fetched item for edit:', item);
 
-      const tempDataForSubs = {
-        categoryId: item.categoryId?._id || '',
-        subCategoryId: item.subCategoryId?._id || '',
-        subSubCategoryId: item.subSubCategoryId?._id || '',
+      // FIXED: Better handling of object vs string IDs
+      const getSafeId = (value) => {
+        if (!value) return '';
+        if (typeof value === 'string') return value;
+        if (typeof value === 'object' && value !== null && value._id) return value._id;
+        return '';
       };
 
+      const categoryId = getSafeId(item.categoryId);
+      const subCategoryId = getSafeId(item.subCategoryId);
+      const subSubCategoryId = getSafeId(item.subSubCategoryId);
+
+      // FIXED: Load subcategories first, then set form data
+      loadSubCategoriesForEdit(categoryId, subCategoryId);
+
+      // Determine the level based on which IDs are present
+      let level = 'category';
+      if (subSubCategoryId) {
+        level = 'subsubcategory';
+      } else if (subCategoryId) {
+        level = 'subcategory';
+      }
+      setSelectedLevel(level);
+
+      // Set form data
       setFormData({
         heading: item.heading || '',
         subheading: item.subheading || '',
         details: item.details || '',
-        categoryId: tempDataForSubs.categoryId,
-        subCategoryId: tempDataForSubs.subCategoryId,
-        subSubCategoryId: tempDataForSubs.subSubCategoryId,
-        cards: item.cards.length > 0
+        categoryId: categoryId,
+        subCategoryId: subCategoryId,
+        subSubCategoryId: subSubCategoryId,
+        cards: item.cards && item.cards.length > 0
           ? item.cards.map(card => ({
               title: card.title || '',
               subTitle: card.subTitle || '',
@@ -111,18 +132,9 @@ const ServiceSec3Form = () => {
           : [{ title: '', subTitle: '', description: '', photo: null, currentPhoto: '', alt: '', imgTitle: '' }],
       });
 
-      loadSubCategoriesForEdit(tempDataForSubs);
-
-      if (item.subSubCategoryId) {
-        setSelectedLevel('subsubcategory');
-      } else if (item.subCategoryId) {
-        setSelectedLevel('subcategory');
-      } else {
-        setSelectedLevel('category');
-      }
-
       setMessage({ type: 'info', text: 'Data loaded for editing' });
     } catch (err) {
+      console.error('Error loading data:', err);
       setMessage({ type: 'error', text: 'Failed to load data' });
       setTimeout(() => navigate('/serviceSec3-table'), 2000);
     } finally {
@@ -263,6 +275,17 @@ const ServiceSec3Form = () => {
       setSaving(false);
     }
   };
+
+  // ADDED: Loading state
+  if (loading) {
+    return (
+      <div className="max-w-4xl mx-auto p-6 bg-white rounded-lg shadow-lg">
+        <div className="flex items-center justify-center h-64">
+          <div className="text-xl text-gray-600">Loading data...</div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="max-w-4xl mx-auto p-6 bg-white rounded-lg shadow-lg">

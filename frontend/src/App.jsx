@@ -374,8 +374,6 @@ function App() {
 
             // Career Option 
             { path: '/createCareerOption', element: <Suspense fallback={<LoadingFallback />}><CareerAdminForm /></Suspense> },
-
-
             //testimonials Policy Route
             { path: 'add-testimonials', element: <Suspense fallback={<LoadingFallback />}><CreateTestimonials /></Suspense> },
             { path: 'testimonials', element: <Suspense fallback={<LoadingFallback />}><TestimonialsTable /></Suspense> },
