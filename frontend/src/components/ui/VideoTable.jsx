@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { Button } from "@/components/ui/button";
-import { Edit, Trash2, Plus } from 'lucide-react';
+import { Edit, Trash2, Plus, Eye } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
 const VideoTable = () => {
   const [videos, setVideos] = useState([]);
+  const [selectedVideo, setSelectedVideo] = useState(null);
   const navigate = useNavigate();
 
   const fetchVideos = async () => {
@@ -36,6 +37,13 @@ const VideoTable = () => {
     navigate(`/video-form?id=${id}`);
   };
 
+  const truncateText = (text, maxLength = 50) => {
+    const strippedText = text.replace(/<[^>]*>/g, '');
+    return strippedText.length > maxLength 
+      ? strippedText.substring(0, maxLength) + '...' 
+      : strippedText;
+  };
+
   return (
     <div className="p-6">
       <div className="flex justify-between items-center mb-6">
@@ -52,6 +60,7 @@ const VideoTable = () => {
               <th className="px-6 py-3">Heading</th>
               <th className="px-6 py-3">Slug</th>
               <th className="px-6 py-3">Subheading</th>
+              <th className="px-6 py-3">Description</th>
               <th className="px-6 py-3">Image</th>
               <th className="px-6 py-3">Video</th>
               <th className="px-6 py-3">Actions</th>
@@ -62,8 +71,29 @@ const VideoTable = () => {
               videos.map((video) => (
                 <tr key={video._id} className="bg-white border-b hover:bg-gray-50">
                   <td className="px-6 py-4 font-medium">{video.heading}</td>
-                  <td className="px-6 py-4">{video.slug}</td>
+                  <td className="px-6 py-4">
+                    <code className="bg-gray-100 px-2 py-1 rounded text-xs">
+                      {video.slug}
+                    </code>
+                  </td>
                   <td className="px-6 py-4">{video.subheading}</td>
+                  <td className="px-6 py-4 max-w-xs">
+                    <div className="flex items-center gap-2">
+                      <span className="text-gray-700">
+                        {truncateText(video.description || '', 40)}
+                      </span>
+                      {video.description && (
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => setSelectedVideo(video)}
+                          className="p-1 h-6"
+                        >
+                          <Eye className="h-3 w-3" />
+                        </Button>
+                      )}
+                    </div>
+                  </td>
                   <td className="px-6 py-4">
                     {video.image ? (
                       <img
@@ -99,12 +129,45 @@ const VideoTable = () => {
               ))
             ) : (
               <tr>
-                <td colSpan="5" className="px-6 py-4 text-center text-gray-500">No videos found.</td>
+                <td colSpan="7" className="px-6 py-4 text-center text-gray-500">
+                  No videos found.
+                </td>
               </tr>
             )}
           </tbody>
         </table>
       </div>
+
+      {/* Description Preview Modal */}
+      {selectedVideo && (
+        <div 
+          className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
+          onClick={() => setSelectedVideo(null)}
+        >
+          <div 
+            className="bg-white rounded-lg shadow-lg max-w-2xl w-full mx-4 max-h-[80vh] overflow-auto"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="p-6">
+              <div className="flex justify-between items-start mb-4">
+                <h2 className="text-xl font-bold">{selectedVideo.heading}</h2>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setSelectedVideo(null)}
+                  className="text-gray-500 hover:text-gray-700"
+                >
+                  ✕
+                </Button>
+              </div>
+              <div 
+                className="prose prose-sm max-w-none"
+                dangerouslySetInnerHTML={{ __html: selectedVideo.description }}
+              />
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

@@ -28,6 +28,26 @@ const VideoForm = () => {
     image: null
   });
 
+  // ReactQuill modules configuration
+  const modules = {
+    toolbar: [
+      [{ 'header': [1, 2, 3, 4, 5, 6, false] }],
+      ['bold', 'italic', 'underline', 'strike'],
+      [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+      [{ 'align': [] }],
+      ['link', 'image'],
+      ['clean']
+    ],
+  };
+
+  const formats = [
+    'header',
+    'bold', 'italic', 'underline', 'strike',
+    'list', 'bullet',
+    'align',
+    'link', 'image'
+  ];
+
   useEffect(() => {
     if (id) {
       const fetchVideo = async () => {
@@ -41,7 +61,7 @@ const VideoForm = () => {
             description: data.description,
             alt: data.alt,
             imgTitle: data.imgTitle,
-            video: null, // Keep null to detect new uploads
+            video: null,
             image: null
           });
           setPreview({
@@ -60,8 +80,12 @@ const VideoForm = () => {
     const { name, value } = e.target;
     setFormData(prev => {
       const newData = { ...prev, [name]: value };
+      // Auto-generate slug from heading when creating new video
       if (name === 'heading' && !id) {
-        newData.slug = value.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '');
+        newData.slug = value
+          .toLowerCase()
+          .replace(/[^a-z0-9]+/g, '-')
+          .replace(/(^-|-$)+/g, '');
       }
       return newData;
     });
@@ -111,62 +135,135 @@ const VideoForm = () => {
   };
 
   return (
-    <div className="p-6 max-w-2xl mx-auto bg-white rounded-lg shadow mt-10">
+    <div className="p-6 max-w-3xl mx-auto bg-white rounded-lg shadow mt-10">
       <h2 className="text-2xl font-bold mb-6">{id ? 'Edit Video' : 'Add New Video'}</h2>
-      <form onSubmit={handleSubmit} className="space-y-4">
+      <form onSubmit={handleSubmit} className="space-y-6">
         
         <div>
-          <Label htmlFor="heading">Heading</Label>
-          <Input id="heading" name="heading" value={formData.heading} onChange={handleChange} required />
-        </div>
-
-        <div>
-          <Label htmlFor="slug">Slug</Label>
-          <Input id="slug" name="slug" value={formData.slug} onChange={handleChange} required />
-        </div>
-
-        <div>
-          <Label htmlFor="subheading">Subheading</Label>
-          <Input id="subheading" name="subheading" value={formData.subheading} onChange={handleChange} required />
-        </div>
-
-        <div>
-          <Label htmlFor="description">Description</Label>
-          <ReactQuill
-            theme="snow"
-            value={formData.description}
-            onChange={handleDescriptionChange}
-            className="h-60 mb-12"
+          <Label htmlFor="heading">Heading *</Label>
+          <Input 
+            id="heading" 
+            name="heading" 
+            value={formData.heading} 
+            onChange={handleChange} 
+            placeholder="Enter video heading"
+            required 
           />
         </div>
 
-        <div className="grid grid-cols-2 gap-4">
+        <div>
+          <Label htmlFor="slug">Slug *</Label>
+          <Input 
+            id="slug" 
+            name="slug" 
+            value={formData.slug} 
+            onChange={handleChange}
+            placeholder="url-friendly-slug"
+            required 
+          />
+          <p className="text-xs text-gray-500 mt-1">
+            Auto-generated from heading. Edit if needed.
+          </p>
+        </div>
+
+        <div>
+          <Label htmlFor="subheading">Subheading *</Label>
+          <Input 
+            id="subheading" 
+            name="subheading" 
+            value={formData.subheading} 
+            onChange={handleChange}
+            placeholder="Enter video subheading"
+            required 
+          />
+        </div>
+
+        <div>
+          <Label htmlFor="description">Description *</Label>
+          <div className="mt-2">
+            <ReactQuill
+              theme="snow"
+              value={formData.description}
+              onChange={handleDescriptionChange}
+              modules={modules}
+              formats={formats}
+              placeholder="Write a detailed description..."
+              style={{ height: '250px', marginBottom: '50px' }}
+            />
+          </div>
+        </div>
+
+        <div className="grid grid-cols-2 gap-4 pt-8">
           <div>
             <Label htmlFor="alt">Alt Text</Label>
-            <Input id="alt" name="alt" value={formData.alt} onChange={handleChange} />
+            <Input 
+              id="alt" 
+              name="alt" 
+              value={formData.alt} 
+              onChange={handleChange}
+              placeholder="Image alt text"
+            />
           </div>
           <div>
             <Label htmlFor="imgTitle">Image Title</Label>
-            <Input id="imgTitle" name="imgTitle" value={formData.imgTitle} onChange={handleChange} />
+            <Input 
+              id="imgTitle" 
+              name="imgTitle" 
+              value={formData.imgTitle} 
+              onChange={handleChange}
+              placeholder="Image title"
+            />
           </div>
         </div>
 
         <div>
-          <Label htmlFor="image">Upload Image (Optional)</Label>
-          <Input id="image" type="file" name="image" accept="image/*" onChange={handleFileChange} />
-          {preview.image && <img src={preview.image} alt="Preview" className="mt-2 h-32 object-cover rounded" />}
-        </div>
-
-        <div>
-          <Label htmlFor="video">Upload Video (Optional)</Label>
-          <Input id="video" type="file" name="video" accept="video/*" onChange={handleFileChange} />
-          {preview.video && (
-            <video src={preview.video} controls className="mt-2 h-32 object-cover rounded" />
+          <Label htmlFor="image">Upload Image</Label>
+          <Input 
+            id="image" 
+            type="file" 
+            name="image" 
+            accept="image/*" 
+            onChange={handleFileChange}
+            className="mt-2"
+          />
+          {preview.image && (
+            <div className="mt-3">
+              <img 
+                src={preview.image} 
+                alt="Preview" 
+                className="h-40 w-auto object-cover rounded border"
+              />
+            </div>
           )}
         </div>
 
-        <div className="flex justify-end gap-4 mt-6">
-          <Button type="button" variant="outline" onClick={() => navigate('/video-table')}>
+        <div>
+          <Label htmlFor="video">Upload Video</Label>
+          <Input 
+            id="video" 
+            type="file" 
+            name="video" 
+            accept="video/*" 
+            onChange={handleFileChange}
+            className="mt-2"
+          />
+          {preview.video && (
+            <div className="mt-3">
+              <video 
+                src={preview.video} 
+                controls 
+                className="h-40 w-auto object-cover rounded border"
+              />
+            </div>
+          )}
+        </div>
+
+        <div className="flex justify-end gap-4 pt-6">
+          <Button 
+            type="button" 
+            variant="outline" 
+            onClick={() => navigate('/video-table')}
+          >
             Cancel
           </Button>
           <Button type="submit">

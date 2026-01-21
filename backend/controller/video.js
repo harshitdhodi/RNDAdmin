@@ -58,6 +58,17 @@ exports.getVideoById = async (req, res) => {
   }
 };
 
+// Get a single video entry by Slug
+exports.getVideoBySlug = async (req, res) => {
+  try {
+    const video = await Video.findOne({ slug: req.query.slug });
+    if (!video) return res.status(404).json({ message: 'Video not found' });
+    res.status(200).json(video);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
 // Update a video entry by ID
 exports.updateVideo = async (req, res) => {
   try {
