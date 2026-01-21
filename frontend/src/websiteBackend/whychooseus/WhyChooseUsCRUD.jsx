@@ -11,6 +11,35 @@ import {
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
 
+const modules = {
+  toolbar: [
+    [{ 'header': [1, 2, 3, 4, 5, 6, false] }],
+    [{ 'font': [] }],
+    [{ 'size': ['small', false, 'large', 'huge'] }],
+    ['bold', 'italic', 'underline', 'strike'],
+    [{ 'color': [] }, { 'background': [] }],
+    [{ 'script': 'sub'}, { 'script': 'super' }],
+    [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+    [{ 'indent': '-1'}, { 'indent': '+1' }],
+    [{ 'align': [] }], // This adds left, center, right, justify alignment
+    ['blockquote', 'code-block'],
+    ['link', 'image', 'video'],
+    ['clean'] // Remove formatting
+  ]
+};
+
+// Define formats
+const formats = [
+  'header', 'font', 'size',
+  'bold', 'italic', 'underline', 'strike',
+  'color', 'background',
+  'script',
+  'list', 'bullet', 'indent',
+  'align', // Include align in formats
+  'blockquote', 'code-block',
+  'link', 'image', 'video'
+];
+
 const WhyChooseUsCRUD = () => {
   const [data, setData] = useState([]);
   const [categories, setCategories] = useState([]);
@@ -572,16 +601,9 @@ const WhyChooseUsCRUD = () => {
                       });
                     }}
                     theme="snow"
-                    modules={{
-                      toolbar: [
-                        [{ header: [1, 2, 3, false] }],
-                        ["bold", "italic", "underline", "strike"],
-                        [{ list: "ordered" }, { list: "bullet" }],
-                        ["link"],
-                        ["clean"],
-                      ],
-                    }}
                     className="bg-white rounded-lg"
+                      modules={modules}
+  formats={formats}
                   />
                 </div>
 

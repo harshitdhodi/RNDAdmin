@@ -3,6 +3,38 @@ import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
 import { useNavigate, useParams } from 'react-router-dom';
 
+
+// Define modules
+const modules = {
+  toolbar: [
+    [{ 'header': [1, 2, 3, 4, 5, 6, false] }],
+    [{ 'font': [] }],
+    [{ 'size': ['small', false, 'large', 'huge'] }],
+    ['bold', 'italic', 'underline', 'strike'],
+    [{ 'color': [] }, { 'background': [] }],
+    [{ 'script': 'sub'}, { 'script': 'super' }],
+    [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+    [{ 'indent': '-1'}, { 'indent': '+1' }],
+    [{ 'align': [] }], // This adds left, center, right, justify alignment
+    ['blockquote', 'code-block'],
+    ['link', 'image', 'video'],
+    ['clean'] // Remove formatting
+  ]
+};
+
+// Define formats
+const formats = [
+  'header', 'font', 'size',
+  'bold', 'italic', 'underline', 'strike',
+  'color', 'background',
+  'script',
+  'list', 'bullet', 'indent',
+  'align', // Include align in formats
+  'blockquote', 'code-block',
+  'link', 'image', 'video'
+];
+
+
 const ServiceSec1Form = () => {
   const [categories, setCategories] = useState([]);
   const [subCategories, setSubCategories] = useState([]);
@@ -452,17 +484,20 @@ const ServiceSec1Form = () => {
               <label className="block text-sm font-semibold text-gray-700 mb-2">
                 Details
               </label>
-              <ReactQuill
-                value={formData.details}
-                onChange={(value) =>
-                  setFormData((prev) => ({
-                    ...prev,
-                    details: value,
-                  }))
-                }
-                placeholder="Enter detailed description"
-                className="bg-white rounded-lg"
-              />
+                <ReactQuill
+                theme='snow'
+                  value={formData.details}
+                  onChange={(value) =>
+                    setFormData((prev) => ({
+                      ...prev,
+                      details: value,
+                    }))
+                  }
+                   modules={modules}
+  formats={formats}
+                  placeholder="Enter detailed description"
+                  className="bg-white rounded-lg"
+                />
             </div>
 
             <div>
