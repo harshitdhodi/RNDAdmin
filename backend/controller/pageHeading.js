@@ -6,7 +6,7 @@ const getpageHeading = async (req, res) => {
   try {
     const pageHeading = await PageHeadings.findOne({ pageType: pageType });
     if (pageHeading) {
-      res.status(200).json({ heading: pageHeading.heading, subheading: pageHeading.subheading,photo:pageHeading.photo,alt:pageHeading.alt,imgTitle:pageHeading.imgTitle });
+      res.status(200).json({ heading: pageHeading.heading, subheading: pageHeading.subheading, detail: pageHeading.detail, photo:pageHeading.photo,alt:pageHeading.alt,imgTitle:pageHeading.imgTitle });
     }
 
   } catch (err) {
@@ -55,7 +55,7 @@ const getAllPageHeadings = async (req, res) => {
 
 const updatePageHeading = async (req, res) => {
   const pageType = req.query.pageType;
-  const { heading, subheading, alt, imgTitle } = req.body;
+  const { heading, subheading, detail, alt, imgTitle } = req.body;
   let photo;
 
   // Check if a new file was uploaded
@@ -74,6 +74,7 @@ const updatePageHeading = async (req, res) => {
         pageType,
         heading,
         subheading,
+        detail,
         alt,
         imgTitle,
         photo: photo || '', // Set photo only if it's uploaded
@@ -85,6 +86,7 @@ const updatePageHeading = async (req, res) => {
         message: `Page heading created for ${pageType}`,
         heading: pageHeading.heading,
         subheading: pageHeading.subheading,
+        detail: pageHeading.detail,
         photo: pageHeading.photo,
         alt: pageHeading.alt,
         imgTitle: pageHeading.imgTitle,
@@ -94,6 +96,7 @@ const updatePageHeading = async (req, res) => {
     // Update existing page heading
     if (heading) pageHeading.heading = heading;
     if (subheading) pageHeading.subheading = subheading;
+    if (detail) pageHeading.detail = detail;
     if (alt) pageHeading.alt = alt;
     if (imgTitle) pageHeading.imgTitle = imgTitle; 
 
@@ -108,6 +111,7 @@ const updatePageHeading = async (req, res) => {
       message: `Page heading updated for ${pageType}`,
       heading: pageHeading.heading,
       subheading: pageHeading.subheading,
+      detail: pageHeading.detail,
       alt: pageHeading.alt,
       imgTitle: pageHeading.imgTitle,
       photo: pageHeading.photo,
@@ -119,7 +123,7 @@ const updatePageHeading = async (req, res) => {
 };
 
 const addPageHeading = async (req, res) => {
-  const { pageType, heading, subheading, alt, imgTitle } = req.body;
+  const { pageType, heading, subheading, detail, alt, imgTitle } = req.body;
   let photo;
 
   // Handle image upload via multer
@@ -140,6 +144,7 @@ const addPageHeading = async (req, res) => {
       pageType,
       heading,
       subheading,
+      detail,
       alt,
       imgTitle,
       photo: photo || '',
@@ -179,7 +184,7 @@ const getPageHeadingById = async (req, res) => {
 
 const updatePageHeadingById = async (req, res) => {
   const { id } = req.params;
-  const { heading, subheading, alt, imgTitle } = req.body;
+  const { heading, subheading, detail, alt, imgTitle } = req.body;
   let photo;
 
   // Check if a new image was uploaded
@@ -197,6 +202,7 @@ const updatePageHeadingById = async (req, res) => {
     // Update fields only if they are provided
     if (heading) pageHeading.heading = heading;
     if (subheading) pageHeading.subheading = subheading;
+    if (detail) pageHeading.detail = detail;
     if (alt) pageHeading.alt = alt;
     if (imgTitle) pageHeading.imgTitle = imgTitle;
     if (photo) pageHeading.photo = photo;

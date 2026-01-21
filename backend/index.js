@@ -22,7 +22,7 @@ app.use(compression({ threshold: 1024 }));
 app.get('/images/:filename', async (req, res) => {
   const { filename } = req.params;
   const { w = 1200, q = 80, device = 'desktop' } = req.query;
-  const imagePath = path.join(__dirname, 'public', 'download', filename);
+  const imagePath = path.join(__dirname, 'uploads', filename);
 
   try {
     if (!fs.existsSync(imagePath)) return res.status(404).send('Image not found');
@@ -48,6 +48,7 @@ app.get('/images/:filename', async (req, res) => {
 
 // Static file serving
 app.use(express.static(path.join(__dirname, 'public'), { maxAge: 0 }));
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 app.use(express.static(path.join(__dirname, 'dist'), {
   maxAge: 0,
@@ -87,6 +88,7 @@ const apiRoutes = [
   ['/api/aboutus', require('./route/aboutUs')],
   ['/api/contactForm', require('./route/contactForm')],
   ['/api/chemicalMail', require('./route/chemicalMail')],
+  ['/api/heroSection', require('./route/heroSectionRoute')],
   ['/api/career', require('./route/carrer')],
   ['/api/worldwide', require('./route/worldwide')],
   ['/api/contactinfo', require('./route/contactinfo')],
@@ -111,13 +113,20 @@ const apiRoutes = [
   ['/api/serviceSec3', require('./route/serviceSec3.js')],
   ['/api/testimonial', require('./route/testimonial')],
   ['/api/why-choose-us', require('./route/whyChooseUs')],
-  ['/api/career-option', require('./route/careerOption')]
+  ['/api/career-option', require('./route/careerOption')],
+  ['/api/counter', require('./route/counter')],
+  ['/api/video', require('./route/video')],
+  ['/api/footer', require('./route/footer')]
 ];
 
 // Apply cache middleware to all API routes
 apiRoutes.forEach(([route, handler]) => {
   app.use(route, handler);
 });
+
+// Hero Section Routes
+const heroSectionRoute = require('./route/heroSectionRoute');
+app.use('/api/hero-sections', heroSectionRoute);
 
 // Catch-all route for SPA
 app.get('*', (req, res) => {

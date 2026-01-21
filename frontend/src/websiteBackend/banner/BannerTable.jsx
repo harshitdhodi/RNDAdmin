@@ -35,15 +35,29 @@ const BannerTable = () => {
     },
     {
       title: 'Title',
-      dataIndex: 'imgName',
+      dataIndex: 'title',
       key: 'title',
-      width: '20%',
+      width: '15%',
+    },
+    {
+      title: 'Heading',
+      dataIndex: 'heading',
+      key: 'heading',
+      width: '15%',
+      render: (text) => text || '-',
+    },
+    {
+      title: 'Subheading',
+      dataIndex: 'subheading',
+      key: 'subheading',
+      width: '15%',
+      render: (text) => text || '-',
     },
     {
       title: 'Page Slug',
       dataIndex: 'pageSlug',
       key: 'pageSlug',
-      width: '20%',
+      width: '15%',
     },
     {
       title: 'Actions',

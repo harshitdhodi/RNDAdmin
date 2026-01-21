@@ -12,7 +12,7 @@ router.get('/:id', requireAuth, getPageHeadingById);
 router.put('/updateHeading/:id', requireAuth, uploadLogo, updatePageHeadingById);
 router.put('/updateHeading', requireAuth, uploadLogo, updatePageHeading);
 router.delete('/delete', deletePageHeading,);
-/**
+/**service-category
  * @swagger
  * tags: 
  *   name: PageHeadings 
@@ -46,6 +46,9 @@ router.delete('/delete', deletePageHeading,);
  *                 subheading:
  *                   type: string
  *                   description: The subheading of the page
+ *                 detail:
+ *                   type: string
+ *                   description: The detail of the page
  *       404:
  *         description: Page heading not found
  *       500:
@@ -78,6 +81,9 @@ router.delete('/delete', deletePageHeading,);
  *               subheading:
  *                 type: string
  *                 description: The subheading to update or create
+ *               detail:
+ *                 type: string
+ *                 description: The detail to update or create
  *     responses:
  *       200:
  *         description: Successfully updated page heading
@@ -92,6 +98,9 @@ router.delete('/delete', deletePageHeading,);
  *                 subheading:
  *                   type: string
  *                   description: The updated subheading of the page
+ *                 detail:
+ *                   type: string
+ *                   description: The updated detail of the page
  *       201:
  *         description: Page heading created successfully
  *       500:

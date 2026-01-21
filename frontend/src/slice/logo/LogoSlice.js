@@ -22,8 +22,22 @@ export const logoApi = createApi({
                 method: 'PUT',
                 body: logoData
             }),
-            invalidatesTags: ['Logo'],
-            transformResponse: (response) => response.data
+            // Optimistically update the 'getLogo' cache after a successful update
+            async onQueryStarted(arg, { dispatch, queryFulfilled }) {
+                try {
+                    const { data: updateResult } = await queryFulfilled;
+                    const updatedLogo = updateResult.data;
+                    // Update the 'getLogo' query cache with the new data
+                    dispatch(
+                        logoApi.util.updateQueryData('getLogo', undefined, (draft) => {
+                            Object.assign(draft, updatedLogo);
+                        })
+                    );
+                } catch {
+                    // The queryFulfilled promise will reject on an error, but we don't need to handle it here
+                    // as the component's error handling will take over.
+                }
+            }
         }),
 
         // Delete Logo

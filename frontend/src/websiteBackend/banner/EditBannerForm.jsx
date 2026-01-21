@@ -8,6 +8,7 @@ import { UploadOutlined, HomeOutlined } from '@ant-design/icons';
 import axios from 'axios';
 
 const { Option } = Select;
+const { TextArea } = Input;
 
 const EditBannerForm = () => {
     const { id } = useParams();
@@ -47,6 +48,10 @@ const EditBannerForm = () => {
                 details: banner.details,
                 imgName: banner.imgName,
                 pageSlug: banner.pageSlug || '',
+                heading: banner.heading,
+                subheading: banner.subheading,
+                description: banner.description,
+                marque: banner.marque,
                 image: banner.image
                     ? [{ name: banner.imgName, url: `/api/image/download/${banner.image}` }]
                     : [],
@@ -90,6 +95,10 @@ const EditBannerForm = () => {
             formData.append('altName', values.altName.trim());
             formData.append('details', values.details?.trim() || '');
             formData.append('pageSlug', values.pageSlug);
+            formData.append('heading', values.heading || '');
+            formData.append('subheading', values.subheading || '');
+            formData.append('description', values.description || '');
+            formData.append('marque', values.marque || '');
 
             await updateBanner({
                 id,
@@ -132,6 +141,10 @@ const EditBannerForm = () => {
                         details: banner?.details || '',
                         imgName: banner?.imgName || '',
                         pageSlug: banner?.pageSlug || '',
+                        heading: banner?.heading || '',
+                        subheading: banner?.subheading || '',
+                        description: banner?.description || '',
+                        marque: banner?.marque || '',
                         image: banner?.image
                             ? [{ name: banner.imgName, url: `/api/image/download/${banner.image}` }]
                             : [],
@@ -204,6 +217,28 @@ const EditBannerForm = () => {
                         rules={[{ required: true, message: 'Please input alt name!' }]}
                     >
                         <Input />
+                    </Form.Item>
+
+                    <Form.Item
+                        name="heading"
+                        label="Heading"
+                    >
+                        <Input />
+                    </Form.Item>
+
+                    <Form.Item
+                        name="subheading"
+                        label="Subheading"
+                    >
+                        <Input />
+                    </Form.Item>
+
+                    <Form.Item name="marque" label="Marque Text">
+                        <Input />
+                    </Form.Item>
+
+                    <Form.Item name="description" label="Description">
+                        <TextArea rows={4} />
                     </Form.Item>
 
                     <Form.Item

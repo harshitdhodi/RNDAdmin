@@ -10,6 +10,9 @@ const PageHeadingSchema = new mongoose.Schema({
   subheading: {
     type: String
   },
+  detail: {
+    type: String
+  },
   photo: {
     type: String,
   },
