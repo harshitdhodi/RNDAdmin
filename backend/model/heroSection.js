@@ -1,14 +1,14 @@
 const mongoose = require('mongoose');
 
 const socialMediaSchema = new mongoose.Schema({
-    platform: { type: String, required: true }, // facebook, twitter, instagram, linkedin, youtube, etc
-    url: { type: String, required: true },
+    platform: { type: String }, // facebook, twitter, instagram, linkedin, youtube, etc
+    url: { type: String },
     icon: { type: String }, // optional icon class or name
     _id: false
 });
 
 const marqueeSchema = new mongoose.Schema({
-    text: { type: String, required: true },
+    title: { type: String },
     speed: { type: Number, default: 50 }, // pixels per second
     backgroundColor: { type: String, default: '#000000' },
     textColor: { type: String, default: '#ffffff' },
@@ -17,9 +17,12 @@ const marqueeSchema = new mongoose.Schema({
 });
 
 const heroSectionSchema = new mongoose.Schema({
-    title: [{ type: String, required: true }],
-    imageUrl: { type: String, required: true },
-    description: { type: String, required: true },
+    title: [{ type: String }],
+    subtitle: { type: String },
+    imageUrl: { type: String },
+    description: { type: String },
+    buttonText: { type: String },
+    buttonLink: { type: String },
     marquee: [marqueeSchema],
     socialMediaLinks: [socialMediaSchema],
     createdAt: { type: Date, default: Date.now },

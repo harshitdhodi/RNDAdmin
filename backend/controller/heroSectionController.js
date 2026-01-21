@@ -25,7 +25,7 @@ exports.createHeroSection = async (req, res) => {
         await heroSection.save();
         res.status(201).json({ success: true, data: heroSection });
     } catch (error) {
-        res.status(400).json({ success: false, message: error.message });
+        res.status(500).json({ success: false, message: error.message });
     }
 };
 
@@ -76,14 +76,14 @@ exports.updateHeroSection = async (req, res) => {
         const heroSection = await HeroSection.findByIdAndUpdate(
             req.params.id,
             { ...req.body, updatedAt: Date.now() },
-            { new: true, runValidators: true }
+            { new: true, runValidators: false } // Disable validation to allow partial updates if needed
         );
         if (!heroSection) {
             return res.status(404).json({ success: false, message: 'Hero section not found' });
         }
         res.status(200).json({ success: true, data: heroSection });
     } catch (error) {
-        res.status(400).json({ success: false, message: error.message });
+        res.status(500).json({ success: false, message: error.message });
     }
 };
 
