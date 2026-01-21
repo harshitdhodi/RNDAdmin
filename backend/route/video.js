@@ -27,6 +27,7 @@ const uploadFields = upload.fields([
 router.post('/createVideo', uploadFields, videoController.createVideo);
 router.get('/getVideos', videoController.getVideos);
 router.get('/getVideoById', videoController.getVideoById);
+router.get('/getVideoBySlug', videoController.getVideoBySlug);
 router.put('/updateVideo', uploadFields, videoController.updateVideo);
 router.delete('/deleteVideo', videoController.deleteVideo);
 

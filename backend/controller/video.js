@@ -5,7 +5,7 @@ const path = require('path');
 // Create a new video entry
 exports.createVideo = async (req, res) => {
   try {
-    const { heading, subheading, description, alt, imgTitle } = req.body;
+    const { heading, subheading, description, alt, imgTitle, slug } = req.body;
     
     let video = null;
     let image = null;
@@ -21,6 +21,7 @@ exports.createVideo = async (req, res) => {
 
     const newVideo = new Video({
       heading,
+      slug,
       subheading,
       description,
       video,
@@ -57,18 +58,29 @@ exports.getVideoById = async (req, res) => {
   }
 };
 
+// Get a single video entry by Slug
+exports.getVideoBySlug = async (req, res) => {
+  try {
+    const video = await Video.findOne({ slug: req.query.slug });
+    if (!video) return res.status(404).json({ message: 'Video not found' });
+    res.status(200).json(video);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
 // Update a video entry by ID
 exports.updateVideo = async (req, res) => {
   try {
     const { id } = req.query;
-    const { heading, subheading, description, alt, imgTitle } = req.body;
+    const { heading, subheading, description, alt, imgTitle, slug } = req.body;
     
     const videoDoc = await Video.findById(id);
     if (!videoDoc) {
       return res.status(404).json({ message: 'Video not found' });
     }
 
-    const updateData = { heading, subheading, description, alt, imgTitle };
+    const updateData = { heading, subheading, description, alt, imgTitle, slug };
 
     // Handle file updates
     if (req.files) {

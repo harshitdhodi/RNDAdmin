@@ -36,7 +36,7 @@ const EditServiceCategory = () => {
       if (categoryId && subCategoryId && subSubCategoryId) {
         urls = `/api/services/getSpecificSubSubcategory?categoryId=${categoryId}&subCategoryId=${subCategoryId}&subSubCategoryId=${subSubCategoryId}`;
       } else if (categoryId && subCategoryId) {
-        urls = `/api/services/getSpecificSubcategory?categoryId=${categoryId}&subCategoryId=${subCategoryId}`;
+        urls = `/api/service/getSpecificSubcategory?categoryId=${categoryId}&subCategoryId=${subCategoryId}`;
       } else if (categoryId) {
         urls = `/api/services/getSpecificCategory?categoryId=${categoryId}`;
       }
@@ -97,6 +97,7 @@ const EditServiceCategory = () => {
   
   const handleDeleteImage = () => {
     setPhoto(null);
+    setCurrentPhoto("");
     setAltText("");
     setImgtitle("");
   };
@@ -154,10 +155,8 @@ const EditServiceCategory = () => {
     formData.append('priority', priority);
     formData.append('status', status);
 
-    if (photo) {
+    if (photo instanceof File) {
       formData.append("photo", photo);
-    } else {
-      formData.append("photo", currentPhoto);
     }
 
     if (categoryId && subCategoryId && subSubCategoryId) {
@@ -290,14 +289,20 @@ const EditServiceCategory = () => {
           name="photo"
           id="photo"
           onChange={handlePhotoChange}
-          className="border rounded focus:outline-none"
+          className="hidden"
           accept="image/*"
         />
+        <label
+          htmlFor="photo"
+          className="px-4 py-2 bg-gray-200 text-gray-700 rounded cursor-pointer hover:bg-gray-300 transition inline-block"
+        >
+          {photo ? photo.name : "Choose File"}
+        </label>
 
         {(photo || currentPhoto) && (
           <div className="mt-2 w-56 relative group">
             <img
-              src={photo ? URL.createObjectURL(photo) : `/api/logo/download/${currentPhoto}`}
+              src={photo instanceof File ? URL.createObjectURL(photo) : `/api/image/download/${currentPhoto}`}
               alt={altText}
               className="h-32 w-56 object-cover"
             />

@@ -10,7 +10,7 @@ const getServiceSec1 = async (req, res) => {
     let query = {};
     
     if (subSubCategoryId) {
-      query = { subSubCategoryId };
+      query = { subSubCategoryId }; 
     } else if (subCategoryId) {
       query = { subCategoryId };
     } else if (categoryId) {

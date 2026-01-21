@@ -25,6 +25,22 @@ const logoSchema = new mongoose.Schema(
     favIconAltName: {
         type: String,
        
+    },
+    footerLogo: {
+      type: String,
+     
+    },
+    footerLogoName: {
+      type: String,
+     
+    },
+    footerLogoAltName: {
+      type: String,
+     
+    },
+    tagline: {
+      type: String,
+     
       },
   },
   {

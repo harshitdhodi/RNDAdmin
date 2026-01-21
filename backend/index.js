@@ -88,6 +88,7 @@ const apiRoutes = [
   ['/api/aboutus', require('./route/aboutUs')],
   ['/api/contactForm', require('./route/contactForm')],
   ['/api/chemicalMail', require('./route/chemicalMail')],
+  ['/api/heroSection', require('./route/heroSectionRoute')],
   ['/api/career', require('./route/carrer')],
   ['/api/worldwide', require('./route/worldwide')],
   ['/api/contactinfo', require('./route/contactinfo')],
@@ -122,6 +123,10 @@ const apiRoutes = [
 apiRoutes.forEach(([route, handler]) => {
   app.use(route, handler);
 });
+
+// Hero Section Routes
+const heroSectionRoute = require('./route/heroSectionRoute');
+app.use('/api/hero-sections', heroSectionRoute);
 
 // Catch-all route for SPA
 app.get('*', (req, res) => {
