@@ -24,7 +24,7 @@ const HeroSectionForm = () => {
 
   const form = useForm({
     defaultValues: {
-      title: "",
+      title: [{ text: "" }],
       subtitle: "",
       description: "",
       buttonText: "",
@@ -33,6 +33,11 @@ const HeroSectionForm = () => {
       marquee: [],
       socialMediaLinks: [],
     },
+  });
+
+  const { fields: titleFields, append: appendTitle, remove: removeTitle } = useFieldArray({
+    control: form.control,
+    name: "title",
   });
 
   const { fields: marqueeFields, append: appendMarquee, remove: removeMarquee } = useFieldArray({
@@ -52,7 +57,7 @@ const HeroSectionForm = () => {
           const response = await axios.get(`/api/heroSection/${id}`);
           const data = response.data.data || response.data;
           form.reset({
-            title: data.title || "",
+            title: Array.isArray(data.title) ? data.title.map(t => ({ text: t })) : [{ text: data.title || "" }],
             subtitle: data.subtitle || "",
             description: data.description || "",
             buttonText: data.buttonText || "",
@@ -74,7 +79,7 @@ const HeroSectionForm = () => {
   const onSubmit = async (values) => {
     setLoading(true);
     const formData = new FormData();
-    formData.append("title", values.title);
+    formData.append("title", JSON.stringify(values.title.map(t => t.text)));
     formData.append("subtitle", values.subtitle);
     formData.append("description", values.description);
     formData.append("buttonText", values.buttonText);
@@ -115,19 +120,34 @@ const HeroSectionForm = () => {
         <CardContent>
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-              <FormField
-                control={form.control}
-                name="title"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Title</FormLabel>
-                    <FormControl>
-                      <Input placeholder="Enter title" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+              <div className="space-y-4 border p-4 rounded-md">
+                <div className="flex justify-between items-center">
+                  <FormLabel>Titles</FormLabel>
+                  <Button type="button" variant="outline" size="sm" onClick={() => appendTitle({ text: "" })}>
+                    <Plus className="h-4 w-4 mr-2" /> Add Title
+                  </Button>
+                </div>
+                {titleFields.map((field, index) => (
+                  <div key={field.id} className="flex gap-2 items-end">
+                    <FormField
+                      control={form.control}
+                      name={`title.${index}.text`}
+                      render={({ field }) => (
+                        <FormItem className="flex-1">
+                          <FormControl>
+                            <Input placeholder="Enter title" {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <Button type="button" variant="destructive" size="icon" onClick={() => removeTitle(index)}>
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
+                  </div>
+                ))}
+              </div>
+
               <FormField
                 control={form.control}
                 name="subtitle"

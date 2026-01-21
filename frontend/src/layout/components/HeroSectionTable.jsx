@@ -81,7 +81,9 @@ const HeroSectionTable = () => {
                         <img src={`/api/image/download/${item.imageUrl}`} alt={item.title} className="h-12 w-20 object-cover rounded" />
                       )}
                     </TableCell>
-                    <TableCell className="font-medium">{item.title}</TableCell>
+                    <TableCell className="font-medium">
+                      {Array.isArray(item.title) ? item.title.join(", ") : item.title}
+                    </TableCell>
                     <TableCell>{item.subtitle}</TableCell>
                     <TableCell className="text-right">
                       <div className="flex justify-end gap-2">

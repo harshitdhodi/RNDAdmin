@@ -13,6 +13,13 @@ exports.createHeroSection = async (req, res) => {
         if (req.body.socialMediaLinks && typeof req.body.socialMediaLinks === 'string') {
             req.body.socialMediaLinks = JSON.parse(req.body.socialMediaLinks);
         }
+        if (req.body.title && typeof req.body.title === 'string') {
+            try {
+                req.body.title = JSON.parse(req.body.title);
+            } catch (error) {
+                req.body.title = [req.body.title];
+            }
+        }
 
         const heroSection = new HeroSection(req.body);
         await heroSection.save();
@@ -57,6 +64,13 @@ exports.updateHeroSection = async (req, res) => {
         }
         if (req.body.socialMediaLinks && typeof req.body.socialMediaLinks === 'string') {
             req.body.socialMediaLinks = JSON.parse(req.body.socialMediaLinks);
+        }
+        if (req.body.title && typeof req.body.title === 'string') {
+            try {
+                req.body.title = JSON.parse(req.body.title);
+            } catch (error) {
+                req.body.title = [req.body.title];
+            }
         }
 
         const heroSection = await HeroSection.findByIdAndUpdate(
