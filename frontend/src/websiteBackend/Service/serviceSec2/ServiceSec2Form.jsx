@@ -49,12 +49,6 @@ const ServiceSec2Form = () => {
     }
   }, [id, categories]);
 
-//   useEffect(() => {
-//     if (isEditMode && categories.length > 0 && formData.categoryId) {
-//       loadSubCategoriesForEdit(formData);
-//     }
-//   }, [categories, isEditMode]);
-
   const fetchCategories = async () => {
     try {
       setIsLoadingCategories(true);
@@ -85,59 +79,79 @@ const ServiceSec2Form = () => {
     }
   };
 
-const fetchDataForEdit = async (dataId) => {
-  try {
-    setLoading(true);
-    const res = await axios.get(`/api/serviceSec2/${dataId}`);
-    const item = res.data.data;
-console.log('Fetched item for edit:', item);
-    // Prepare temp data for subcategory loading (uses item directly to avoid setState async)
-    const tempDataForSubs = {
-      categoryId: item.categoryId?._id || '',
-      subCategoryId: item.subCategoryId?._id || '',
-      subSubCategoryId: item.subSubCategoryId?._id || '',
-    };
+  const fetchDataForEdit = async (dataId) => {
+    try {
+      setLoading(true);
+      const res = await axios.get(`/api/serviceSec2/${dataId}`);
+      const item = res.data.data;
+      console.log('Fetched item for edit:', item);
 
-    setFormData({
-      heading: item.heading || '',
-      subheading: item.subheading || '',
-      details: item.details || '',
-      categoryId: tempDataForSubs.categoryId,
-      subCategoryId: tempDataForSubs.subCategoryId,
-      subSubCategoryId: tempDataForSubs.subSubCategoryId,
-      cards: item.cards.length > 0
-        ? item.cards.map(card => ({
-            title: card.title || '',
-            subTitle: card.subTitle || '',
-            description: card.description || '',
-            photo: null,
-            currentPhoto: card.photo || '',
-            alt: card.alt || '',
-            imgTitle: card.imgTitle || '',
-          }))
-        : [{ title: '', subTitle: '', description: '', photo: null, currentPhoto: '', alt: '', imgTitle: '' }],
-    });
+      // Extract IDs from potentially populated objects
+      const extractId = (field) => {
+        if (!field) return '';
+        if (typeof field === 'string') return field;
+        if (typeof field === 'object' && field._id) return field._id;
+        return '';
+      };
 
-    // Now load subcategories using the temp data (runs immediately, categories are already loaded)
-    loadSubCategoriesForEdit(tempDataForSubs);
+      const categoryId = extractId(item.categoryId);
+      const subCategoryId = extractId(item.subCategoryId);
+      const subSubCategoryId = extractId(item.subSubCategoryId);
 
-    // Set selectedLevel based on item
-    if (item.subSubCategoryId) {
-      setSelectedLevel('subsubcategory');
-    } else if (item.subCategoryId) {
-      setSelectedLevel('subcategory');
-    } else {
-      setSelectedLevel('category');
+      // Determine selected level based on what's populated
+      let level = 'category';
+      if (subSubCategoryId) {
+        level = 'subsubcategory';
+      } else if (subCategoryId) {
+        level = 'subcategory';
+      }
+      setSelectedLevel(level);
+
+      // Load subcategories first
+      if (categoryId) {
+        const category = categories.find(cat => cat._id === categoryId);
+        if (category) {
+          setSubCategories(category.subCategories || []);
+          
+          if (subCategoryId) {
+            const subCategory = category.subCategories?.find(sub => sub._id === subCategoryId);
+            if (subCategory) {
+              setSubSubCategories(subCategory.subSubCategory || []);
+            }
+          }
+        }
+      }
+
+      // Set form data
+      setFormData({
+        heading: item.heading || '',
+        subheading: item.subheading || '',
+        details: item.details || '',
+        categoryId: categoryId,
+        subCategoryId: subCategoryId,
+        subSubCategoryId: subSubCategoryId,
+        cards: item.cards && item.cards.length > 0
+          ? item.cards.map(card => ({
+              title: card.title || '',
+              subTitle: card.subTitle || '',
+              description: card.description || '',
+              photo: null,
+              currentPhoto: card.photo || '',
+              alt: card.alt || '',
+              imgTitle: card.imgTitle || '',
+            }))
+          : [{ title: '', subTitle: '', description: '', photo: null, currentPhoto: '', alt: '', imgTitle: '' }],
+      });
+
+      setMessage({ type: 'info', text: 'Data loaded for editing' });
+    } catch (err) {
+      console.error('Error loading data:', err);
+      setMessage({ type: 'error', text: 'Failed to load data' });
+      setTimeout(() => navigate('/serviceSec2-table'), 2000);
+    } finally {
+      setLoading(false);
     }
-
-    setMessage({ type: 'info', text: 'Data loaded for editing' });
-  } catch (err) {
-    setMessage({ type: 'error', text: 'Failed to load data' });
-    setTimeout(() => navigate('/serviceSec2-table'), 2000);
-  } finally {
-    setLoading(false);
-  }
-};
+  };
 
   const handleCategoryChange = (e) => {
     const categoryId = e.target.value;
@@ -272,6 +286,16 @@ console.log('Fetched item for edit:', item);
       setSaving(false);
     }
   };
+
+  if (loading) {
+    return (
+      <div className="max-w-4xl mx-auto p-6">
+        <div className="bg-blue-50 border border-blue-200 rounded-lg p-8 text-center">
+          <p className="text-blue-800 text-lg">Loading data...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="max-w-4xl mx-auto p-6 bg-white rounded-lg shadow-lg">

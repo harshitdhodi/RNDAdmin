@@ -59,11 +59,11 @@ exports.createWhyChooseUs = async (req, res) => {
       return res.status(400).json({ error: 'categoryId is required' });
     }
 
-    // Handle main photo (separate from card photos)
-    const mainPhoto = req.files && req.files['mainPhoto'] 
-      ? req.files['mainPhoto'][0].filename 
-      : '';
-
+        // MAIN PHOTO
+        let mainPhoto;
+        if (req.files && req.files['photo']) {
+          mainPhoto = req.files['photo'][0].filename;
+        }
     // Process cards with up to 5 uploaded photos (field name: 'photo')
     const processedCards = processCards(cards, req.files);
 
@@ -216,7 +216,7 @@ exports.updateWhyChooseUs = async (req, res) => {
     if (!categoryId) {
       return res.status(400).json({ error: 'categoryId is required' });
     }
-
+console.log('Updating Why Choose Us with data:', req.body);
     const whyChooseUs = await WhyChooseUs.findById(req.params.id);
     if (!whyChooseUs) {
       return res.status(404).json({
@@ -228,14 +228,19 @@ exports.updateWhyChooseUs = async (req, res) => {
     /* ---------------- MAIN PHOTO ---------------- */
     let mainPhoto = whyChooseUs.photo;
 
-    if (req.files && req.files['mainPhoto']) {
+    if (req.files && req.files['photo']) {
       // delete old photo
       if (whyChooseUs.photo) {
-        deleteImage(whyChooseUs.photo);
+        try {
+          deleteImage(whyChooseUs.photo);
+        } catch (err) {
+          console.error(`Failed to delete old image ${whyChooseUs.photo}:`, err);
+          // Continue without throwing an error. This can happen on Windows if the file is locked.
+        }
       }
-      mainPhoto = req.files['mainPhoto'][0].filename;
+      mainPhoto = req.files['photo'][0].filename;
     }
-
+console.log('Main photo set to:', mainPhoto);
     /* ---------------- CARDS ---------------- */
     // processCards should:
     // - parse cards if string

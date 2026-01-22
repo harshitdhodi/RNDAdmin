@@ -75,7 +75,8 @@ const ServiceSec1Form = () => {
       
       if (data.success && data.data) {
         const fetchedData = data.data;
-        
+        console.log('Fetched data:', fetchedData);
+          
         setFormData({
           categoryId: fetchedData.categoryId || '',
           subCategoryId: fetchedData.subCategoryId || '',
