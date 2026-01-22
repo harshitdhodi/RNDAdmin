@@ -72,6 +72,13 @@ const menuData = [
         ]
       },
       {
+        title: "Text Slider",
+        icon: SlidersHorizontal,
+        children: [
+          { title: "Manage Slider", icon: List, url: "/text-slider" },
+        ]
+      },
+      {
         title: "Menu",
         icon: Menu,
         children: [

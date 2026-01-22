@@ -169,6 +169,8 @@ import EditCareerOptionForm from './websiteBackend/careerOption/EditCareerOption
 import CounterTable from './websiteBackend/counter/counterTable';
 import AddCounter from './websiteBackend/counter/AddCounter';
 import EditCounter from './websiteBackend/counter/EditCounter';
+import TextSliderCRUD from "./websiteBackend/textSlider/TextSliderCRUD";
+
 
 // Auth Components
 const PrivateRoute = ({ children }) => {
@@ -409,6 +411,10 @@ function App() {
             { path: 'counter', element: <Suspense fallback={<LoadingFallback />}><CounterTable /></Suspense> },
             { path: 'add-counter', element: <Suspense fallback={<LoadingFallback />}><AddCounter /></Suspense> },
             { path: 'edit-counter/:id', element: <Suspense fallback={<LoadingFallback />}><EditCounter /></Suspense> },
+
+            // Text Slider Routes
+            { path: 'text-slider', element: <Suspense fallback={<LoadingFallback />}><TextSliderCRUD /></Suspense> },
+
           ]
         }
       ]
