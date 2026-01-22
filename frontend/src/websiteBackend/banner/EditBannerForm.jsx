@@ -4,7 +4,7 @@ import { useNavigate, useParams, Link } from 'react-router-dom';
 import { useGetBannerByIdQuery, useUpdateBannerMutation } from '../../slice/banner/banner';
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
-import { UploadOutlined, HomeOutlined } from '@ant-design/icons';
+import { UploadOutlined, HomeOutlined, MinusCircleOutlined, PlusOutlined } from '@ant-design/icons';
 import axios from 'axios';
 
 const { Option } = Select;
@@ -43,15 +43,16 @@ const EditBannerForm = () => {
     useEffect(() => {
         if (banner) {
             form.setFieldsValue({
-                title: banner.title,
+                title: banner.title || [],
                 altName: banner.altName,
                 details: banner.details,
                 imgName: banner.imgName,
                 pageSlug: banner.pageSlug || '',
-                heading: banner.heading,
+                heading: banner.heading || [],
                 subheading: banner.subheading,
                 description: banner.description,
                 marque: banner.marque,
+                link: banner.link || [],
                 image: banner.image
                     ? [{ name: banner.imgName, url: `/api/image/download/${banner.image}` }]
                     : [],
@@ -69,7 +70,7 @@ const EditBannerForm = () => {
 
     const onFinish = async (values) => {
         try {
-            if (!values.title?.trim()) {
+            if (!values.title || values.title.length === 0) {
                 message.error('Title is required');
                 return;
             }
@@ -91,14 +92,15 @@ const EditBannerForm = () => {
                 formData.append('imgName', values.imgName || banner.imgName);
             }
 
-            formData.append('title', values.title.trim());
+            formData.append('title', JSON.stringify(values.title));
             formData.append('altName', values.altName.trim());
             formData.append('details', values.details?.trim() || '');
             formData.append('pageSlug', values.pageSlug);
-            formData.append('heading', values.heading || '');
+            formData.append('heading', JSON.stringify(values.heading || []));
             formData.append('subheading', values.subheading || '');
             formData.append('description', values.description || '');
             formData.append('marque', values.marque || '');
+            formData.append('link', JSON.stringify(values.link || []));
 
             await updateBanner({
                 id,
@@ -136,15 +138,16 @@ const EditBannerForm = () => {
                     layout="vertical"
                     onFinish={onFinish}
                     initialValues={{
-                        title: banner?.title || '',
+                        title: banner?.title || [],
                         altName: banner?.altName || '',
                         details: banner?.details || '',
                         imgName: banner?.imgName || '',
                         pageSlug: banner?.pageSlug || '',
-                        heading: banner?.heading || '',
+                        heading: banner?.heading || [],
                         subheading: banner?.subheading || '',
                         description: banner?.description || '',
                         marque: banner?.marque || '',
+                        link: banner?.link || [],
                         image: banner?.image
                             ? [{ name: banner.imgName, url: `/api/image/download/${banner.image}` }]
                             : [],
@@ -203,13 +206,39 @@ const EditBannerForm = () => {
                         <Input disabled={imageChanged} />
                     </Form.Item>
 
-                    <Form.Item
-                        name="title"
-                        label="Title"
-                        rules={[{ required: true, message: 'Please input title!' }]}
-                    >
-                        <Input />
-                    </Form.Item>
+                    <Form.List name="title">
+                        {(fields, { add, remove }) => (
+                            <>
+                                {fields.map((field, index) => (
+                                    <Form.Item
+                                        label={index === 0 ? 'Title' : ''}
+                                        required={false}
+                                        key={field.key}
+                                    >
+                                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                            <Form.Item
+                                                {...field}
+                                                validateTrigger={['onChange', 'onBlur']}
+                                                rules={[{ required: true, whitespace: true, message: "Please input title or delete this field." }]}
+                                                noStyle
+                                            >
+                                                <Input placeholder="Title" />
+                                            </Form.Item>
+                                            <MinusCircleOutlined
+                                                className="dynamic-delete-button"
+                                                onClick={() => remove(field.name)}
+                                            />
+                                        </div>
+                                    </Form.Item>
+                                ))}
+                                <Form.Item label={fields.length === 0 ? 'Title' : ''}>
+                                    <Button type="dashed" onClick={() => add()} block icon={<PlusOutlined />}>
+                                        Add Title
+                                    </Button>
+                                </Form.Item>
+                            </>
+                        )}
+                    </Form.List>
 
                     <Form.Item
                         name="altName"
@@ -219,12 +248,38 @@ const EditBannerForm = () => {
                         <Input />
                     </Form.Item>
 
-                    <Form.Item
-                        name="heading"
-                        label="Heading"
-                    >
-                        <Input />
-                    </Form.Item>
+                    <Form.List name="heading">
+                        {(fields, { add, remove }) => (
+                            <>
+                                {fields.map((field, index) => (
+                                    <Form.Item
+                                        label={index === 0 ? 'Heading' : ''}
+                                        required={false}
+                                        key={field.key}
+                                    >
+                                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                            <Form.Item
+                                                {...field}
+                                                validateTrigger={['onChange', 'onBlur']}
+                                                noStyle
+                                            >
+                                                <Input placeholder="Heading" />
+                                            </Form.Item>
+                                            <MinusCircleOutlined
+                                                className="dynamic-delete-button"
+                                                onClick={() => remove(field.name)}
+                                            />
+                                        </div>
+                                    </Form.Item>
+                                ))}
+                                <Form.Item label={fields.length === 0 ? 'Heading' : ''}>
+                                    <Button type="dashed" onClick={() => add()} block icon={<PlusOutlined />}>
+                                        Add Heading
+                                    </Button>
+                                </Form.Item>
+                            </>
+                        )}
+                    </Form.List>
 
                     <Form.Item
                         name="subheading"
@@ -236,6 +291,40 @@ const EditBannerForm = () => {
                     <Form.Item name="marque" label="Marque Text">
                         <Input />
                     </Form.Item>
+
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Social Media Links</label>
+                    <Form.List name="link">
+                        {(fields, { add, remove }) => (
+                            <>
+                                {fields.map(({ key, name, ...restField }) => (
+                                    <div key={key} style={{ display: 'flex', gap: '8px', marginBottom: '8px', alignItems: 'center' }}>
+                                        <Form.Item
+                                            {...restField}
+                                            name={[name, 'name']}
+                                            rules={[{ required: true, message: 'Missing name' }]}
+                                            style={{ marginBottom: 0, flex: 1 }}
+                                        >
+                                            <Input placeholder="Link Name (e.g. Facebook)" />
+                                        </Form.Item>
+                                        <Form.Item
+                                            {...restField}
+                                            name={[name, 'url']}
+                                            rules={[{ required: true, message: 'Missing url' }]}
+                                            style={{ marginBottom: 0, flex: 2 }}
+                                        >
+                                            <Input placeholder="URL" />
+                                        </Form.Item>
+                                        <MinusCircleOutlined onClick={() => remove(name)} />
+                                    </div>
+                                ))}
+                                <Form.Item>
+                                    <Button type="dashed" onClick={() => add()} block icon={<PlusOutlined />}>
+                                        Add Social Link
+                                    </Button>
+                                </Form.Item>
+                            </>
+                        )}
+                    </Form.List>
 
                     <Form.Item name="description" label="Description">
                         <TextArea rows={4} />

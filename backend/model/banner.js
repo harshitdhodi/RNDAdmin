@@ -18,16 +18,16 @@ const bannerSchema = new mongoose.Schema({
         required: true 
     },
     title: { 
-        type: String,
-       default: "" 
+        type: [String],
+       default: [] 
     },
     details: { 
         type: String,
        default: "" 
     },
     heading: { 
-        type: String,
-       default: "" 
+        type: [String],
+       default: [] 
     },
     subheading: { 
         type: String,
@@ -40,7 +40,11 @@ const bannerSchema = new mongoose.Schema({
     marque: { 
         type: String,
        default: "" 
-    }
+    },
+    link: [{
+        name: { type: String, trim: true },
+        url: { type: String, trim: true }
+    }]
 }, { timestamps: true });
 
 module.exports = mongoose.model('Banner', bannerSchema);

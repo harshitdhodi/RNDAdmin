@@ -1,5 +1,17 @@
 const Banner = require('../model/banner');
 
+// Helper to parse array fields
+const parseArrayField = (field) => {
+    if (!field) return [];
+    if (Array.isArray(field)) return field;
+    try {
+        const parsed = JSON.parse(field);
+        return Array.isArray(parsed) ? parsed : [field];
+    } catch (e) {
+        return [field];
+    }
+};
+
 // Create new banner
 exports.createBanner = async (req, res) => {
     try {
@@ -9,13 +21,14 @@ exports.createBanner = async (req, res) => {
             image: image,
             imgName: req.body.imgName,
             altName: req.body.altName,
-            title: req.body.title,
+            title: parseArrayField(req.body.title),
             details: req.body.details,
             pageSlug: req.body.pageSlug,
-            heading: req.body.heading,
+            heading: parseArrayField(req.body.heading),
             subheading: req.body.subheading,
             description: req.body.description,
-            marque: req.body.marque
+            marque: req.body.marque,
+            link: parseArrayField(req.body.link)
         });
 
         const savedBanner = await banner.save();
@@ -71,6 +84,18 @@ exports.updateBanner = async (req, res) => {
         const updateData = {
             ...req.body
         };
+
+        if (req.body.title) {
+            updateData.title = parseArrayField(req.body.title);
+        }
+
+        if (req.body.heading) {
+            updateData.heading = parseArrayField(req.body.heading);
+        }
+
+        if (req.body.link) {
+            updateData.link = parseArrayField(req.body.link);
+        }
 
         // Handle image update if new image is uploaded
         if (req.files && req.files['image']) {
