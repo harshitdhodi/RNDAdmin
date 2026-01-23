@@ -164,6 +164,14 @@ const menuData = [
         ]
       },
       {
+        title: "Social Media",
+        icon: LinkIcon,
+        children: [
+          { title: "Social Media List", icon: List, url: "/social-media" },
+          { title: "Add New", icon: PlusSquare, url: "/social-media/add" },
+        ]
+      },
+      {
         title: "Counter",
         icon: Calculator,
         children: [

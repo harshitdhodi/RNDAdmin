@@ -117,7 +117,8 @@ const apiRoutes = [
   ['/api/counter', require('./route/counter')],
   ['/api/video', require('./route/video')],
   ['/api/footer', require('./route/footer')],
-  ['/api/text-slider', require('./route/textSliderRoutes')]
+  ['/api/text-slider', require('./route/textSliderRoutes')],
+  ['/api/socialMedia', require('./route/socialMedia')]
 ];
 
 // Apply cache middleware to all API routes

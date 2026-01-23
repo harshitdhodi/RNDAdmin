@@ -91,6 +91,8 @@ const HeroSectionTable = lazy(() => import('./components/ui/HeroSectionTable'));
 const HeroSectionForm = lazy(() => import('./components/ui/HeroSectionForm'));
 const FooterTable = lazy(() => import('./websiteBackend/footer/FooterTable'));
 const FooterForm = lazy(() => import('./websiteBackend/footer/FooterForm'));
+const SocialMediaTable = lazy(() => import('./components/SocialMedia/SocialMediaTable'));
+const SocialMediaForm = lazy(() => import('./components/SocialMedia/SocialMediaForm'));
 const AboutDescription = lazy(() => import('./website/componets/home/AboutUs'));
 const Introduction = lazy(() => import('./website/pages/Introduction'));
 const MainContent = lazy(() => import('./website/componets/Introduction/MainContent'));
@@ -317,6 +319,11 @@ function App() {
             { path: 'footer-table', element: <Suspense fallback={<LoadingFallback />}><FooterTable /></Suspense> },
             { path: 'footer-form', element: <Suspense fallback={<LoadingFallback />}><FooterForm /></Suspense> },
             { path: 'edit-footer/:id', element: <Suspense fallback={<LoadingFallback />}><FooterForm /></Suspense> },
+
+            // Social Media Routes
+            { path: 'social-media', element: <Suspense fallback={<LoadingFallback />}><SocialMediaTable /></Suspense> },
+            { path: 'social-media/add', element: <Suspense fallback={<LoadingFallback />}><SocialMediaForm /></Suspense> },
+            { path: 'social-media/edit/:id', element: <Suspense fallback={<LoadingFallback />}><SocialMediaForm /></Suspense> },
 
             { path: 'worldwide-table', element: <Suspense fallback={<LoadingFallback />}><WorldWideBackend /></Suspense> },
             { path: 'worldwide/add', element: <Suspense fallback={<LoadingFallback />}><WorldwideForm /></Suspense> },
