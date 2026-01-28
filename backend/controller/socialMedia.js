@@ -2,8 +2,8 @@ const SocialMedia = require('../model/socialMedia');
 
 const createSocialMedia = async (req, res) => {
   try {
-    const { name, link, icon, status } = req.body;
-    const socialMedia = new SocialMedia({ name, link, icon, status });
+    const { name, link, status } = req.body;
+    const socialMedia = new SocialMedia({ name, link, status });
     await socialMedia.save();
     res.status(201).json({ message: 'Social media link added successfully', data: socialMedia });
   } catch (error) {
@@ -36,11 +36,11 @@ const getSocialMediaById = async (req, res) => {
 const updateSocialMedia = async (req, res) => {
   try {
     const { id } = req.query;
-    const { name, link, icon, status } = req.body;
+    const { name, link, status } = req.body;
     
     const updatedSocialMedia = await SocialMedia.findByIdAndUpdate(
       id,
-      { name, link, icon, status },
+      { name, link, status },
       { new: true }
     );
 

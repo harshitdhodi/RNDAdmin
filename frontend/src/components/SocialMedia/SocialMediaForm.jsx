@@ -9,7 +9,6 @@ const SocialMediaForm = () => {
   const [formData, setFormData] = useState({
     name: '',
     link: '',
-    icon: '',
     status: 'active'
   });
 
@@ -90,19 +89,6 @@ const SocialMediaForm = () => {
               className="w-full border border-gray-300 rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
               required
             />
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Icon Class</label>
-            <input
-              type="text"
-              name="icon"
-              value={formData.icon}
-              onChange={handleChange}
-              placeholder="e.g. fa-brands fa-facebook"
-              className="w-full border border-gray-300 rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
-            />
-            <p className="text-xs text-gray-500 mt-1">Enter the CSS class for the icon (e.g., FontAwesome).</p>
           </div>
 
           <div>

@@ -9,9 +9,6 @@ const socialMediaSchema = new mongoose.Schema({
     type: String,
     required: true
   },
-  icon: {
-    type: String
-  },
   status: {
     type: String,
     default: 'active'
