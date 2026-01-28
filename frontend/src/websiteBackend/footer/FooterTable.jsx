@@ -49,9 +49,8 @@ const FooterTable = () => {
         <table className="w-full text-sm text-left">
           <thead className="bg-gray-100 text-gray-700 uppercase">
             <tr>
-              <th className="px-6 py-3">Link Heading</th>
               <th className="px-6 py-3">Description</th>
-              <th className="px-6 py-3">Contact Email</th>
+              <th className="px-6 py-3">Social Links</th>
               <th className="px-6 py-3">Actions</th>
             </tr>
           </thead>
@@ -59,9 +58,8 @@ const FooterTable = () => {
             {footers.length > 0 ? (
               footers.map((footer) => (
                 <tr key={footer._id} className="border-b hover:bg-gray-50">
-                  <td className="px-6 py-4 font-medium">{footer.linkHeading}</td>
                   <td className="px-6 py-4 truncate max-w-xs">{footer.description}</td>
-                  <td className="px-6 py-4">{footer.contactInfo?.email}</td>
+                  <td className="px-6 py-4">{footer.social?.length || 0}</td>
                   <td className="px-6 py-4 flex gap-2">
                     <Button variant="outline" size="sm" onClick={() => handleEdit(footer._id)}>
                       <Edit className="h-4 w-4 text-blue-600" />
