@@ -17,7 +17,7 @@ const StaffTable = () => {
   const [pageIndex, setPageIndex] = useState(0);
   const [pageCount, setPageCount] = useState(0);
   const [searchTerm, setSearchTerm] = useState("");
-  const pageSize = 5; // Define the number of items per page
+  const pageSize = 10; // Define the number of items per page
   const navigate = useNavigate()
   const filteredStaff = useMemo(() => {
     return staff.filter((staff) =>
@@ -105,6 +105,19 @@ const StaffTable = () => {
     []
   );
 
+  // Paginate the filtered data
+  const paginatedStaff = useMemo(() => {
+    const startIndex = pageIndex * pageSize;
+    const endIndex = startIndex + pageSize;
+    return filteredStaff.slice(startIndex, endIndex);
+  }, [filteredStaff, pageIndex, pageSize]);
+
+  // Update page count based on filtered results
+  useEffect(() => {
+    setPageCount(Math.ceil(filteredStaff.length / pageSize));
+    setPageIndex(0); // Reset to first page when search changes
+  }, [filteredStaff, pageSize]);
+
   const {
     getTableProps,
     getTableBodyProps,
@@ -114,21 +127,31 @@ const StaffTable = () => {
   } = useTable(
     {
       columns,
-      data: filteredStaff,
+      data: paginatedStaff,
     },
     useSortBy
   );
 
-  const fetchData = async (pageIndex) => {
+  const fetchData = async () => {
     setLoading(true);
     try {
-      const response = await axios.get(`/api/staff/getStaff?page=${pageIndex + 1}`, { withCredentials: true });
-      const staffWithIds = response.data.data.map((staffMember, index) => ({
+      let allStaff = [];
+      let page = 1;
+      let hasMore = true;
+
+      // Fetch all pages until we get all staff
+      while (hasMore) {
+        const response = await axios.get(`/api/staff/getStaff?page=${page}&limit=100`, { withCredentials: true });
+        allStaff = [...allStaff, ...response.data.data];
+        hasMore = response.data.hasNextPage;
+        page++;
+      }
+
+      const staffWithIds = allStaff.map((staffMember, index) => ({
         ...staffMember,
-        id: pageIndex * pageSize + index + 1,
+        id: index + 1,
       }));
       setStaff(staffWithIds);
-      setPageCount(Math.ceil(response.data.total / pageSize)); // Assuming the API returns the total number of items
     } catch (error) {
       console.error(error);
     } finally {
@@ -149,8 +172,8 @@ const StaffTable = () => {
   };
 
   useEffect(() => {
-    fetchData(pageIndex);
-  }, [pageIndex]);
+    fetchData();
+  }, []);
 
   const fetchHeadings = async () => {
     try {
