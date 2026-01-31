@@ -42,7 +42,7 @@ const ServiceSec1Form = () => {
     if (isEditMode && categories.length > 0 && formData.categoryId) {
       loadSubCategoriesForEdit(formData);
     }
-  }, [categories, isEditMode]);
+  }, [categories, isEditMode, formData.categoryId, formData.subCategoryId]);
 
   // Set image preview when photo URL is loaded in edit mode
   useEffect(() => {
@@ -76,11 +76,21 @@ const ServiceSec1Form = () => {
       if (data.success && data.data) {
         const fetchedData = data.data;
         console.log('Fetched data:', fetchedData);
-          
+        // Backend returns populated categoryId as object; extract ID for dropdown value
+        const categoryId = typeof fetchedData.categoryId === 'object' && fetchedData.categoryId?._id
+          ? fetchedData.categoryId._id
+          : (fetchedData.categoryId || '');
+        const subCategoryId = typeof fetchedData.subCategoryId === 'object' && fetchedData.subCategoryId?._id
+          ? fetchedData.subCategoryId._id
+          : (fetchedData.subCategoryId || '');
+        const subSubCategoryId = typeof fetchedData.subSubCategoryId === 'object' && fetchedData.subSubCategoryId?._id
+          ? fetchedData.subSubCategoryId._id
+          : (fetchedData.subSubCategoryId || '');
+
         setFormData({
-          categoryId: fetchedData.categoryId || '',
-          subCategoryId: fetchedData.subCategoryId || '',
-          subSubCategoryId: fetchedData.subSubCategoryId || '',
+          categoryId,
+          subCategoryId,
+          subSubCategoryId,
           heading: fetchedData.heading || '',
           subheading: fetchedData.subheading || '',
           details: fetchedData.details || '',

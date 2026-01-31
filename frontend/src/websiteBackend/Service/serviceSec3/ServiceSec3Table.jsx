@@ -14,6 +14,9 @@ const ServiceSec3Table = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [filterLevel, setFilterLevel] = useState('all');
   const [expandedRows, setExpandedRows] = useState(new Set());
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(10);
+  const PER_PAGE_OPTIONS = [5, 10, 30, 50, 100];
 
   useEffect(() => {
     fetchData();
@@ -23,6 +26,10 @@ const ServiceSec3Table = () => {
   useEffect(() => {
     filterData();
   }, [data, searchTerm, filterLevel]);
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchTerm, filterLevel, itemsPerPage]);
 
   const fetchCategories = async () => {
     try {
@@ -76,6 +83,10 @@ const ServiceSec3Table = () => {
 
     setFilteredData(filtered);
   };
+
+  const totalPages = Math.ceil(filteredData.length / itemsPerPage) || 1;
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const paginatedData = filteredData.slice(startIndex, startIndex + itemsPerPage);
 
   const getCategoryPath = (item) => {
     if (!item.categoryId || typeof item.categoryId === 'string') {
@@ -207,6 +218,19 @@ const ServiceSec3Table = () => {
               <option value="subsubcategory">Sub-Sub Category</option>
             </select>
 
+            <div className="flex items-center gap-2">
+              <label className="text-sm text-gray-600 whitespace-nowrap">Per page:</label>
+              <select
+                value={itemsPerPage}
+                onChange={(e) => setItemsPerPage(Number(e.target.value))}
+                className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              >
+                {PER_PAGE_OPTIONS.map((n) => (
+                  <option key={n} value={n}>{n}</option>
+                ))}
+              </select>
+            </div>
+
             <button
               onClick={() => navigate('/service-sec3-form')}
               className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition whitespace-nowrap"
@@ -217,7 +241,8 @@ const ServiceSec3Table = () => {
 
           <div className="mt-4 flex items-center justify-between">
             <p className="text-sm text-gray-600">
-              Showing {filteredData.length} of {data.length} items
+              Showing {filteredData.length === 0 ? 0 : startIndex + 1}–{Math.min(startIndex + itemsPerPage, filteredData.length)} of {filteredData.length} items
+              {data.length !== filteredData.length && ` (filtered from ${data.length})`}
             </p>
           </div>
         </div>
@@ -247,14 +272,14 @@ const ServiceSec3Table = () => {
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
-              {filteredData.length === 0 ? (
+              {paginatedData.length === 0 ? (
                 <tr>
                   <td colSpan="6" className="px-6 py-8 text-center text-gray-500">
                     No data found. {searchTerm || filterLevel !== 'all' ? 'Try adjusting your filters.' : 'Create your first entry using the form.'}
                   </td>
                 </tr>
               ) : (
-                filteredData.map((item) => {
+                paginatedData.map((item) => {
                   const itemLevel = getItemLevel(item);
                   return (
                     <React.Fragment key={item._id}>
@@ -398,6 +423,61 @@ const ServiceSec3Table = () => {
             </tbody>
           </table>
         </div>
+
+        {/* Pagination */}
+        {filteredData.length > 0 && (
+          <div className="px-6 py-4 border-t border-gray-200 flex flex-col sm:flex-row items-center justify-between gap-4">
+            <p className="text-sm text-gray-600">
+              Page {currentPage} of {totalPages}
+            </p>
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+                disabled={currentPage <= 1}
+                className="px-3 py-1.5 border border-gray-300 rounded-lg text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50 transition"
+              >
+                Previous
+              </button>
+              <div className="flex items-center gap-1">
+                {Array.from({ length: totalPages }, (_, i) => i + 1)
+                  .filter((p) => {
+                    if (totalPages <= 7) return true;
+                    if (p === 1 || p === totalPages) return true;
+                    if (Math.abs(p - currentPage) <= 1) return true;
+                    return false;
+                  })
+                  .map((p, idx, arr) => {
+                    const prev = arr[idx - 1];
+                    const showEllipsis = prev != null && p - prev > 1;
+                    return (
+                      <React.Fragment key={p}>
+                        {showEllipsis && (
+                          <span className="px-2 text-gray-400">…</span>
+                        )}
+                        <button
+                          onClick={() => setCurrentPage(p)}
+                          className={`min-w-[2rem] px-2 py-1.5 rounded-lg text-sm font-medium transition ${
+                            currentPage === p
+                              ? 'bg-blue-600 text-white'
+                              : 'border border-gray-300 hover:bg-gray-50'
+                          }`}
+                        >
+                          {p}
+                        </button>
+                      </React.Fragment>
+                    );
+                  })}
+              </div>
+              <button
+                onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
+                disabled={currentPage >= totalPages}
+                className="px-3 py-1.5 border border-gray-300 rounded-lg text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50 transition"
+              >
+                Next
+              </button>
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Delete Confirmation Modal */}
