@@ -7,8 +7,18 @@ import { cn } from "@/lib/utils";
 import { Link, useLocation } from "react-router-dom";
 import axios from "axios";
 
+// Function to sort menu items alphabetically
+const sortMenuItems = (items) => {
+  return items
+    .map((item) => ({
+      ...item,
+      children: item.children ? sortMenuItems(item.children) : undefined,
+    }))
+    .sort((a, b) => a.title.localeCompare(b.title));
+};
+
 // Updated JSON structure with parent-child relationships
-const menuData = [
+let menuData = [
   {
     title: "Dashboard",
     icon: LayoutDashboard,
@@ -240,6 +250,9 @@ const menuData = [
     ],
   },
 ];
+
+// Sort menu items alphabetically
+menuData = sortMenuItems(menuData);
 
 export default function AppSidebar() {
   const [openSections, setOpenSections] = useState({ Website: true });

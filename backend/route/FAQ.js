@@ -2,9 +2,6 @@ const express = require('express');
 const router = express.Router();
 const { getFAQBySlug, insertFAQ, getFAQ, updateFAQ, deleteFAQ, getFAQById, countFaq, getFAQWebsite } = require('../controller/FAQ')
 const { requireAuth } = require('../middleware/authmiddleware');
-const { uploadPhoto } = require('../middleware/fileUpload.js')
-
-
 router.post('/insertFAQ', requireAuth,  insertFAQ);
 router.get('/getFaq', requireAuth, getFAQ);
 router.get('/getFAQByServiceSlug', getFAQBySlug);
