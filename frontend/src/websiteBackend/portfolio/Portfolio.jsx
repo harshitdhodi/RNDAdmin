@@ -55,7 +55,7 @@ const PortfolioTable = () => {
         accessor: "categoryName",
         Cell: ({ row }) => (
           <span
-            className="hover:text-blue-500 cursor-pointer"
+            className="hover:text-yellow-500 cursor-pointer"
             onClick={() => navigate(`/portfolio/${row.original._id || ''}`)}
           >
             {row.original.categoryName || 'N/A'}
@@ -67,7 +67,7 @@ const PortfolioTable = () => {
         accessor: "title",
         Cell: ({ row }) => (
           <span
-            className="hover:text-blue-500 cursor-pointer"
+            className="hover:text-yellow-500 cursor-pointer"
             onClick={() => navigate(`/portfolio/${row.original._id || ''}`)}
           >
             {row.original.title || 'N/A'}
@@ -102,12 +102,12 @@ const PortfolioTable = () => {
         Cell: ({ row }) => (
           <div className="flex gap-4">
             <button
-              className="text-blue-500 hover:text-blue-700 transition"
+              className="text-yellow-500 hover:text-yellow-700 transition"
               onClick={() => handleView(row.original)}
             >
               <FaEye />
             </button>
-            <button className="text-blue-500 hover:text-blue-700 transition">
+            <button className="text-yellow-500 hover:text-yellow-700 transition">
               <Link to={`/portfolio/${row.original._id || ''}${row.original.subcategories?.[0] ? `/${row.original.subcategories[0]}` : ''}`}>
                 <FaEdit />
               </Link>
@@ -294,7 +294,7 @@ const PortfolioTable = () => {
               type="text"
               value={heading}
               onChange={handleHeadingChange}
-              className={`w-full px-4 py-2 border rounded-md focus:outline-none focus:border-blue-500 transition duration-300 ${errors.heading ? 'border-red-500' : ''}`}
+              className={`w-full px-4 py-2 border rounded-md focus:outline-none focus:border-yellow-500 transition duration-300 ${errors.heading ? 'border-red-500' : ''}`}
               required
             />
             <div className="text-sm text-gray-500 mt-1">
@@ -310,7 +310,7 @@ const PortfolioTable = () => {
               type="text"
               value={subheading}
               onChange={handleSubheadingChange}
-              className={`w-full px-4 py-2 border rounded-md focus:outline-none focus:border-blue-500 transition duration-300 ${errors.subheading ? 'border-red-500' : ''}`}
+              className={`w-full px-4 py-2 border rounded-md focus:outline-none focus:border-yellow-500 transition duration-300 ${errors.subheading ? 'border-red-500' : ''}`}
               required
             />
             <div className="text-sm text-gray-500 mt-1">
@@ -344,7 +344,7 @@ const PortfolioTable = () => {
           placeholder="Search by title..."
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
-          className="w-full px-4 py-2 border rounded-md focus:outline-none focus:border-blue-500 transition duration-300"
+          className="w-full px-4 py-2 border rounded-md focus:outline-none focus:border-yellow-500 transition duration-300"
         />
         {searchTerm && (
           <button

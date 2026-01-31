@@ -276,9 +276,9 @@ export const ChemicalFormPage = () => {
       </div>
 
       {/* Debug Info Banner */}
-      <div className="mb-4 p-4 bg-blue-50 border border-blue-200 rounded-lg">
-        <div className="font-semibold text-blue-900">Debug Information:</div>
-        <div className="text-sm text-blue-800 mt-2">
+      <div className="mb-4 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
+        <div className="font-semibold text-yellow-900">Debug Information:</div>
+        <div className="text-sm text-yellow-800 mt-2">
           <div>Mode: <strong>{id ? `EDIT (ID: ${id})` : "CREATE"}</strong></div>
           <div>Submitting: <strong>{isSubmitting ? "Yes" : "No"}</strong></div>
           <div>Has Errors: <strong>{Object.keys(errors).length > 0 ? "Yes" : "No"}</strong></div>

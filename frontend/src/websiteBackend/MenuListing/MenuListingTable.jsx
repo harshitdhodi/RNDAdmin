@@ -82,7 +82,7 @@ const MenuListingTable = () => {
       <div className="flex justify-between items-center mb-4">
         <h3 className="text-2xl font-semibold">Menu Listings</h3>
         <Link to="/menu-listing-form">
-          <button className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 flex items-center gap-2">
+          <button className="bg-yellow-600 text-white px-4 py-2 rounded hover:bg-yellow-700 flex items-center gap-2">
             <PlusOutlined />
             Add Menu
           </button>

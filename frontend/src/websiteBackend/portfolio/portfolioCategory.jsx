@@ -38,7 +38,7 @@ const PorfolioCategoryTable = () => {
         accessor: "category",
         Cell: ({ row }) => (
           <div
-            className="flex items-center gap-2 hover:text-blue-500 cursor-pointer"
+            className="flex items-center gap-2 hover:text-yellow-500 cursor-pointer"
             onClick={() => navigate(`/portfolio-category/${row.original._id}`)}
           >
             {row.original.photo && (
@@ -56,7 +56,7 @@ const PorfolioCategoryTable = () => {
         Header: "Options",
         Cell: ({ row }) => (
           <div className="flex gap-4">
-            <button className="text-blue-500 hover:text-blue-700 transition">
+            <button className="text-yellow-500 hover:text-yellow-700 transition">
               <Link to={`/portfolio-category/${row.original._id}`}>
                 <Edit />
               </Link>
@@ -217,7 +217,7 @@ const PorfolioCategoryTable = () => {
                             <tr className="border-b border-gray-300 hover:bg-gray-100 transition duration-150">
                               <td></td>
                               <td
-                                className="py-2 px-8 flex gap-2 hover:text-blue-500 cursor-pointer"
+                                className="py-2 px-8 flex gap-2 hover:text-yellow-500 cursor-pointer"
                                 onClick={() =>
                                   navigate(
                                     `/portfolio-category/${row.original._id}/${subcategory.slug}`
@@ -236,7 +236,7 @@ const PorfolioCategoryTable = () => {
                               </td>
                               <td className="py-2 px-4">
                                 <div className="flex gap-4">
-                                  <button className="text-blue-500 hover:text-blue-700 transition">
+                                  <button className="text-yellow-500 hover:text-yellow-700 transition">
                                     <Link
                                       to={`/portfolio-category/${row.original._id}/${subcategory._id}`}
                                     >
@@ -265,7 +265,7 @@ const PorfolioCategoryTable = () => {
                                 >
                                   <td></td>
                                   <td
-                                    className="py-2 px-12 flex gap-2 hover:text-blue-500 cursor-pointer"
+                                    className="py-2 px-12 flex gap-2 hover:text-yellow-500 cursor-pointer"
                                     onClick={() =>
                                       navigate(
                                         `/portfolio-category/${row.original._id}/${subcategory.slug}/${subSubcategory.slug}`
@@ -284,7 +284,7 @@ const PorfolioCategoryTable = () => {
                                   </td>
                                   <td className="py-2 px-4">
                                     <div className="flex gap-4">
-                                      <button className="text-blue-500 hover:text-blue-700 transition">
+                                      <button className="text-yellow-500 hover:text-yellow-700 transition">
                                         <Link
                                           to={`/portfolio-category/${row.original._id}/${subcategory._id}/${subSubcategory._id}`}
                                         >

@@ -64,7 +64,7 @@ const FooterTable = () => {
                   <td className="px-6 py-4">{footer.contactInfo?.email}</td>
                   <td className="px-6 py-4 flex gap-2">
                     <Button variant="outline" size="sm" onClick={() => handleEdit(footer._id)}>
-                      <Edit className="h-4 w-4 text-blue-600" />
+                      <Edit className="h-4 w-4 text-yellow-600" />
                     </Button>
                     <Button variant="outline" size="sm" onClick={() => handleDelete(footer._id)}>
                       <Trash2 className="h-4 w-4 text-red-600" />

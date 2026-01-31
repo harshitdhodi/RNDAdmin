@@ -30,7 +30,7 @@ export const FaqTableComponent = ({ faqs, searchTerm, navigate, handleView, dele
         accessor: "question",
         Cell: ({ row }) => (
           <span
-            className="hover:text-blue-500 cursor-pointer"
+            className="hover:text-yellow-500 cursor-pointer"
             onClick={() => navigate(`/faq/editFAQ/${row.original._id}`)}
           >
             {row.original.question}
@@ -50,7 +50,7 @@ export const FaqTableComponent = ({ faqs, searchTerm, navigate, handleView, dele
             <button className="text-gray-600 hover:text-gray-800 transition" onClick={() => handleView(row.original)}>
               <FaEye />
             </button>
-            <button className="text-blue-500 hover:text-blue-700 transition">
+            <button className="text-yellow-500 hover:text-yellow-700 transition">
               <Link to={`/faq/editFAQ/${row.original._id}`}><FaEdit /></Link>
             </button>
             <button className="text-red-500 hover:text-red-700 transition" onClick={() => deleteFaq(row.original._id)}>

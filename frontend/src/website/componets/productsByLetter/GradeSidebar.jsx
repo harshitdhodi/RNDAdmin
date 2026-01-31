@@ -33,9 +33,9 @@ export function GradeSidebar({ categorySlug, chemicals, selectedGrades, setSelec
                 {selectedGrades.length > 0 && (
                     <div className="mb-6">
                         <h3 className="font-medium mb-2">Grades:</h3>
-                        <div className="text-blue-600 py-3 flex flex-col gap-2 border-y-2 border-gray-300">
+                        <div className="text-yellow-600 py-3 flex flex-col gap-2 border-y-2 border-gray-300">
                             {selectedGrades.map((grade) => (
-                                <div key={grade} className="flex justify-between items-center px-2 py-1 bg-blue-100 rounded">
+                                <div key={grade} className="flex justify-between items-center px-2 py-1 bg-yellow-100 rounded">
                                     <span className="text-sm">{grade}</span>
                                     <button
                                         onClick={() => removeGrade(grade)}

@@ -241,7 +241,7 @@ export default function CareerForm() {
                 <div className="flex gap-4">
                   <Button
                     type="submit"
-                    className="bg-blue-700 rounded-sm text-lg py-6 hover:bg-blue-800"
+                    className="bg-yellow-700 rounded-sm text-lg py-6 hover:bg-yellow-800"
                     disabled={isLoading || isUploading}
                   >
                     {isLoading || isUploading ? 'Submitting...' : 'Submit'}

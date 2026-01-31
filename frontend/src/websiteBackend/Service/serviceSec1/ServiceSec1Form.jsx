@@ -308,8 +308,8 @@ const ServiceSec1Form = () => {
       </h2>
       
       {isLoadingCategories && (
-        <div className="mb-4 p-4 bg-blue-50 border border-blue-200 rounded">
-          <p className="text-blue-800">Loading categories...</p>
+        <div className="mb-4 p-4 bg-yellow-50 border border-yellow-200 rounded">
+          <p className="text-yellow-800">Loading categories...</p>
         </div>
       )}
       
@@ -318,7 +318,7 @@ const ServiceSec1Form = () => {
           message.type === 'success' ? 'bg-green-100 text-green-700' :
           message.type === 'error' ? 'bg-red-100 text-red-700' :
           message.type === 'warning' ? 'bg-yellow-100 text-yellow-700' :
-          'bg-blue-100 text-blue-700'
+          'bg-yellow-100 text-yellow-700'
         }`}>
           {message.text}
         </div>
@@ -341,7 +341,7 @@ const ServiceSec1Form = () => {
               disabled={isEditMode}
               className={`px-4 py-2 rounded font-medium transition ${
                 selectedLevel === 'category'
-                  ? 'bg-blue-600 text-white'
+                  ? 'bg-yellow-600 text-white'
                   : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
               } ${isEditMode ? 'opacity-50 cursor-not-allowed' : ''}`}
             >
@@ -352,7 +352,7 @@ const ServiceSec1Form = () => {
               disabled={isEditMode}
               className={`px-4 py-2 rounded font-medium transition ${
                 selectedLevel === 'subcategory'
-                  ? 'bg-blue-600 text-white'
+                  ? 'bg-yellow-600 text-white'
                   : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
               } ${isEditMode ? 'opacity-50 cursor-not-allowed' : ''}`}
             >
@@ -363,7 +363,7 @@ const ServiceSec1Form = () => {
               disabled={isEditMode}
               className={`px-4 py-2 rounded font-medium transition ${
                 selectedLevel === 'subsubcategory'
-                  ? 'bg-blue-600 text-white'
+                  ? 'bg-yellow-600 text-white'
                   : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
               } ${isEditMode ? 'opacity-50 cursor-not-allowed' : ''}`}
             >
@@ -380,7 +380,7 @@ const ServiceSec1Form = () => {
             value={formData.categoryId}
             onChange={handleCategoryChange}
             disabled={isLoadingCategories}
-            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-100"
+            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-transparent disabled:bg-gray-100"
           >
             <option value="">Select Category</option>
             {categories.map(cat => (
@@ -398,7 +398,7 @@ const ServiceSec1Form = () => {
               value={formData.subCategoryId}
               onChange={handleSubCategoryChange}
               disabled={!formData.categoryId}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-100"
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-transparent disabled:bg-gray-100"
             >
               <option value="">Select Sub Category</option>
               {subCategories.map(sub => (
@@ -417,7 +417,7 @@ const ServiceSec1Form = () => {
               value={formData.subSubCategoryId}
               onChange={handleSubSubCategoryChange}
               disabled={!formData.subCategoryId}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-100"
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-transparent disabled:bg-gray-100"
             >
               <option value="">Select Sub-Sub Category</option>
               {subSubCategories.map(subsub => (
@@ -440,7 +440,7 @@ const ServiceSec1Form = () => {
                 name="heading"
                 value={formData.heading}
                 onChange={handleInputChange}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-transparent"
                 placeholder="Enter heading"
               />
             </div>
@@ -454,7 +454,7 @@ const ServiceSec1Form = () => {
                 name="subheading"
                 value={formData.subheading}
                 onChange={handleInputChange}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-transparent"
                 placeholder="Enter subheading"
               />
             </div>
@@ -484,7 +484,7 @@ const ServiceSec1Form = () => {
                 type="file"
                 accept="image/*"
                 onChange={handleFileChange}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-transparent"
               />
               {isEditMode && formData.photo && !selectedFile && (
                 <p className="text-sm text-gray-500 mt-1">Current file: {formData.photo}</p>
@@ -524,7 +524,7 @@ const ServiceSec1Form = () => {
                   name="alt"
                   value={formData.alt}
                   onChange={handleInputChange}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-transparent"
                   placeholder="Enter alt text"
                 />
               </div>
@@ -538,7 +538,7 @@ const ServiceSec1Form = () => {
                   name="imgTitle"
                   value={formData.imgTitle}
                   onChange={handleInputChange}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-transparent"
                   placeholder="Enter image title"
                 />
               </div>
@@ -556,7 +556,7 @@ const ServiceSec1Form = () => {
           <button
             onClick={handleSubmit}
             disabled={loading || !formData.categoryId}
-            className="flex-1 bg-blue-600 text-white py-3 px-6 rounded-lg font-semibold hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed transition"
+            className="flex-1 bg-yellow-600 text-white py-3 px-6 rounded-lg font-semibold hover:bg-yellow-700 disabled:bg-gray-400 disabled:cursor-not-allowed transition"
           >
             {loading ? 'Saving...' : id ? 'Update Data' : 'Create Data'}
           </button>

@@ -81,7 +81,7 @@ export default function AlphabetsBaseCategory() {
       </nav>
 
       <div className="grid md:grid-cols-[350px_1fr]  gap-6">
-        <div className="bg-blue-100 p-6 ">
+        <div className="bg-yellow-100 p-6 ">
           <h2 className=" text-gray-800 text-xl mb-4">Grades</h2>
           <div className="space-y-4">
             {grades.map((grade) => (
@@ -122,7 +122,7 @@ export default function AlphabetsBaseCategory() {
             FINE CHEMICALS & LABORATORY REAGENTS FOR RESEARCH & INDUSTRIES
           </p>
 
-          <div className="flex justify-between bg-blue-100 px-2 py-2 items-center mb-4">
+          <div className="flex justify-between bg-yellow-100 px-2 py-2 items-center mb-4">
             <p className="text-[13px] font-normal">
               1 to 50 of 105 item(s) displayed
             </p>
@@ -139,8 +139,8 @@ export default function AlphabetsBaseCategory() {
             </Select>
           </div>
 
-          <Table className="border border-blue-600/20">
-  <TableHeader className="bg-blue-800">
+          <Table className="border border-yellow-600/20">
+  <TableHeader className="bg-yellow-800">
     <TableRow>
       <TableHead className="text-white">Product Code</TableHead>
       <TableHead className="text-white">Product Name</TableHead>
@@ -153,21 +153,21 @@ export default function AlphabetsBaseCategory() {
     {products.map((product, index) => (
       <TableRow
         key={product.code}
-        className={ index % 2 === 0 ? 'bg-white text-blue-800 ' : 'bg-blue-100 text-blue-800 hover:bg-blue-100'}
+        className={ index % 2 === 0 ? 'bg-white text-yellow-800 ' : 'bg-yellow-100 text-yellow-800 hover:bg-yellow-100'}
       >
-        <TableCell className="text-center border-r border-blue-200">{product.code}</TableCell>
-        <TableCell className="border-r border-blue-200">{product.name}</TableCell>
-        <TableCell className="border-r border-blue-200">{product.cas}</TableCell>
-        <TableCell className="border-r border-blue-200">
+        <TableCell className="text-center border-r border-yellow-200">{product.code}</TableCell>
+        <TableCell className="border-r border-yellow-200">{product.name}</TableCell>
+        <TableCell className="border-r border-yellow-200">{product.cas}</TableCell>
+        <TableCell className="border-r border-yellow-200">
           {product.hasTds && (
-            <Link to="#" className="text-blue-600 hover:underline">
+            <Link to="#" className="text-yellow-600 hover:underline">
               Specs
             </Link>
           )}
         </TableCell>
         <TableCell>
           {product.hasMsds && (
-            <Link to="#" className="text-blue-600 hover:underline">
+            <Link to="#" className="text-yellow-600 hover:underline">
               MSDS
             </Link>
           )}

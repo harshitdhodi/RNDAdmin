@@ -85,7 +85,7 @@ const CareerTable = () => {
             render: (_, record) => (
                 <DownloadOutlined
                     onClick={() => handleDownload(record.resumeFile)}
-                    className="text-blue-600 cursor-pointer"
+                    className="text-yellow-600 cursor-pointer"
                 />
             ),
         },
@@ -102,7 +102,7 @@ const CareerTable = () => {
             render: (_, record) => (
                 <div className="flex gap-3">
                     <EditOutlined
-                        className="text-blue-600 cursor-pointer"
+                        className="text-yellow-600 cursor-pointer"
                         onClick={() => handleEdit(record)}
                     />
                     <DeleteOutlined
@@ -118,7 +118,7 @@ const CareerTable = () => {
         <div className="p-4">
             <div className="mb-4 text-sm text-gray-600 flex gap-2">
                 <span
-                    className="text-blue-600 cursor-pointer hover:underline"
+                    className="text-yellow-600 cursor-pointer hover:underline"
                     onClick={() => navigate('/dashboard')}
                 >
                     Dashboard
@@ -131,7 +131,7 @@ const CareerTable = () => {
                 <h2 className="text-2xl font-semibold">Career List</h2>
                 <button
                     onClick={() => navigate('/career/add')}
-                    className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 flex items-center gap-2"
+                    className="bg-yellow-600 text-white px-4 py-2 rounded hover:bg-yellow-700 flex items-center gap-2"
                 >
                     <PlusOutlined />
                     Add New Application

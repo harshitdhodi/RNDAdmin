@@ -58,7 +58,7 @@ const AlphabetbaseProductTable = ({ chemicals }) => {
               <TableCell>{chemical.auto_p_code}</TableCell>
               <TableCell>
                 <button
-                  className="text-blue-900 hover:no-underline"
+                  className="text-yellow-900 hover:no-underline"
                   onClick={() => handleNameClick(chemical.name)}
                 >
                   {chemical.name}
@@ -84,8 +84,8 @@ const AlphabetbaseProductTable = ({ chemicals }) => {
               size="sm"
               className={`min-w-[40px] ${
                 page === currentPage
-                  ? "bg-blue-600 text-white hover:bg-blue-700"
-                  : "hover:bg-blue-50"
+                  ? "bg-yellow-600 text-white hover:bg-yellow-700"
+                  : "hover:bg-yellow-50"
               }`}
               onClick={() => handlePageChange(page)}
             >

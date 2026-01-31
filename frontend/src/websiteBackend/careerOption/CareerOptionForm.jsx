@@ -264,7 +264,7 @@ const CareerOptionForm = () => {
         </div>
       </div>
 
-      <button type="submit" className="w-full bg-blue-600 text-white font-bold py-2 rounded hover:bg-blue-700">
+      <button type="submit" className="w-full bg-yellow-600 text-white font-bold py-2 rounded hover:bg-yellow-700">
         Add Career Option
       </button>
     </form>

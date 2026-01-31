@@ -77,7 +77,7 @@ const Navbar = () => {
 
     return (
         <>
-            <nav className="bg-[#304a8a] flex items-center justify-between text-white relative">
+            <nav className="bg-[#eab308] flex items-center justify-between text-white relative">
                 <SidebarTrigger />
                 <div className="flex w-full items-center justify-end space-x-8">
                     <NotificationsDropdown
@@ -87,7 +87,7 @@ const Navbar = () => {
                     />
 
                     {adminProfile && (
-                        <p className="text-gray-300">{adminProfile.admin.email}</p>
+                        <p className="text-gray-800">{adminProfile.admin.email}</p>
                     )}
 
                     <UserInfoDropdown

@@ -116,7 +116,7 @@ const BlogCardForm = () => {
       <div className="flex justify-end">
         <button
           type="submit"
-          className="bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700 focus:outline-none transition duration-300"
+          className="bg-yellow-600 text-white px-6 py-2 rounded hover:bg-yellow-700 focus:outline-none transition duration-300"
         >
           {blogCardId ? 'Update Blog Card' : 'Add Blog Card'}
         </button>

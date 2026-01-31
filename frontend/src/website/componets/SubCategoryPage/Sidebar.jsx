@@ -39,7 +39,7 @@ export default function Sidebar({ slug, data }) {
           alt="CDH Logo"
           className="h-8"
         />
-        <h2 className="text-blue-800 font-bold text-lg md:text-xl lg:text-2xl">
+        <h2 className="text-yellow-800 font-bold text-lg md:text-xl lg:text-2xl">
          {data.name}
         </h2>
       </div>
@@ -47,17 +47,17 @@ export default function Sidebar({ slug, data }) {
       <nav>
         {data?.subCategories?.map((category) => (
           <div key={category._id} className="mb-3">
-            <div className="bg-blue-100 p-1 text-lg px-3 flex items-center justify-between">
+            <div className="bg-yellow-100 p-1 text-lg px-3 flex items-center justify-between">
               <button
                 onClick={() => handleCategoryClick(category.slug)}
-                className="text-blue-900 text-sm md:text-lg hover:text-blue-700 text-left"
+                className="text-yellow-900 text-sm md:text-lg hover:text-yellow-700 text-left"
               >
                 {category.category}
               </button>
               {category.subSubCategory?.length > 0 && (
                 <button
                   onClick={(e) => toggleCategory(e, category.category)}
-                  className="text-blue-800 p-1 hover:bg-blue-200 rounded-full transition-colors"
+                  className="text-yellow-800 p-1 hover:bg-yellow-200 rounded-full transition-colors"
                 >
                   {openCategories[category.category] ? (
                     <Minus size={20} />
@@ -74,7 +74,7 @@ export default function Sidebar({ slug, data }) {
                     <ArrowRight size={16} className="text-gray-600" />
                     <button
                       onClick={() => handleSubCategoryClick(category.slug, sub.slug)}
-                      className="text-gray-600 text-[16px] hover:text-blue-600 text-left"
+                      className="text-gray-600 text-[16px] hover:text-yellow-600 text-left"
                     >
                       {sub.category}
                     </button>

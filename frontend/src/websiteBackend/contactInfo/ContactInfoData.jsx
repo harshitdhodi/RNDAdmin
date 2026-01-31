@@ -115,7 +115,7 @@ const ContactInfoForm = () => {
         <div className="min-h-screen ">
             <div className="max-w-3xl ">
                 {/* Header */}
-                <div className="bg-white rounded-t-2xl  p-2 border-b-4 border-indigo-600">
+                <div className="bg-white rounded-t-2xl  p-2 border-b-4 border-yellow-500">
                     <h1 className="text-3xl font-bold text-gray-900">Contact Information</h1>
                   
                 </div>
@@ -125,7 +125,7 @@ const ContactInfoForm = () => {
                     {/* Address Field */}
                     <div className="space-y-2">
                         <label className="flex items-center text-sm font-semibold text-gray-700">
-                            <MapPin className="w-5 h-5 mr-2 text-indigo-600" />
+                            <MapPin className="w-5 h-5 mr-2 text-yellow-500" />
                             Address
                         </label>
                         <textarea
@@ -135,7 +135,7 @@ const ContactInfoForm = () => {
                                 address: e.target.value
                             }))}
                             rows="3"
-                            className="w-full px-4 py-3 rounded-lg border-2 border-gray-200 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 transition-all outline-none"
+                            className="w-full px-4 py-3 rounded-lg border-2 border-gray-200 focus:border-yellow-500 focus:ring-2 focus:ring-yellow-200 transition-all outline-none"
                             placeholder="Enter your business address"
                             required
                         />
@@ -144,7 +144,7 @@ const ContactInfoForm = () => {
                     {/* Map Link Field */}
                     <div className="space-y-2">
                         <label className="flex items-center text-sm font-semibold text-gray-700">
-                            <LinkIcon className="w-5 h-5 mr-2 text-indigo-600" />
+                            <LinkIcon className="w-5 h-5 mr-2 text-yellow-500" />
                             Map Link
                         </label>
                         <input
@@ -154,7 +154,7 @@ const ContactInfoForm = () => {
                                 ...prev,
                                 mapLink: e.target.value
                             }))}
-                            className="w-full px-4 py-3 rounded-lg border-2 border-gray-200 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 transition-all outline-none"
+                            className="w-full px-4 py-3 rounded-lg border-2 border-gray-200 focus:border-yellow-500 focus:ring-2 focus:ring-yellow-200 transition-all outline-none"
                             placeholder="https://maps.google.com/..."
                         />
                     </div>
@@ -162,7 +162,7 @@ const ContactInfoForm = () => {
                     {/* Mobile Numbers */}
                     <div className="space-y-2">
                         <label className="flex items-center text-sm font-semibold text-gray-700">
-                            <Phone className="w-5 h-5 mr-2 text-indigo-600" />
+                            <Phone className="w-5 h-5 mr-2 text-yellow-500" />
                             Mobile Numbers
                         </label>
                         {formData.mobiles.map((mobile, index) => (
@@ -178,7 +178,7 @@ const ContactInfoForm = () => {
                                             mobiles: newArray
                                         };
                                     })}
-                                    className="flex-1 px-4 py-3 rounded-lg border-2 border-gray-200 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 transition-all outline-none"
+                                    className="flex-1 px-4 py-3 rounded-lg border-2 border-gray-200 focus:border-yellow-500 focus:ring-2 focus:ring-yellow-200 transition-all outline-none"
                                     placeholder="+91 XXXXX XXXXX"
                                     required
                                 />
@@ -206,7 +206,7 @@ const ContactInfoForm = () => {
                                 ...prev,
                                 mobiles: [...prev.mobiles, '']
                             }))} 
-                            className="text-indigo-600 hover:text-indigo-700 font-medium text-sm flex items-center gap-1"
+                            className="text-yellow-500 hover:text-yellow-700 font-medium text-sm flex items-center gap-1"
                         >
                             <span className="text-xl">+</span> Add Mobile Number
                         </button>
@@ -215,7 +215,7 @@ const ContactInfoForm = () => {
                     {/* Emails */}
                     <div className="space-y-2">
                         <label className="flex items-center text-sm font-semibold text-gray-700">
-                            <Mail className="w-5 h-5 mr-2 text-indigo-600" />
+                            <Mail className="w-5 h-5 mr-2 text-yellow-500" />
                             Email Addresses
                         </label>
                         {formData.emails.map((email, index) => (
@@ -231,7 +231,7 @@ const ContactInfoForm = () => {
                                             emails: newArray
                                         };
                                     })}
-                                    className="flex-1 px-4 py-3 rounded-lg border-2 border-gray-200 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 transition-all outline-none"
+                                    className="flex-1 px-4 py-3 rounded-lg border-2 border-gray-200 focus:border-yellow-500 focus:ring-2 focus:ring-yellow-200 transition-all outline-none"
                                     placeholder="contact@example.com"
                                     required
                                 />
@@ -259,7 +259,7 @@ const ContactInfoForm = () => {
                                 ...prev,
                                 emails: [...prev.emails, '']
                             }))} 
-                            className="text-indigo-600 hover:text-indigo-700 font-medium text-sm flex items-center gap-1"
+                            className="text-yellow-500 hover:text-yellow-700 font-medium text-sm flex items-center gap-1"
                         >
                             <span className="text-xl">+</span> Add Email Address
                         </button>
@@ -269,7 +269,7 @@ const ContactInfoForm = () => {
                     <button
                         type="button"
                         onClick={handleSubmit}
-                        className="w-full bg-gradient-to-r from-indigo-600 to-blue-600 text-white py-4 px-6 rounded-lg hover:from-indigo-700 hover:to-blue-700 transition-all font-semibold text-lg shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
+                        className="w-full bg-yellow-500 text-white py-4 px-6 rounded-lg hover:bg-yellow-700 transition-all font-semibold text-lg shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
                     >
                         {allUsers && allUsers.length > 0 ? '✓ Update Contact Information' : '+ Add Contact Information'}
                     </button>

@@ -349,7 +349,7 @@ const PortfolioForm = () => {
           id="parentCategory"
           value={parentCategoryId}
           onChange={handleParentCategoryChange}
-          className={`w-full p-2 border rounded focus:outline-none focus:border-blue-500 ${
+          className={`w-full p-2 border rounded focus:outline-none focus:border-yellow-500 ${
             errors.parentCategory ? 'border-red-500' : ''
           }`}
         >
@@ -370,7 +370,7 @@ const PortfolioForm = () => {
             id="subCategory"
             value={subCategoryId}
             onChange={handleSubCategoryChange}
-            className="w-full p-2 border rounded focus:outline-none focus:border-blue-500"
+            className="w-full p-2 border rounded focus:outline-none focus:border-yellow-500"
           >
             <option value="">Select Subcategory</option>
             {subCategories.map((subCategory) => (
@@ -391,7 +391,7 @@ const PortfolioForm = () => {
             id="subSubCategory"
             value={subSubCategoryId}
             onChange={handleSubSubCategoryChange}
-            className="w-full p-2 border rounded focus:outline-none focus:border-blue-500"
+            className="w-full p-2 border rounded focus:outline-none focus:border-yellow-500"
           >
             <option value="">Select Sub-Subcategory</option>
             {subSubCategories.map((subSubCategory) => (
@@ -415,7 +415,7 @@ const PortfolioForm = () => {
             setTitle(e.target.value);
             clearFieldError('title');
           }}
-          className={`w-full p-2 border rounded focus:outline-none focus:border-blue-500 ${
+          className={`w-full p-2 border rounded focus:outline-none focus:border-yellow-500 ${
             errors.title ? 'border-red-500' : ''
           }`}
         />
@@ -437,7 +437,7 @@ const PortfolioForm = () => {
             setLink(e.target.value);
             clearFieldError('link');
           }}
-          className={`w-full p-2 border rounded focus:outline-none focus:border-blue-500 ${
+          className={`w-full p-2 border rounded focus:outline-none focus:border-yellow-500 ${
             errors.link ? 'border-red-500' : ''
           }`}
           placeholder="https://example.com"
@@ -476,7 +476,7 @@ const PortfolioForm = () => {
           name="photo"
           id="photo"
           onChange={handlePhotoChange}
-          className="w-full p-2 border rounded focus:outline-none focus:border-blue-500"
+          className="w-full p-2 border rounded focus:outline-none focus:border-yellow-500"
           accept="image/*"
         />
         <p className="text-sm text-gray-500 mt-1">
@@ -512,7 +512,7 @@ const PortfolioForm = () => {
                     setPhotoAlt(e.target.value);
                     clearFieldError('alt');
                   }}
-                  className={`w-full p-2 border rounded focus:outline-none focus:border-blue-500 ${
+                  className={`w-full p-2 border rounded focus:outline-none focus:border-yellow-500 ${
                     errors.alt ? 'border-red-500' : ''
                   }`}
                   placeholder="Describe this image..."
@@ -534,7 +534,7 @@ const PortfolioForm = () => {
                     setImgtitle(e.target.value);
                     clearFieldError('imgtitle');
                   }}
-                  className={`w-full p-2 border rounded focus:outline-none focus:border-blue-500 ${
+                  className={`w-full p-2 border rounded focus:outline-none focus:border-yellow-500 ${
                     errors.imgtitle ? 'border-red-500' : ''
                   }`}
                   placeholder="Image title..."
@@ -557,7 +557,7 @@ const PortfolioForm = () => {
           id="status"
           value={status}
           onChange={(e) => setStatus(e.target.value)}
-          className="w-full p-2 border rounded focus:outline-none focus:border-blue-500"
+          className="w-full p-2 border rounded focus:outline-none focus:border-yellow-500"
         >
           <option value="active">Active</option>
           <option value="inactive">Inactive</option>
@@ -567,7 +567,7 @@ const PortfolioForm = () => {
       <button 
         type="submit" 
         disabled={isSubmitting}
-        className={`bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600 transition duration-200 ${
+        className={`bg-yellow-500 text-white py-2 px-4 rounded hover:bg-yellow-600 transition duration-200 ${
           isSubmitting ? 'opacity-50 cursor-not-allowed' : ''
         }`}
       >

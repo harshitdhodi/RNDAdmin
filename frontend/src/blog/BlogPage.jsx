@@ -217,7 +217,7 @@ const BlogTable = () => {
               value={heading}
               onChange={(e) => setHeading(e.target.value)}
               disabled={loadingHeadings}
-              className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-500"
               placeholder="Enter main heading"
             />
           </div>
@@ -230,7 +230,7 @@ const BlogTable = () => {
               value={subheading}
               onChange={(e) => setSubheading(e.target.value)}
               disabled={loadingHeadings}
-              className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-500"
               placeholder="Enter subheading"
             />
           </div>

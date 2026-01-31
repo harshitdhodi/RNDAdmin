@@ -54,7 +54,7 @@ const CareerOptionTable = () => {
         accessor: "jobtitle",
         Cell: ({ row }) => (
           <span
-            className="hover:text-blue-500 cursor-pointer"
+            className="hover:text-yellow-500 cursor-pointer"
             onClick={() => navigate(`/careeroption/editCareerOption/${row.original._id}`)}
           >
             {row.original.jobtitle}
@@ -66,7 +66,7 @@ const CareerOptionTable = () => {
         accessor: "description",
         Cell: ({ row }) => (
           <span
-            className="hover:text-blue-500 cursor-pointer"
+            className="hover:text-yellow-500 cursor-pointer"
             onClick={() => navigate(`/careeroption/editCareerOption/${row.original._id}`)}
           >
             <p dangerouslySetInnerHTML={{ __html: row.original.description }}></p>
@@ -93,10 +93,10 @@ const CareerOptionTable = () => {
         Header: "Options",
         Cell: ({ row }) => (
           <div className="flex gap-4">
-            <button className="text-blue-500 hover:text-blue-700 transition" onClick={() => handleView(row.original)}>
+            <button className="text-yellow-500 hover:text-yellow-700 transition" onClick={() => handleView(row.original)}>
               <Eye />
             </button>
-            <button className="text-blue-500 hover:text-blue-700 transition">
+            <button className="text-yellow-500 hover:text-yellow-700 transition">
               <Link to={`/careeroption/editCareerOption/${row.original._id}`}><Edit /></Link>
             </button>
             <button className="text-red-500 hover:text-red-700 transition" onClick={() => deleteCareerOption(row.original._id)}>
@@ -207,7 +207,7 @@ const CareerOptionTable = () => {
               type="text"
               value={heading}
               onChange={handleHeadingChange}
-              className="w-full px-4 py-2 border rounded-md focus:outline-none focus:border-blue-500 transition duration-300"
+              className="w-full px-4 py-2 border rounded-md focus:outline-none focus:border-yellow-500 transition duration-300"
             />
           </div>
           <div className="mb-6">
@@ -216,7 +216,7 @@ const CareerOptionTable = () => {
               type="text"
               value={subheading}
               onChange={handleSubheadingChange}
-              className="w-full px-4 py-2 border rounded-md focus:outline-none focus:border-blue-500 transition duration-300"
+              className="w-full px-4 py-2 border rounded-md focus:outline-none focus:border-yellow-500 transition duration-300"
             />
           </div>
         </div>
@@ -239,7 +239,7 @@ const CareerOptionTable = () => {
           placeholder="Search by title..."
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
-          className="w-full px-4 py-2 border rounded-md focus:outline-none focus:border-blue-500 transition duration-300"
+          className="w-full px-4 py-2 border rounded-md focus:outline-none focus:border-yellow-500 transition duration-300"
         />
       </div>
       <h2 className="text-md font-semibold mb-4">Manage Career Options</h2>

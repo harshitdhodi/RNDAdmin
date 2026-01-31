@@ -63,7 +63,7 @@ const ProductCategory = () => {
       {subSubCategories.map((subSubCat) => (
         <li
           key={subSubCat.slug}
-          className="flex items-center text-gray-600 cursor-pointer hover:text-blue-700"
+          className="flex items-center text-gray-600 cursor-pointer hover:text-yellow-700"
           onClick={() => handleSubSubCategoryClick(parentSlug, subCategorySlug, subSubCat.slug)}
         >
           <span className="mr-2">›</span>
@@ -82,13 +82,13 @@ const ProductCategory = () => {
       <nav className="pt-5 sm:text-xs md:text-sm lg:text-base text-[11px] border-b pb-3 w-[98%] ml-8 mb-5 py-2">
         <ul className="flex gap-2 flex-wrap">
           <li>
-            <Link to="/" className="text-gray-600 hover:text-blue-600">
+            <Link to="/" className="text-gray-600 hover:text-yellow-600">
               Home
             </Link>
           </li>
           <li className="text-gray-400">&gt;</li>
           <li>
-            <Link to="/products" className="text-gray-600 hover:text-blue-600">
+            <Link to="/products" className="text-gray-600 hover:text-yellow-600">
               Products
             </Link>
           </li>
@@ -110,7 +110,7 @@ const ProductCategory = () => {
                       className="h-8 "
                     />
                     {/* Dynamically rendering category name */}
-                    <h2 className="text-blue-800 font-bold text-lg">
+                    <h2 className="text-yellow-800 font-bold text-lg">
                       {category.name}
                     </h2>
                   </div>
@@ -121,8 +121,8 @@ const ProductCategory = () => {
                         className="p-1 flex items-center justify-between cursor-pointer"
                         onClick={() => handleSubCategoryClick(category.slug, subCategory.slug, subCategory.category)}
                       >
-                        <div className='flex p-1 px-4 justify-between items-center w-full bg-blue-100'>
-                        <span className="text-blue-800  text-lg font-normal hover:text-blue-700 transition-colors">
+                        <div className='flex p-1 px-4 justify-between items-center w-full bg-yellow-100'>
+                        <span className="text-yellow-800  text-lg font-normal hover:text-yellow-700 transition-colors">
                           {subCategory.category}
                         </span>
                         <button
@@ -130,12 +130,12 @@ const ProductCategory = () => {
                             e.stopPropagation();
                             toggleSubCategory(subCategory.slug);
                           }}
-                          className="p-1 hover:bg-blue-100 rounded-full transition-colors"
+                          className="p-1 hover:bg-yellow-100 rounded-full transition-colors"
                         >
                           {openSubCategories[subCategory.slug] ? (
-                            <Minus className="w-5 h-5 text-blue-900" />
+                            <Minus className="w-5 h-5 text-yellow-900" />
                           ) : (
-                            <Plus className="w-5 h-5 text-blue-900" />
+                            <Plus className="w-5 h-5 text-yellow-900" />
                           )}
                         </button>
                         </div>

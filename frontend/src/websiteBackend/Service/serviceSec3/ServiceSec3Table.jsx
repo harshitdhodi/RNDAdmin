@@ -146,7 +146,7 @@ const ServiceSec3Table = () => {
   const getLevelBadgeColor = (level) => {
     switch (level) {
       case 'category':
-        return 'bg-blue-100 text-blue-800';
+        return 'bg-yellow-100 text-yellow-800';
       case 'subcategory':
         return 'bg-green-100 text-green-800';
       case 'subsubcategory':
@@ -172,7 +172,7 @@ const ServiceSec3Table = () => {
     return (
       <div className="max-w-7xl mx-auto p-6">
         <div className="bg-white rounded-lg shadow-lg p-8 text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-yellow-600 mx-auto"></div>
           <p className="mt-4 text-gray-600">Loading data...</p>
         </div>
       </div>
@@ -189,7 +189,7 @@ const ServiceSec3Table = () => {
             <div className={`mb-4 p-4 rounded ${
               message.type === 'success' ? 'bg-green-100 text-green-700' :
               message.type === 'error' ? 'bg-red-100 text-red-700' :
-              'bg-blue-100 text-blue-700'
+              'bg-yellow-100 text-yellow-700'
             }`}>
               {message.text}
             </div>
@@ -203,14 +203,14 @@ const ServiceSec3Table = () => {
                 placeholder="Search by heading, subheading, or category..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-transparent"
               />
             </div>
 
             <select
               value={filterLevel}
               onChange={(e) => setFilterLevel(e.target.value)}
-              className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-transparent"
             >
               <option value="all">All Levels</option>
               <option value="category">Category</option>
@@ -223,7 +223,7 @@ const ServiceSec3Table = () => {
               <select
                 value={itemsPerPage}
                 onChange={(e) => setItemsPerPage(Number(e.target.value))}
-                className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-transparent"
               >
                 {PER_PAGE_OPTIONS.map((n) => (
                   <option key={n} value={n}>{n}</option>
@@ -233,7 +233,7 @@ const ServiceSec3Table = () => {
 
             <button
               onClick={() => navigate('/service-sec3-form')}
-              className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition whitespace-nowrap"
+              className="px-6 py-2 bg-yellow-600 text-white rounded-lg hover:bg-yellow-700 transition whitespace-nowrap"
             >
               + Add New
             </button>
@@ -311,7 +311,7 @@ const ServiceSec3Table = () => {
                           <div className="flex items-center justify-center gap-2">
                             <button
                               onClick={() => toggleRowExpansion(item._id)}
-                              className="text-blue-600 hover:text-blue-900 p-1 hover:bg-blue-50 rounded"
+                              className="text-yellow-600 hover:text-yellow-900 p-1 hover:bg-yellow-50 rounded"
                               title="View Details"
                             >
                               {expandedRows.has(item._id) ? (
@@ -458,7 +458,7 @@ const ServiceSec3Table = () => {
                           onClick={() => setCurrentPage(p)}
                           className={`min-w-[2rem] px-2 py-1.5 rounded-lg text-sm font-medium transition ${
                             currentPage === p
-                              ? 'bg-blue-600 text-white'
+                              ? 'bg-yellow-600 text-white'
                               : 'border border-gray-300 hover:bg-gray-50'
                           }`}
                         >

@@ -35,14 +35,14 @@ export default function MSDSSection({ msds, specs, name, onInquiry }) {
   }
 
   return (
-    <div className="mt-12 bg-gradient-to-r from-blue-50 to-blue-100 p-5 shadow-md">
-      <h2 className="text-xl font-semibold mb-6 text-blue-900 border-b border-blue-200 pb-3">
+    <div className="mt-12 bg-gradient-to-r from-yellow-50 to-yellow-100 p-5 shadow-md">
+      <h2 className="text-xl font-semibold mb-6 text-yellow-900 border-b border-yellow-200 pb-3">
         {name} MSDS (Material Safety Data Sheet) or SDS, COA and Specs
       </h2>
       <div className="flex gap-4 mb-3">
         <Button 
           variant="outline" 
-          className="flex items-center gap-2 bg-white hover:bg-blue-50 border-blue-200 hover:border-blue-300 text-blue-700"
+          className="flex items-center gap-2 bg-white hover:bg-yellow-50 border-yellow-200 hover:border-yellow-300 text-yellow-700"
           onClick={() => openPdf('specs')}
         >
           <svg
@@ -57,7 +57,7 @@ export default function MSDSSection({ msds, specs, name, onInquiry }) {
         </Button>
         <Button 
           variant="outline" 
-          className="flex items-center gap-2 bg-white hover:bg-blue-50 border-blue-200 hover:border-blue-300 text-blue-700"
+          className="flex items-center gap-2 bg-white hover:bg-yellow-50 border-yellow-200 hover:border-yellow-300 text-yellow-700"
           onClick={() => openPdf('msds')}
         >
           <svg

@@ -22,8 +22,8 @@ const RecentProduct = () => {
   return (
     <div className="container mx-auto px-4 py-8">
       <div className="mb-6">
-        <h2 className="text-2xl lg:text-3xl font-bold mb-2 text-blue-900">Recent Products</h2>
-        <div className="w-[10%] h-1 bg-blue-800"></div>
+        <h2 className="text-2xl lg:text-3xl font-bold mb-2 text-yellow-900">Recent Products</h2>
+        <div className="w-[10%] h-1 bg-yellow-800"></div>
       </div>
       
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -46,14 +46,14 @@ const RecentProduct = () => {
                 </div>
               </div>
               
-              <div className="p-5 space-y-3 flex-1 bg-gradient-to-b from-blue-50 to-blue-100">
+              <div className="p-5 space-y-3 flex-1 bg-gradient-to-b from-yellow-50 to-yellow-100">
                 <h3 className="font-semibold text-xl text-gray-800 truncate 
-                  group-hover:text-blue-600 transition-colors">
+                  group-hover:text-yellow-600 transition-colors">
                   {product.name}
                 </h3>
                 <p className="text-gray-600 text-sm flex items-center gap-2">
                   <span className="font-medium">Category:</span> 
-                  <span className="bg-blue-100 px-2 py-1 rounded-full">
+                  <span className="bg-yellow-100 px-2 py-1 rounded-full">
                     {product.categorySlug}
                   </span>
                 </p>

@@ -389,7 +389,7 @@ const WhyChooseUsCRUD = () => {
             </h1>
             <button
               onClick={() => setShowForm(!showForm)}
-              className="flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition"
+              className="flex items-center gap-2 bg-yellow-600 text-white px-4 py-2 rounded-lg hover:bg-yellow-700 transition"
             >
               {showForm ? <X size={20} /> : <Plus size={20} />}
               {showForm ? "Close" : "Add New"}
@@ -410,7 +410,7 @@ const WhyChooseUsCRUD = () => {
                     categoryId: e.target.value,
                   }))
                 }
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-transparent"
               >
                 <option value="">All Categories</option>
                 {categories.map((cat) => (
@@ -439,7 +439,7 @@ const WhyChooseUsCRUD = () => {
                     onClick={() => handleLevelChange("category")}
                     className={`px-4 py-2 rounded font-medium transition ${
                       selectedLevel === "category"
-                        ? "bg-blue-600 text-white"
+                        ? "bg-yellow-600 text-white"
                         : "bg-gray-200 text-gray-700 hover:bg-gray-300"
                     }`}
                   >
@@ -449,7 +449,7 @@ const WhyChooseUsCRUD = () => {
                     onClick={() => handleLevelChange("subcategory")}
                     className={`px-4 py-2 rounded font-medium transition ${
                       selectedLevel === "subcategory"
-                        ? "bg-blue-600 text-white"
+                        ? "bg-yellow-600 text-white"
                         : "bg-gray-200 text-gray-700 hover:bg-gray-300"
                     }`}
                   >
@@ -459,7 +459,7 @@ const WhyChooseUsCRUD = () => {
                     onClick={() => handleLevelChange("subsubcategory")}
                     className={`px-4 py-2 rounded font-medium transition ${
                       selectedLevel === "subsubcategory"
-                        ? "bg-blue-600 text-white"
+                        ? "bg-yellow-600 text-white"
                         : "bg-gray-200 text-gray-700 hover:bg-gray-300"
                     }`}
                   >
@@ -477,7 +477,7 @@ const WhyChooseUsCRUD = () => {
                   <select
                     value={formData.categoryId}
                     onChange={handleCategoryChange}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-transparent"
                   >
                     <option value="">Select Category</option>
                     {categories.map((cat) => (
@@ -498,7 +498,7 @@ const WhyChooseUsCRUD = () => {
                       value={formData.subCategoryId}
                       onChange={handleSubCategoryChange}
                       disabled={!formData.categoryId}
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-100"
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-transparent disabled:bg-gray-100"
                     >
                       <option value="">Select Sub Category</option>
                       {subCategories.map((sub) => (
@@ -519,7 +519,7 @@ const WhyChooseUsCRUD = () => {
                       value={formData.subSubCategoryId}
                       onChange={handleSubSubCategoryChange}
                       disabled={!formData.subCategoryId}
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-100"
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-transparent disabled:bg-gray-100"
                     >
                       <option value="">Select Sub-Sub Category</option>
                       {subSubCategories.map((subsub) => (
@@ -540,7 +540,7 @@ const WhyChooseUsCRUD = () => {
                     name="heading"
                     value={formData.heading}
                     onChange={handleInputChange}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-transparent"
                   />
                 </div>
 
@@ -553,7 +553,7 @@ const WhyChooseUsCRUD = () => {
                     name="subheading"
                     value={formData.subheading}
                     onChange={handleInputChange}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-transparent"
                   />
                 </div>
 
@@ -613,7 +613,7 @@ const WhyChooseUsCRUD = () => {
                     name="alt"
                     value={formData.alt}
                     onChange={handleInputChange}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-transparent"
                   />
                 </div>
 
@@ -626,7 +626,7 @@ const WhyChooseUsCRUD = () => {
                     name="imgTitle"
                     value={formData.imgTitle}
                     onChange={handleInputChange}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-transparent"
                   />
                 </div>
               </div>
@@ -669,7 +669,7 @@ const WhyChooseUsCRUD = () => {
                           onChange={(e) =>
                             handleCardChange(index, "title", e.target.value)
                           }
-                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-transparent"
                         />
                       </div>
 
@@ -683,7 +683,7 @@ const WhyChooseUsCRUD = () => {
                           onChange={(e) =>
                             handleCardChange(index, "subTitle", e.target.value)
                           }
-                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-transparent"
                         />
                       </div>
 
@@ -701,7 +701,7 @@ const WhyChooseUsCRUD = () => {
                             )
                           }
                           rows="2"
-                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-transparent"
                         />
                       </div>
 
@@ -734,7 +734,7 @@ const WhyChooseUsCRUD = () => {
                           onChange={(e) =>
                             handleCardChange(index, "alt", e.target.value)
                           }
-                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-transparent"
                         />
                       </div>
                     </div>
@@ -745,7 +745,7 @@ const WhyChooseUsCRUD = () => {
               <div className="flex gap-3">
                 <button
                   onClick={handleSubmit}
-                  className="flex items-center gap-2 bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition"
+                  className="flex items-center gap-2 bg-yellow-600 text-white px-6 py-2 rounded-lg hover:bg-yellow-700 transition"
                 >
                   <Save size={18} />
                   {editingId ? "Update" : "Create"}
@@ -814,7 +814,7 @@ const WhyChooseUsCRUD = () => {
                       <div className="flex gap-2">
                         <button
                           onClick={() => handleEdit(item)}
-                          className="text-blue-600 hover:text-blue-800 transition"
+                          className="text-yellow-600 hover:text-yellow-800 transition"
                         >
                           <Edit2 size={18} />
                         </button>

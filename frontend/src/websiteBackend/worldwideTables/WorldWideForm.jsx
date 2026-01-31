@@ -48,14 +48,14 @@ const WorldwideForm = () => {
                 items={[
                     {
                         title: (
-                            <span onClick={() => navigate('/dashboard')} className="cursor-pointer text-blue-500">
+                            <span onClick={() => navigate('/dashboard')} className="cursor-pointer text-yellow-500">
                                 Dashboard
                             </span>
                         ),
                     },
                     {
                         title: (
-                            <span onClick={() => navigate('/worldwide-table')} className="cursor-pointer text-blue-500">
+                            <span onClick={() => navigate('/worldwide-table')} className="cursor-pointer text-yellow-500">
                                 Worldwide Locations
                             </span>
                         ),

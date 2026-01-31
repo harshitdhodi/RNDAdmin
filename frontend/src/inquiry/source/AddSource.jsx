@@ -76,7 +76,7 @@ export const SourceForm = ({ closeModal, sourceToEdit = null }) => {
 
         <Button
           type="submit"
-          className="w-full bg-blue-500 text-white rounded hover:bg-blue-600"
+          className="w-full bg-yellow-500 text-white rounded hover:bg-yellow-600"
           disabled={isCreating || isUpdating}
         >
           {isCreating || isUpdating ? 'Submitting...' : (sourceToEdit ? 'Update' : 'Submit')}

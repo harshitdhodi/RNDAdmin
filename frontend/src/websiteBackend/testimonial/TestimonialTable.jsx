@@ -47,7 +47,7 @@ const TestimonialsTable = () => {
         accessor: "name",
         Cell: ({ row }) => (
           <span
-            className="hover:text-blue-500 cursor-pointer"
+            className="hover:text-yellow-500 cursor-pointer"
             onClick={() => navigate(`/testimonials/editTestimonials/${row.original._id}`)}
           >
             {row.original.name}
@@ -59,7 +59,7 @@ const TestimonialsTable = () => {
         accessor: "designation",
         Cell: ({ row }) => (
           <span
-            className="hover:text-blue-500 cursor-pointer"
+            className="hover:text-yellow-500 cursor-pointer"
             onClick={() => navigate(`/testimonials/editTestimonials/${row.original._id}`)}
           >
             {row.original.designation}
@@ -88,7 +88,7 @@ const TestimonialsTable = () => {
             <button className="text-gray-600 hover:text-gray-800 transition" onClick={() => handleView(row.original)}>
               <FaEye />
             </button>
-            <button className="text-blue-500 hover:text-blue-700 transition">
+            <button className="text-yellow-500 hover:text-yellow-700 transition">
               <Link to={`/testimonials/editTestimonials/${row.original._id}`}>  <FaEdit /></Link>
             </button>
             <button className="text-red-500 hover:text-red-700 transition" onClick={() => deleteTestimonial(row.original._id)}>
@@ -200,7 +200,7 @@ const TestimonialsTable = () => {
               type="text"
               value={heading}
               onChange={handleHeadingChange}
-              className="w-full px-4 py-2 border rounded-md focus:outline-none focus:border-blue-500 transition duration-300"
+              className="w-full px-4 py-2 border rounded-md focus:outline-none focus:border-yellow-500 transition duration-300"
             />
           </div>
           <div className="mb-6">
@@ -209,7 +209,7 @@ const TestimonialsTable = () => {
               type="text"
               value={subheading}
               onChange={handleSubheadingChange}
-              className="w-full px-4 py-2 border rounded-md focus:outline-none focus:border-blue-500 transition duration-300"
+              className="w-full px-4 py-2 border rounded-md focus:outline-none focus:border-yellow-500 transition duration-300"
             />
           </div>
         </div>
@@ -232,7 +232,7 @@ const TestimonialsTable = () => {
           placeholder="Search by name..."
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
-          className="w-full px-4 py-2 border rounded-md focus:outline-none focus:border-blue-500 transition duration-300"
+          className="w-full px-4 py-2 border rounded-md focus:outline-none focus:border-yellow-500 transition duration-300"
         />
       </div>
       <h2 className="text-md font-semibold mb-4">Manage Testimonials</h2>

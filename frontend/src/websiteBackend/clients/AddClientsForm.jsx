@@ -182,7 +182,7 @@ const AddClientForm = () => {
 
       <button 
         type="submit" 
-        className={`bg-blue-500 text-white py-2 px-4 rounded mt-8 ${isLoading ? "opacity-50 cursor-not-allowed" : ""}`}
+        className={`bg-yellow-500 text-white py-2 px-4 rounded mt-8 ${isLoading ? "opacity-50 cursor-not-allowed" : ""}`}
         disabled={isLoading}
       >
         {isLoading ? "Adding..." : "Add Client"}

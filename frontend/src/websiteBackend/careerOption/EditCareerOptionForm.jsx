@@ -358,7 +358,7 @@ const EditCareerOptionForm = () => {
           <option value="inactive">Inactive</option>
         </select>
       </div>
-      <button type="submit" className="bg-blue-500 text-white rounded-md p-2">
+      <button type="submit" className="bg-yellow-500 text-white rounded-md p-2">
         Update Career Option
       </button>
     </form>

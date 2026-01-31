@@ -103,7 +103,7 @@ const EditCounter = () => {
         </select>
       </div>
 
-      <button type="submit" className="w-full bg-blue-500 text-white rounded-md p-2 hover:bg-blue-600">
+      <button type="submit" className="w-full bg-yellow-500 text-white rounded-md p-2 hover:bg-yellow-600">
         Update Counter
       </button>
     </form>

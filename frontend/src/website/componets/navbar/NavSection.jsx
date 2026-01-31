@@ -34,7 +34,7 @@ const NavSection = ({
                         </NavLink>
                         <div
                             className={`
-                                absolute left-0 w-64 bg-blue-800 text-white shadow-lg z-50 font-normal
+                                absolute left-0 w-64 bg-yellow-800 text-white shadow-lg z-50 font-normal
                                 transition-all duration-200 ease-in-out
                                 ${corporateDropdownOpen 
                                     ? 'opacity-100 translate-y-0' 
@@ -43,13 +43,13 @@ const NavSection = ({
                         >
                             <Link
                                 to="/introduction"
-                                className="block px-4 py-2 hover:bg-blue-600 transition-colors"
+                                className="block px-4 py-2 hover:bg-yellow-600 transition-colors"
                             >
                                 <span>Introduction</span>
                             </Link>
                             <Link
                                 to="/vision-mission"
-                                className="block px-4 py-2 hover:bg-blue-600 transition-colors"
+                                className="block px-4 py-2 hover:bg-yellow-600 transition-colors"
                             >
                                 Vision
                             </Link>
@@ -95,7 +95,7 @@ const NavSection = ({
                         </NavLink>
                         <div
                             className={`
-                                absolute left-0 w-64 bg-blue-800 text-white shadow-lg z-50 font-normal
+                                absolute left-0 w-64 bg-yellow-800 text-white shadow-lg z-50 font-normal
                                 transition-all duration-200 ease-in-out
                                 ${blogDropdownOpen 
                                     ? 'opacity-100 translate-y-0' 
@@ -107,7 +107,7 @@ const NavSection = ({
                                     <Link
                                         key={category.id}
                                         to={`/blog/${category.slug}`}
-                                        className="block px-4 py-2 hover:bg-blue-600 transition-colors"
+                                        className="block px-4 py-2 hover:bg-yellow-600 transition-colors"
                                     >
                                         {category.name}
                                     </Link>

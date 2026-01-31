@@ -37,7 +37,7 @@ function AdminLogin() {
                     <div className="text-center">
                         <div className="flex justify-center items-center flex-col">
                             <img className="w-[2cm] h-[2cm]" src={Adminlogo} alt="img" />
-                            <h2 className="text-2xl font-[700] font-sens text-blue-950 mt-4">ADMIN PANEL</h2>
+                            <h2 className="text-2xl font-[700] font-sens text-yellow-950 mt-4">ADMIN PANEL</h2>
                         </div>
                     </div>
                     <form className="mt-8" onSubmit={handleSubmit}>
@@ -48,7 +48,7 @@ function AdminLogin() {
                             <input
                                 type="email"
                                 id="email"
-                                className="w-full py-2 px-3 mt-1 text-blue-950 bg-white border-b-2 border-gray-400 focus:outline-none focus:border-blue-700"
+                                className="w-full py-2 px-3 mt-1 text-yellow-950 bg-white border-b-2 border-gray-400 focus:outline-none focus:border-yellow-700"
                                 value={email}
                                 onChange={(e) => setEmail(e.target.value)}
                                 required
@@ -62,7 +62,7 @@ function AdminLogin() {
                             <input
                                 type="password"
                                 id="password"
-                                className="w-full py-2 px-3 mt-1 text-blue-950 bg-white border-b-2 border-gray-400 focus:outline-none focus:border-blue-700"
+                                className="w-full py-2 px-3 mt-1 text-yellow-950 bg-white border-b-2 border-gray-400 focus:outline-none focus:border-yellow-700"
                                 value={password}
                                 onChange={(e) => setPassword(e.target.value)}
                                 required
@@ -72,14 +72,14 @@ function AdminLogin() {
                             <div className="text-sm text-gray-400">
                                 <Link
                                     to="/forgetpassword"
-                                    className="text-blue-500 hover:underline"
+                                    className="text-yellow-500 hover:underline"
                                 >
                                     Forgot Password?
                                 </Link>
                             </div>
                             <button
                                 type="submit"
-                                className="py-2 px-4 bg-transparent text-blue-950 font-bold border border-blue-950 rounded hover:bg-blue-950 hover:text-white transition duration-300"
+                                className="py-2 px-4 bg-transparent text-yellow-950 font-bold border border-yellow-950 rounded hover:bg-yellow-950 hover:text-white transition duration-300"
                                 disabled={isLoading}
                             >
                                 LOGIN

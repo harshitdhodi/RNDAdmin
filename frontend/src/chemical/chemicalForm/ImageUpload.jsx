@@ -225,8 +225,8 @@ const ImageUploadForm = ({ control, setValue }) => {
                 file:mr-4 file:py-2 file:px-4
                 file:rounded-full file:border-0
                 file:text-sm file:font-semibold
-                file:bg-blue-50 file:text-blue-700
-                hover:file:bg-blue-100"
+                file:bg-yellow-50 file:text-yellow-700
+                hover:file:bg-yellow-100"
           />
 
           {/* Alt Text Input */}
@@ -276,7 +276,7 @@ const ImageUploadForm = ({ control, setValue }) => {
         onClick={() =>
           append({ file: null, preview: null, altText: "", title: "", url: null })
         }
-        className="px-4 py-2 mt-4 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+        className="px-4 py-2 mt-4 text-sm font-medium text-white bg-yellow-600 rounded-md hover:bg-yellow-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-yellow-500"
       >
         Add Image
       </button>

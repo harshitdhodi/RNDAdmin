@@ -6,13 +6,13 @@ export default function Breadcrumb({ chemicals = '', slug = '', categorySlug = '
     <nav className="pt-5 sm:text-xs md:text-sm lg:text-base text-[11px] border-b pb-3 w-full mb-5 py-2 px-4">
       <ul className="flex gap-2 flex-wrap">
         <li>
-          <Link to="/" className="text-gray-600 hover:text-blue-600">
+          <Link to="/" className="text-gray-600 hover:text-yellow-600">
             Home
           </Link>
         </li>
         <li className="text-gray-400">&gt;</li>
         <li>
-          <Link to="/categories" className="text-gray-600 hover:text-blue-600">
+          <Link to="/categories" className="text-gray-600 hover:text-yellow-600">
             Products
           </Link>
         </li>
@@ -21,7 +21,7 @@ export default function Breadcrumb({ chemicals = '', slug = '', categorySlug = '
           <li>
             <Link 
               to={`/${slug}`} 
-              className="text-black hover:text-blue-600"
+              className="text-black hover:text-yellow-600"
             >
               {chemicals.charAt(0).toUpperCase() + chemicals.slice(1).toLowerCase()}
             </Link>

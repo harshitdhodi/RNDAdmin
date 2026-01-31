@@ -71,7 +71,7 @@ function InquiryForm({ productName, onClose }) {
                                     type="text"
                                     value={name}
                                     onChange={(e) => setName(e.target.value)}
-                                    className="w-full border border-gray-300 p-1 rounded-lg focus:ring-2 focus:ring-blue-400 focus:border-transparent transition duration-200"
+                                    className="w-full border border-gray-300 p-1 rounded-lg focus:ring-2 focus:ring-yellow-400 focus:border-transparent transition duration-200"
                                     required
                                 />
                             </div>
@@ -81,7 +81,7 @@ function InquiryForm({ productName, onClose }) {
                                     type="email"
                                     value={email}
                                     onChange={(e) => setEmail(e.target.value)}
-                                    className="w-full border border-gray-300 p-1 rounded-lg focus:ring-2 focus:ring-blue-400 focus:border-transparent transition duration-200"
+                                    className="w-full border border-gray-300 p-1 rounded-lg focus:ring-2 focus:ring-yellow-400 focus:border-transparent transition duration-200"
                                     required
                                 />
                             </div>
@@ -95,7 +95,7 @@ function InquiryForm({ productName, onClose }) {
                                     type="text"
                                     value={phone}
                                     onChange={(e) => setPhone(e.target.value)}
-                                    className="w-full border border-gray-300 p-1 rounded-lg focus:ring-2 focus:ring-blue-400 focus:border-transparent transition duration-200"
+                                    className="w-full border border-gray-300 p-1 rounded-lg focus:ring-2 focus:ring-yellow-400 focus:border-transparent transition duration-200"
                                     required
                                 />
                             </div>
@@ -105,7 +105,7 @@ function InquiryForm({ productName, onClose }) {
                                     type="text"
                                     value={subject}
                                     onChange={(e) => setSubject(e.target.value)}
-                                    className="w-full border border-gray-300 p-1 rounded-lg focus:ring-2 focus:ring-blue-400 focus:border-transparent transition duration-200"
+                                    className="w-full border border-gray-300 p-1 rounded-lg focus:ring-2 focus:ring-yellow-400 focus:border-transparent transition duration-200"
                                     required
                                 />
                             </div>
@@ -142,7 +142,7 @@ function InquiryForm({ productName, onClose }) {
                         </button>
                         <button
                             type="submit"
-                            className="bg-blue-500 hover:bg-blue-600 text-white p-2 w-1/4 px-6 rounded-md transition duration-200 disabled:opacity-50 disabled:cursor-not-allowed "
+                            className="bg-yellow-500 hover:bg-yellow-600 text-white p-2 w-1/4 px-6 rounded-md transition duration-200 disabled:opacity-50 disabled:cursor-not-allowed "
                             disabled={!captchaValue || isSubmitting}
                         >
                             {isSubmitting ? 'Submitting...' : 'Submit'}

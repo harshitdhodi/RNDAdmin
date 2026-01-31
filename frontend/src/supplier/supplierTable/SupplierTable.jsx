@@ -172,7 +172,7 @@ const SuppliersTable = () => {
                                             variant="default"
                                             size="sm"
                                             onClick={() => handleChemicalsClick(supplier)}
-                                            className="bg-[#304a8a] text-white px-4 py-2 rounded hover:bg-[#304a8a] transition-colors duration-300"
+                                            className="bg-[#ebb207] text-white px-4 py-2 rounded hover:bg-[#ebb207] transition-colors duration-300"
                                         >
                                             Chemicals
                                             <Badge
@@ -189,7 +189,7 @@ const SuppliersTable = () => {
                                             to={supplier.website}
                                             target="_blank"
                                             rel="noopener noreferrer"
-                                            className="text-blue-600 hover:underline"
+                                            className="text-yellow-600 hover:underline"
                                         >
                                             {supplier.website}
                                         </Link>

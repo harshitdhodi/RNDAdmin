@@ -65,7 +65,7 @@ export default function ProductSearchBar() {
         </div>
 
         <Table>
-          <TableHeader className="bg-blue-700">
+          <TableHeader className="bg-yellow-700">
             <TableRow>
               <TableHead className="text-white">Product Code</TableHead>
               <TableHead className="text-white">Product Name</TableHead>
@@ -76,12 +76,12 @@ export default function ProductSearchBar() {
             </TableRow>
           </TableHeader>
           <TableBody>
-            <TableRow className="bg-blue-50">
+            <TableRow className="bg-yellow-50">
               <TableCell>{chemical.product_code || chemical.auto_p_code || 'N/A'}</TableCell>
               <TableCell>
                 <Link 
                   to={`/${chemical.slug}`} 
-                  className="text-blue-600 hover:underline cursor-pointer"
+                  className="text-yellow-600 hover:underline cursor-pointer"
                 >
                   {chemical.name}
                 </Link>
@@ -90,7 +90,7 @@ export default function ProductSearchBar() {
               <TableCell>{chemical.cas_number || 'N/A'}</TableCell>
               <TableCell>
                 {chemical.tds_url ? (
-                  <Link to={chemical.tds_url} className="text-blue-600 hover:underline" target="_blank" rel="noopener noreferrer">
+                  <Link to={chemical.tds_url} className="text-yellow-600 hover:underline" target="_blank" rel="noopener noreferrer">
                     Specs
                   </Link>
                 ) : (
@@ -99,7 +99,7 @@ export default function ProductSearchBar() {
               </TableCell>
               <TableCell>
                 {chemical.msds_url ? (
-                  <Link to={chemical.msds_url} className="text-blue-600 hover:underline" target="_blank" rel="noopener noreferrer">
+                  <Link to={chemical.msds_url} className="text-yellow-600 hover:underline" target="_blank" rel="noopener noreferrer">
                     MSDS
                   </Link>
                 ) : (

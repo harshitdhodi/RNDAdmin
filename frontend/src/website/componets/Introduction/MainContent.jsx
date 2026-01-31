@@ -111,11 +111,11 @@ export default function MainContent() {
                 {menuItems.map((section) => (
                   <div className="border-b border-gray-200" key={section.title}>
                     <button
-                      className="flex w-full items-center justify-between bg-blue-50 px-4 py-3 text-2xl font-normal text-gray-600 hover:bg-blue-100"
+                      className="flex w-full items-center justify-between bg-yellow-50 px-4 py-3 text-2xl font-normal text-gray-600 hover:bg-yellow-100"
                     >
                       {section.title}
                     </button>
-                    <div className="bg-blue-50/50 ">
+                    <div className="bg-yellow-50/50 ">
                       {section.items.map((item) => (
                         <MenuItem key={item.title} {...item} />
                       ))}

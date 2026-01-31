@@ -65,7 +65,7 @@ export function NavLink({
       {isHovered && categories?.length > 0 && (
         <div
           className={`
-            absolute left-0 w-64 bg-blue-800 text-white shadow-lg z-50
+            absolute left-0 w-64 bg-yellow-800 text-white shadow-lg z-50
             transition-all duration-200 ease-in-out
             ${isHovered 
               ? 'opacity-100 translate-y-0' 
@@ -81,7 +81,7 @@ export function NavLink({
             >
               <div
                 onClick={() => handleCategoryClick(category)}
-                className="block px-4 py-2 hover:bg-blue-600 transition-colors cursor-pointer font-normal"
+                className="block px-4 py-2 hover:bg-yellow-600 transition-colors cursor-pointer font-normal"
               >
                 {category.category}
               </div>
@@ -89,7 +89,7 @@ export function NavLink({
               {activeCategory === category && category.subCategories?.length > 0 && (
                 <div
                   className={`
-                    absolute left-full top-0 w-[40vh] bg-blue-800 text-white shadow-lg
+                    absolute left-full top-0 w-[40vh] bg-yellow-800 text-white shadow-lg
                     transition-all duration-200 ease-in-out
                     ${activeCategory === category 
                       ? 'opacity-100 translate-x-0' 
@@ -101,7 +101,7 @@ export function NavLink({
                       <div
                         key={subcategory._id}
                         onClick={() => handleSubCategoryClick(category, subcategory)}
-                        className="block px-2 py-1 hover:bg-blue-600 transition-colors text-sm text-center cursor-pointer font-normal"
+                        className="block px-2 py-1 hover:bg-yellow-600 transition-colors text-sm text-center cursor-pointer font-normal"
                       >
                         {subcategory.category}
                       </div>

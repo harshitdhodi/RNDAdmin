@@ -399,7 +399,7 @@ const EditCategory = () => {
           <option value="inactive">Inactive</option>
         </select>
       </div>
-      <button type="submit" className="bg-blue-500 text-white py-2 px-4 rounded">
+      <button type="submit" className="bg-yellow-500 text-white py-2 px-4 rounded">
         Update Category
       </button>
     </form>

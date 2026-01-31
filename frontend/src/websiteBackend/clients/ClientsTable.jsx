@@ -37,7 +37,7 @@ const ClientsTable = () => {
         accessor: "title",
         Cell: ({ row }) => (
           <span
-            className="hover:text-blue-500 cursor-pointer"
+            className="hover:text-yellow-500 cursor-pointer"
             onClick={() => navigate(`/clients/editclient/${row.original._id}`)}
           >
             {row.original.title}
@@ -78,7 +78,7 @@ const ClientsTable = () => {
         Header: "Options",
         Cell: ({ row }) => (
           <div className="flex gap-4">
-            <button className="text-blue-500 hover:text-blue-700 transition">
+            <button className="text-yellow-500 hover:text-yellow-700 transition">
               <Link to={`/edit-client/${row.original._id}`}>
                 <Edit />
               </Link>
@@ -183,7 +183,7 @@ const ClientsTable = () => {
               type="text"
               value={heading}
               onChange={(e) => setHeading(e.target.value)}
-              className="w-full px-4 py-2 border rounded-md focus:outline-none focus:border-blue-500 transition duration-300"
+              className="w-full px-4 py-2 border rounded-md focus:outline-none focus:border-yellow-500 transition duration-300"
             />
           </div>
           <div className="mb-6">
@@ -194,7 +194,7 @@ const ClientsTable = () => {
               type="text"
               value={subheading}
               onChange={(e) => setSubheading(e.target.value)}
-              className="w-full px-4 py-2 border rounded-md focus:outline-none focus:border-blue-500 transition duration-300"
+              className="w-full px-4 py-2 border rounded-md focus:outline-none focus:border-yellow-500 transition duration-300"
             />
           </div>
         </div>
@@ -219,7 +219,7 @@ const ClientsTable = () => {
           placeholder="Search by title..."
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
-          className="w-full px-4 py-2 border rounded-md focus:outline-none focus:border-blue-500 transition duration-300"
+          className="w-full px-4 py-2 border rounded-md focus:outline-none focus:border-yellow-500 transition duration-300"
         />
       </div>
       <h2 className="text-md font-semibold mb-4">Manage your clients</h2>

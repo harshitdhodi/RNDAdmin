@@ -52,7 +52,7 @@ const WorldWideBackend = () => {
             render: (_, record) => (
                 <Space size="middle">
                     <EditOutlined 
-                        className={`${iconClass} text-blue-500`} 
+                        className={`${iconClass} text-yellow-500`} 
                         onClick={() => handleEdit(record)} 
                     />
                     <DeleteOutlined 
@@ -82,7 +82,7 @@ const WorldWideBackend = () => {
             render: (_, record) => (
                 <Space size="middle">
                     <EditOutlined 
-                        className={`${iconClass} text-blue-500`} 
+                        className={`${iconClass} text-yellow-500`} 
                         onClick={() => handleEdit(record)} 
                     />
                     <DeleteOutlined 
@@ -100,7 +100,7 @@ const WorldWideBackend = () => {
                 <Breadcrumb
                     items={[
                         { 
-                            title: <span onClick={() => navigate('/dashboard')} className="cursor-pointer text-blue-600 hover:underline">Dashboard</span>
+                            title: <span onClick={() => navigate('/dashboard')} className="cursor-pointer text-yellow-600 hover:underline">Dashboard</span>
                         },
                         { title: 'Worldwide Locations' }
                     ]}

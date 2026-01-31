@@ -9,7 +9,8 @@ const requireAuth = async (req, res, next) => {
       throw new Error("Unauthenticated user");
     }
 
-    const decodeToken = await jwt.verify(token, "secret");
+    const secret = process.env.JWT_SECRET_KEY || "secret";
+    const decodeToken = await jwt.verify(token, secret);
     req.newAdmin = decodeToken.id;
     next();
   } catch (err) {

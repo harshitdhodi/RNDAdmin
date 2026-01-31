@@ -24,7 +24,7 @@ const HeadingSection = ({
             type="text"
             value={heading}
             onChange={handleHeadingChange}
-            className={`w-full px-4 py-2 border rounded-md focus:outline-none focus:border-blue-500 transition duration-300 ${
+            className={`w-full px-4 py-2 border rounded-md focus:outline-none focus:border-yellow-500 transition duration-300 ${
               errors.heading ? 'border-red-500' : 'border-gray-300'
             }`}
           />
@@ -37,7 +37,7 @@ const HeadingSection = ({
             type="text"
             value={subheading}
             onChange={handleSubheadingChange}
-            className={`w-full px-4 py-2 border rounded-md focus:outline-none focus:border-blue-500 transition duration-300 ${
+            className={`w-full px-4 py-2 border rounded-md focus:outline-none focus:border-yellow-500 transition duration-300 ${
               errors.subheading ? 'border-red-500' : 'border-gray-300'
             }`}
           />

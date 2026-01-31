@@ -37,7 +37,7 @@ export default function AboutUs() {
               dangerouslySetInnerHTML={{ __html: profileData.shortDescription }}
             />
             <Link to="/introduction">
-              <span className="text-blue-700/80 text-sm"> More...</span>
+              <span className="text-yellow-700/80 text-sm"> More...</span>
             </Link>
           </div>
         </div>

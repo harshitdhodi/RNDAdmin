@@ -104,7 +104,7 @@ const AddTemplateForm = () => {
         {/* Submit Button */}
         <button
           type="submit"
-          className={`w-1/4 bg-blue-500 text-white px-4 py-2 rounded ${isLoading ? "opacity-50" : ""}`}
+          className={`w-1/4 bg-yellow-500 text-white px-4 py-2 rounded ${isLoading ? "opacity-50" : ""}`}
           disabled={isLoading}
         >
           {isLoading ? "Adding..." : "Add Template"}

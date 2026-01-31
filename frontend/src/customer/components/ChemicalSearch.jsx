@@ -89,7 +89,7 @@ export function ChemicalSearch({ selectedCustomer, refetchCustomer }) {
       <Button
         onClick={handleAddChemical}
         disabled={isAdding || !selectedChemical || !selectedCustomer}
-        className="mt-4 w-[10%] py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+        className="mt-4 w-[10%] py-2 bg-yellow-500 text-white rounded hover:bg-yellow-600"
       >
         {isAdding ? 'Adding...' : 'Add '}
       </Button>

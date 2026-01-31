@@ -226,7 +226,7 @@ const CreateTestimonials = () => {
             id="category"
             value={selectedCategory}
             onChange={(e) => handleCategoryChange(e.target.value)}
-            className="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-yellow-500"
             required
           >
             <option value="">Select Category</option>
@@ -249,7 +249,7 @@ const CreateTestimonials = () => {
               id="subCategory"
               value={selectedSubCategory}
               onChange={(e) => handleSubCategoryChange(e.target.value)}
-              className="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-yellow-500"
             >
               <option value="">Select Sub Category</option>
               {subCategories.map((subCat) => (
@@ -272,7 +272,7 @@ const CreateTestimonials = () => {
               id="subSubCategory"
               value={selectedSubSubCategory}
               onChange={(e) => setSelectedSubSubCategory(e.target.value)}
-              className="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-yellow-500"
             >
               <option value="">Select Sub Sub Category</option>
               {subSubCategories.map((subSubCat) => (
@@ -286,9 +286,9 @@ const CreateTestimonials = () => {
 
         {/* Selected Category Path Display */}
         {selectedCategory && (
-          <div className="mt-3 p-2 bg-blue-50 rounded text-sm">
+          <div className="mt-3 p-2 bg-yellow-50 rounded text-sm">
             <span className="font-semibold">Selected Path: </span>
-            <span className="text-blue-700">
+            <span className="text-yellow-700">
               {categories.find(c => c._id === selectedCategory)?.category}
               {selectedSubCategory && ` → ${subCategories.find(sc => sc._id === selectedSubCategory)?.category}`}
               {selectedSubSubCategory && ` → ${subSubCategories.find(ssc => ssc._id === selectedSubSubCategory)?.category}`}
@@ -307,7 +307,7 @@ const CreateTestimonials = () => {
           id="name"
           value={name}
           onChange={(e) => setName(e.target.value)}
-          className="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-yellow-500"
           required
         />
       </div>
@@ -321,7 +321,7 @@ const CreateTestimonials = () => {
           id="designation"
           value={designation}
           onChange={(e) => setDesignation(e.target.value)}
-          className="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-yellow-500"
           required
         />
       </div>
@@ -338,7 +338,7 @@ const CreateTestimonials = () => {
           step="0.5"
           min="1"
           max="5"
-          className="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-yellow-500"
           required
         />
       </div>
@@ -534,7 +534,7 @@ const CreateTestimonials = () => {
         <button
           type="submit"
           disabled={loading}
-          className="bg-blue-500 hover:bg-blue-600 text-white py-2 px-6 rounded focus:outline-none disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors"
+          className="bg-yellow-500 hover:bg-yellow-600 text-white py-2 px-6 rounded focus:outline-none disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors"
         >
           {loading ? "Adding..." : "Add Testimonial"}
         </button>

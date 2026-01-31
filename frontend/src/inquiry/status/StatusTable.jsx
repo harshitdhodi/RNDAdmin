@@ -64,7 +64,7 @@ export const StatusTable = () => {
               <td className="border border-gray-300 px-4 py-2">{status.status}</td>
               <td className="border border-gray-300 px-4 py-2">
                 <FiEdit 
-                  className="inline-block mx-2 cursor-pointer text-blue-500" 
+                  className="inline-block mx-2 cursor-pointer text-yellow-500" 
                   title="Edit" 
                   onClick={() => handleEdit(status)}  // Trigger edit when clicked
                 />

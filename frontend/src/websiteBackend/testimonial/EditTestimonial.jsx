@@ -478,8 +478,8 @@ const EditTestimonial = () => {
                     type="submit"
                     disabled={isLoading}
                     className={`${isLoading
-                            ? 'bg-blue-400 cursor-not-allowed'
-                            : 'bg-blue-500 hover:bg-blue-700'
+                            ? 'bg-yellow-400 cursor-not-allowed'
+                            : 'bg-yellow-500 hover:bg-yellow-700'
                         } text-white py-2 px-4 rounded flex items-center justify-center gap-2`}
                 >
                     {isLoading ? (

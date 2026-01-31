@@ -8,21 +8,21 @@ export function Pagination() {
         <Button
           variant="outline"
           size="sm"
-          className="min-w-[40px] bg-blue-600 text-white hover:bg-blue-700"
+          className="min-w-[40px] bg-yellow-600 text-white hover:bg-yellow-700"
         >
           1
         </Button>
         <Button
           variant="outline"
           size="sm"
-          className="min-w-[40px] hover:bg-blue-50"
+          className="min-w-[40px] hover:bg-yellow-50"
         >
           2
         </Button>
         <Button
           variant="outline"
           size="sm"
-          className="min-w-[40px] hover:bg-blue-50"
+          className="min-w-[40px] hover:bg-yellow-50"
         >
           3
         </Button>

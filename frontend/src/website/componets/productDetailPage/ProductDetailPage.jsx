@@ -157,20 +157,20 @@ export default function ProductDetailPage() {
               />
             </div>
           </div>
-          <div className="mt-12 bg-gradient-to-r from-blue-50 to-blue-100 p-8 rounded-lg shadow-md border border-blue-200">
-            <h2 className="text-2xl font-semibold mb-6 text-blue-900 border-b border-blue-200 pb-3">
+          <div className="mt-12 bg-gradient-to-r from-yellow-50 to-yellow-100 p-8 rounded-lg shadow-md border border-yellow-200">
+            <h2 className="text-2xl font-semibold mb-6 text-yellow-900 border-b border-yellow-200 pb-3">
               Product Description
             </h2>
             <div 
               className="text-gray-700 leading-relaxed prose prose-sm max-w-none
-                prose-headings:text-blue-900 
+                prose-headings:text-yellow-900 
                 prose-p:text-gray-600 
-                prose-strong:text-blue-800
+                prose-strong:text-yellow-800
                 prose-ul:list-disc 
                 prose-ul:pl-5
                 prose-li:my-1
-                prose-a:text-blue-600 
-                prose-a:hover:text-blue-800"
+                prose-a:text-yellow-600 
+                prose-a:hover:text-yellow-800"
               dangerouslySetInnerHTML={{ 
                 __html: productData?.description || "No description available for this product." 
               }}

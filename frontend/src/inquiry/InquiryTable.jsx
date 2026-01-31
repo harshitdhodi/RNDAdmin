@@ -134,7 +134,7 @@ export default function InquiryList() {
                 <div className="mb-4">
                     <Button 
                         onClick={() => setShowEmailModal(true)}
-                        className="bg-[#304a8a] hover:bg-purple-700"
+                        className="bg-[#ebb207] hover:bg-purple-700"
                     >
                         Send Email to Selected ({selectedInquiries.length})
                     </Button>

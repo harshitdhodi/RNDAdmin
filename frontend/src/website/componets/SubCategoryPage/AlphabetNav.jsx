@@ -20,7 +20,7 @@ export default function AlphabetNav({ chemicals }) {  // Accept chemicals as pro
           onClick={() => handleNavigate(letter)}  // Trigger navigate on click
           className={`w-[44px] h-8 flex text-sm border-t border-b 
             ${index !== letters.length - 1 ? 'border-r' : ''} 
-            font-semibold items-center justify-center hover:bg-blue-100 text-blue-600 
+            font-semibold items-center justify-center hover:bg-yellow-100 text-yellow-600 
             sm:w-[60px] sm:h-10 sm:text-base md:w-[46px] md:h-12 md:text-lg`}
         >
           {letter}

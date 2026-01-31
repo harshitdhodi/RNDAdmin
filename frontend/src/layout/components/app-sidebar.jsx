@@ -49,27 +49,27 @@ let menuData = [
     ]
   },
 
-  {
-    title: "Email",
-    icon: Mail,
-    children: [
-      { title: "SMTP Setting", icon: List, url: "/smtp-table" },
-      { title: "Email Template", icon: PlusSquare, url: "/email-template-table" },
-      { title: "Send Email ", icon: ArrowLeftRightIcon, url: "/email-form" },
-      { title: "Email Category", icon: ArrowLeftRightIcon, url: "/email-category" },
-    ]
-  },
-  {
-    title: "Inquiry",
-    icon: FileQuestion,
-    children: [
-      { title: "List", icon: List, url: "/inquiry-list" },
-      { title: "Add New", icon: PlusSquare, url: "/add-inquiry" },
-      { title: "Inquiry Sources", icon: List, url: "source-table" },
-      { title: "Inquiry Status", icon: List, url: "status-table" },
+  // {
+  //   title: "Email",
+  //   icon: Mail,
+  //   children: [
+  //     { title: "SMTP Setting", icon: List, url: "/smtp-table" },
+  //     { title: "Email Template", icon: PlusSquare, url: "/email-template-table" },
+  //     { title: "Send Email ", icon: ArrowLeftRightIcon, url: "/email-form" },
+  //     { title: "Email Category", icon: ArrowLeftRightIcon, url: "/email-category" },
+  //   ]
+  // },
+  // {
+  //   title: "Inquiry",
+  //   icon: FileQuestion,
+  //   children: [
+  //     { title: "List", icon: List, url: "/inquiry-list" },
+  //     { title: "Add New", icon: PlusSquare, url: "/add-inquiry" },
+  //     { title: "Inquiry Sources", icon: List, url: "source-table" },
+  //     { title: "Inquiry Status", icon: List, url: "status-table" },
 
-    ]
-  },
+  //   ]
+  // },
   {
     title: "Website",
     icon: Globe,
@@ -110,12 +110,12 @@ let menuData = [
         icon: Users,
         children: [
           { title: "Client List", icon: List, url: "/clients-table" },
-          { title: "Add New", icon: PlusSquare, url: "/add-client" }
+          // { title: "Add New", icon: PlusSquare, url: "/add-client" }
         ]
       },
 
       {
-        title: "Corporate",
+        title: "About Info",
         icon: Building,
         children: [
           { title: "List", icon: List, url: "/about-us-table" },
@@ -127,7 +127,7 @@ let menuData = [
         icon: UsersRoundIcon,
         children: [
           { title: "Core Value List", icon: List, url: "/core-value-table" },
-          { title: "Add New", icon: PlusSquare, url: "/core-value-form" },
+          { title: "Add New", icon: PlusSquare, url: "/add-core-value" },
         ]
       },
       {
@@ -142,14 +142,14 @@ let menuData = [
 
         ]
       },
-      {
-        title: "Hero Section",
-        icon: PanelTop,
-        children: [
-          { title: "List", icon: List, url: "/hero-section-table" },
-          { title: "Add New", icon: PlusSquare, url: "/hero-section-form" },
-        ]
-      },
+      // {
+      //   title: "Hero Section",
+      //   icon: PanelTop,
+      //   children: [
+      //     { title: "List", icon: List, url: "/hero-section-table" },
+      //     { title: "Add New", icon: PlusSquare, url: "/hero-section-form" },
+      //   ]
+      // },
       {
         title: "Video",
         icon: Video,
@@ -158,14 +158,14 @@ let menuData = [
           { title: "Add New", icon: PlusSquare, url: "/video-form" },
         ]
       },
-      {
-        title: "Footer",
-        icon: PanelBottom,
-        children: [
-          { title: "Footer List", icon: List, url: "/footer-table" },
-          { title: "Add New", icon: PlusSquare, url: "/footer-form" },
-        ]
-      },
+      // {
+      //   title: "Footer",
+      //   icon: PanelBottom,
+      //   children: [
+      //     { title: "Footer List", icon: List, url: "/footer-table" },
+      //     { title: "Add New", icon: PlusSquare, url: "/footer-form" },
+      //   ]
+      // },
       {
         title: "Counter",
         icon: Calculator,
@@ -185,7 +185,7 @@ let menuData = [
         icon: Briefcase,
         children: [
           { title: "List", icon: List, url: "/career-table" },
-          { title: "Career Info", icon: PlusSquare, url: "/career-info-form" },
+          // { title: "Career Info", icon: PlusSquare, url: "/career-info-form" },
           {title:"Career Option",icon:PlusSquare,url:"/JobApplication"},
         ]
       },
@@ -198,14 +198,14 @@ let menuData = [
         ]
       },
 
-      {
-        title: "WhatsUp Info",
-        icon: MessageSquareQuote,
-        children: [
-          // {title:"List",icon:List,url:"/whatsUpInfo-table"},
-          { title: "Add New", icon: PlusSquare, url: "/whatsUpInfo-form" }
-        ]
-      },
+      // {
+      //   title: "WhatsUp Info",
+      //   icon: MessageSquareQuote,
+      //   children: [
+      //     // {title:"List",icon:List,url:"/whatsUpInfo-table"},
+      //     { title: "Add New", icon: PlusSquare, url: "/whatsUpInfo-form" }
+      //   ]
+      // },
       // {
       //   title: "Events",
       //   icon: Handshake,
@@ -222,14 +222,14 @@ let menuData = [
           { title: "Tracking Info", icon: List, url: "/tracking" },
         ]
       },
-      {
-        title: "Navigation Link",
-        icon: LinkIcon,
-        children: [
-          { title: "List", icon: List, url: "/navigationLink" },
-          { title: "Add New", icon: PlusSquare, url: "/navigationLink-form" },
-        ]
-      },
+      // {
+      //   title: "Navigation Link",
+      //   icon: LinkIcon,
+      //   children: [
+      //     { title: "List", icon: List, url: "/navigationLink" },
+      //     { title: "Add New", icon: PlusSquare, url: "/navigationLink-form" },
+      //   ]
+      // },
       {
         title: "catalogue Management",
         icon: BookCopy,
@@ -294,17 +294,17 @@ export default function AppSidebar() {
     items.map((item) => {
       const isParentActive = item.children?.some((child) => isActive(child.url));
       const isChildActive = isActive(item.url);
-      const activeClass = isParentActive || isChildActive ? "text-blue-600" : "text-gray-600";
+      const activeClass = isParentActive || isChildActive ? "text-yellow-600" : "text-gray-600";
 
       return (
         <SidebarMenuItem key={item.title}>
           {item.children?.length ? (
             <Collapsible open={openSections[item.title]} onOpenChange={() => toggleSection(item.title)}>
               <CollapsibleTrigger asChild>
-                <Button variant="ghost" className={`w-full justify-start gap-2 hover:text-blue-600 font-normal ${activeClass}`}>
+                <Button variant="ghost" className={`w-full justify-start gap-2 hover:text-yellow-600 font-normal ${activeClass}`}>
                   <item.icon className="w-4 h-4" />
                   {item.title}
-                  <ChevronDown className={cn("w-4 h-4 ml-auto transition-transform hover:text-blue-600", { "-rotate-90": !openSections[item.title] })} />
+                  <ChevronDown className={cn("w-4 h-4 ml-auto transition-transform hover:text-yellow-600", { "-rotate-90": !openSections[item.title] })} />
                 </Button>
               </CollapsibleTrigger>
               <CollapsibleContent className="pl-6 space-y-1">
@@ -313,7 +313,7 @@ export default function AppSidebar() {
             </Collapsible>
           ) : (
             <SidebarMenuButton asChild>
-              <Link to={item.url} className={`pl-4 flex items-center gap-2 hover:text-blue-600 ${activeClass}`}>
+              <Link to={item.url} className={`pl-4 flex items-center gap-2 hover:text-yellow-600 ${activeClass}`}>
                 <item.icon className="w-4 h-4" />
                 {item.title}
               </Link>

@@ -112,7 +112,7 @@ export function S_ChemicalSearch({ selectedSupplier, onAddChemical }) {
       <Button
         onClick={handleAddChemical}
         disabled={isAdding || !selectedChemical || !selectedSupplier}
-        className={`mt-4 w-fit py-2 bg-blue-500 text-white rounded hover:bg-blue-600 ${
+        className={`mt-4 w-fit py-2 bg-yellow-500 text-white rounded hover:bg-yellow-600 ${
           isAdding ? 'opacity-50 cursor-not-allowed' : ''
         }`}
       >

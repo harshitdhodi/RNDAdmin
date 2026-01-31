@@ -95,7 +95,7 @@ export default function LeftSection() {
           alt={contactInfo.altName?.[0] || "Corporate Office Building"} 
           className="rounded-lg lg:mt-16 mt-10"
         />
-        <div className="absolute bottom-0 left-0 bg-blue-800 text-white py-2 px-4 rounded-br-lg">
+        <div className="absolute bottom-0 left-0 bg-yellow-800 text-white py-2 px-4 rounded-br-lg">
           <span className="text-cyan-400">SINCE</span> {new Date(contactInfo.createdAt).getFullYear() || "N/A"}
         </div>
       </div>

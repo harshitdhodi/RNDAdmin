@@ -39,8 +39,8 @@ export default function CategoryCards() {
                   loading="lazy" // Lazy loading for performance
                   title={category.alt}
                 />
-                <div className="absolute bg-blue-900/10 inset-0"></div>
-                <div className="absolute bg-blue-900 bottom-0 left-0 right-0 p-3 flex items-center justify-between text-white">
+                <div className="absolute bg-yellow-900/10 inset-0"></div>
+                <div className="absolute bg-yellow-900 bottom-0 left-0 right-0 p-3 flex items-center justify-between text-white">
                   <h3 className="font-semibold text-sm">{capitalizeWords(category.name)}</h3>
                   <ArrowRight className="w-5 h-5 transition-transform group-hover:translate-x-1" />
                 </div>

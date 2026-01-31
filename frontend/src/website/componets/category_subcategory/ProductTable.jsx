@@ -76,7 +76,7 @@ const ProductTable = ({ chemicals, isLoading, msds, specs, error }) => {
 
   return (
     <div className="flex flex-col gap-4">
-      <div className="flex justify-between items-center bg-blue-100 px-4 py-1 shadow-sm">
+      <div className="flex justify-between items-center bg-yellow-100 px-4 py-1 shadow-sm">
         <div className="flex items-center gap-3">
           <span className="text-gray-600 font-medium">Items per page:</span>
           <Select
@@ -117,19 +117,19 @@ const ProductTable = ({ chemicals, isLoading, msds, specs, error }) => {
               className={index % 2 !== 0 ? 'bg-[#93aff0]/60 hover:bg-[#93aff0]/60' : ''}
             >
               <TableCell>{chemical.auto_p_code}</TableCell>
-              <TableCell className="text-blue-900">
+              <TableCell className="text-yellow-900">
                 <button
-                  className="text-blue-900 hover:no-underline"
+                  className="text-yellow-900 hover:no-underline"
                   onClick={() => handleNameClick(chemical.slug)}
                 >
                   {chemical.name}
                 </button>
               </TableCell>
-              <TableCell className="text-blue-900">{chemical.cas}</TableCell>
-              <TableCell className="text-blue-900">
+              <TableCell className="text-yellow-900">{chemical.cas}</TableCell>
+              <TableCell className="text-yellow-900">
                 {chemical.specs ? (
                   <button
-                    className="text-blue-900 hover:underline"
+                    className="text-yellow-900 hover:underline"
                     onClick={() => handleSpecsClick(chemical.specs)}
                   >
                     Specs
@@ -138,10 +138,10 @@ const ProductTable = ({ chemicals, isLoading, msds, specs, error }) => {
                   'Specs'
                 )}
               </TableCell>
-              <TableCell className="text-blue-900">
+              <TableCell className="text-yellow-900">
                 {chemical.msds ? (
                   <button
-                    className="text-blue-900 hover:underline"
+                    className="text-yellow-900 hover:underline"
                     onClick={() => handleMsdsClick(chemical.msds)}
                   >
                     MSDS

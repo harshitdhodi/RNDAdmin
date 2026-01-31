@@ -44,7 +44,7 @@ export default function WorldWide() {
 
                     {/* International Section */}
                     <div className="mb-12">
-                        <div className="inline-block bg-blue-800 text-white px-4 py-1 mt-2 text-2xl md:text-3xl font-bold mb-6">
+                        <div className="inline-block bg-yellow-800 text-white px-4 py-1 mt-2 text-2xl md:text-3xl font-bold mb-6">
                             In International
                         </div>
                         <p className="text-gray-600 mb-8 text-left">
@@ -59,7 +59,7 @@ export default function WorldWide() {
 
                     {/* India Section */}
                     <div className="mb-12">
-                        <div className="inline-block bg-blue-800 text-white px-4 py-1 text-2xl md:text-3xl font-bold mb-6">
+                        <div className="inline-block bg-yellow-800 text-white px-4 py-1 text-2xl md:text-3xl font-bold mb-6">
                             In India
                         </div>
                         <p className="text-gray-600 mb-8 text-left ">

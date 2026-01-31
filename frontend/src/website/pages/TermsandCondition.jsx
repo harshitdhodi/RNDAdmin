@@ -36,7 +36,7 @@ const TermsAndConditions = () => {
     <>
       <div className="bg-gray-50 py-8 px-4 sm:px-6 lg:px-8">
         <div className="max-w-4xl mx-auto bg-white mt-8 shadow-xl rounded-lg overflow-hidden">
-          <div className="bg-gradient-to-r from-blue-600 to-blue-800 px-6 py-4">
+          <div className="bg-gradient-to-r from-yellow-600 to-yellow-800 px-6 py-4">
             <h1 className="text-2xl font-bold text-white">Terms and Conditions</h1>
           </div>
           <div className="p-6 sm:p-8">

@@ -66,7 +66,7 @@ const Dashboard = () => {
         </div>
 
         {/* Total Customers Card */}
-        <div className="bg-blue-500 text-white p-6 rounded-md shadow-lg relative overflow-hidden">
+        <div className="bg-yellow-500 text-white p-6 rounded-md shadow-lg relative overflow-hidden">
           <div className="text-4xl font-bold mb-2">{dataCount.customerCount}</div>
           <div className="text-lg">Total Customers</div>
           <div className="absolute right-4 top-1/2 -translate-y-1/2 opacity-20">

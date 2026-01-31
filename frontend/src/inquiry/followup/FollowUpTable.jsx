@@ -90,7 +90,7 @@ export function FollowUpTable({
             render: (_, record) => (
                 <div className="flex gap-4 ">
                     <EditOutlined
-                        className="cursor-pointer bg-blue-700 text-white p-2 rounded-full"
+                        className="cursor-pointer bg-yellow-700 text-white p-2 rounded-full"
                         onClick={() => onEdit(record._id)}
                     />
                     <DeleteOutlined

@@ -531,7 +531,7 @@ const ServiceCategoryForm = () => {
         </div>
         <button
           type="submit"
-          className="bg-blue-500 text-white py-2 px-4 rounded"
+          className="bg-yellow-500 text-white py-2 px-4 rounded"
         >
           Add Category
         </button>

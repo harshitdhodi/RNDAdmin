@@ -25,7 +25,7 @@ const AddCounter = () => {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="p-4 max-w-lg mx-auto bg-white shadow-md rounded">
+    <form onSubmit={handleSubmit} className="p-4 max-w-lg mt-10 mx-auto bg-white shadow-md rounded">
       <h1 className="text-xl font-bold font-serif text-gray-700 uppercase text-center mb-4">
         Add Counter
       </h1>
@@ -88,7 +88,7 @@ const AddCounter = () => {
         </select>
       </div>
 
-      <button type="submit" className="w-full bg-blue-500 text-white rounded-md p-2 hover:bg-blue-600">
+      <button type="submit" className="w-full bg-yellow-500 text-white rounded-md p-2 hover:bg-yellow-600">
         Add Counter
       </button>
     </form>

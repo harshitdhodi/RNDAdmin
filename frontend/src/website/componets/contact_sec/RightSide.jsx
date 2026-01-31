@@ -51,7 +51,7 @@ export default function RightSection() {
 
   return (
     <div className="bg-gray-100 p-6 rounded-lg">
-      <h2 className="text-xl text-blue-800 font-semibold mb-4">
+      <h2 className="text-xl text-yellow-800 font-semibold mb-4">
         Please fill in the form below to send us your enquiries.
       </h2>
       

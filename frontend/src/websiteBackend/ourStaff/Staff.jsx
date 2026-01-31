@@ -40,7 +40,7 @@ const StaffTable = () => {
         accessor: "S_id",
         Cell: ({ row }) => (
           <span
-            className="hover:text-blue-500 cursor-pointer"
+            className="hover:text-yellow-500 cursor-pointer"
             onClick={() => navigate(`edit-our-staff-form/${row.original._id}`)}
           >
             {row.original.S_id}
@@ -52,7 +52,7 @@ const StaffTable = () => {
         accessor: "name",
         Cell: ({ row }) => (
           <span
-            className="hover:text-blue-500 cursor-pointer"
+            className="hover:text-yellow-500 cursor-pointer"
             onClick={() => navigate(`/edit-our-staff-form/${row.original._id}`)}
           >
             {row.original.name}
@@ -74,7 +74,7 @@ const StaffTable = () => {
         accessor: "jobTitle",
         Cell: ({ row }) => (
           <span
-            className="hover:text-blue-500 cursor-pointer"
+            className="hover:text-yellow-500 cursor-pointer"
             onClick={() => navigate(`/edit-our-staff-form/${row.original._id}`)}
           >
             {row.original.jobTitle}
@@ -91,7 +91,7 @@ const StaffTable = () => {
         Header: "Options",
         Cell: ({ row }) => (
           <div className="flex  gap-4">
-            <button className="text-blue-500 hover:text-blue-700 transition">
+            <button className="text-yellow-500 hover:text-yellow-700 transition">
               <Link to={`/edit-our-staff-form/${row.original._id}`}><FaEdit /></Link>
             </button>
             <button className="text-red-500 hover:text-red-700 transition" onClick={() => deleteStaff(row.original._id)}>
@@ -220,7 +220,7 @@ const StaffTable = () => {
               type="text"
               value={heading}
               onChange={handleHeadingChange}
-              className="w-full px-4 py-2 border rounded-md focus:outline-none focus:border-blue-500 transition duration-300"
+              className="w-full px-4 py-2 border rounded-md focus:outline-none focus:border-yellow-500 transition duration-300"
             />
           </div>
           <div className="mb-6">
@@ -229,7 +229,7 @@ const StaffTable = () => {
               type="text"
               value={subheading}
               onChange={handleSubheadingChange}
-              className="w-full px-4 py-2 border rounded-md focus:outline-none focus:border-blue-500 transition duration-300"
+              className="w-full px-4 py-2 border rounded-md focus:outline-none focus:border-yellow-500 transition duration-300"
             />
           </div>
         </div>
@@ -252,7 +252,7 @@ const StaffTable = () => {
           placeholder="Search by name..."
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
-          className="w-full px-4 py-2 border rounded-md focus:outline-none focus:border-blue-500 transition duration-300"
+          className="w-full px-4 py-2 border rounded-md focus:outline-none focus:border-yellow-500 transition duration-300"
         />
       </div>
       <h2 className="text-md font-semibold mb-4">Manage Your Staff</h2>

@@ -10,7 +10,7 @@ export default function Info({ letter, totalItems, itemsPerPage, setItemsPerPage
           Fine Chemicals & Laboratory Reagents for Research & Industries
         </p>
 
-        <div className="bg-blue-50 flex items-center px-3 py-1 justify-between">
+        <div className="bg-yellow-50 flex items-center px-3 py-1 justify-between">
           <span className="text-sm text-gray-600">
             1 to {itemsPerPage} of {totalItems} item(s) displayed
           </span>

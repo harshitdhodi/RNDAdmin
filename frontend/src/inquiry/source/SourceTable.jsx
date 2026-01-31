@@ -64,7 +64,7 @@ export const SourceTable = () => {
               <td className="border border-gray-300 px-4 py-2">{source.source}</td>
               <td className="border border-gray-300 px-4 py-2">
                 <FiEdit
-                  className="inline-block mx-2 cursor-pointer text-blue-500"
+                  className="inline-block mx-2 cursor-pointer text-yellow-500"
                   title="Edit"
                   onClick={() => handleEdit(source)}
                 />
