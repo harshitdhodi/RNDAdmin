@@ -2,22 +2,23 @@ const jwt = require("jsonwebtoken");
 
 const requireAuth = async (req, res, next) => {
   try {
-    // Ensure that cookie-parser is used to parse cookies
-    if (!req.cookies) {
-      console.log("No cookies found on request");
-      return res.status(400).json({ message: "No cookies found" });
+    // Accept token from Authorization header (Bearer) or cookie
+    const authHeader = req.headers.authorization;
+    let token = null;
+    if (authHeader && authHeader.startsWith("Bearer ")) {
+      token = authHeader.slice(7);
+    } else if (req.cookies && req.cookies.jwt) {
+      token = req.cookies.jwt;
     }
-
-    const token = req.cookies.jwt;
-    console.log("Received token:", token);
 
     if (!token) {
       console.log("Unauthorized user: No token provided");
       return res.status(403).json({ message: "Unauthenticated user" });
     }
 
-    // Decode the token using the secret
-    const decodedToken = await jwt.verify(token, "secret");
+    // Use same secret as login (createToken)
+    const secret = process.env.JWT_SECRET_KEY || "secret";
+    const decodedToken = await jwt.verify(token, secret);
     console.log("Decoded token:", decodedToken);
 
     if (!decodedToken.id) {

@@ -45,7 +45,6 @@ export default defineConfig({
     VitePWA({ registerType: "autoUpdate", workbox: { globPatterns: [] } }), // Disable PWA caching
     // Critical CSS (used with SSR or pre-rendered HTML)
     critical({
-      criticalUrl: "http://localhost:3030", // optional: use your base URL or entry HTML
       criticalBase: "dist/",
       criticalPages: [{ uri: "", template: "index" }],
       critical: {
