@@ -1,0 +1,15 @@
+# Fix for 413 Request Entity Too Large when uploading staff photos (or other large files)
+# Nginx defaults to ~1MB; the backend allows up to 50MB per file.
+#
+# On your Ubuntu server, add one of the following:
+
+# Option A: In your site's server block (e.g. /etc/nginx/sites-available/your-site)
+# Place inside the server { ... } block:
+#   client_max_body_size 50M;
+
+# Option B: Globally in http block (e.g. /etc/nginx/nginx.conf)
+# Place inside the http { ... } block:
+#   client_max_body_size 50M;
+
+# Then reload nginx:
+#   sudo nginx -t && sudo systemctl reload nginx
