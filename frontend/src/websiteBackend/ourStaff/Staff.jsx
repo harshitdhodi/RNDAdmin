@@ -64,7 +64,7 @@ const StaffTable = () => {
         accessor: "photo",
         Cell: ({ value }) => {
           const firstImage = Array.isArray(value) && value.length > 0 ? value[0] : null;
-          return firstImage ? <img src={`/api/image/download/${firstImage}`} alt="Service" className="w-32 h-20 object-cover" /> : null;
+          return firstImage ? <img src={`/api/logo/download/${firstImage}`} alt="Service" className="w-32 h-20 object-cover" /> : null;
 
         },
         disableSortBy: true,

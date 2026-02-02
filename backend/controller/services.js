@@ -256,6 +256,37 @@ console.log(count)
   }
 };
 
+/**
+ * Get service category counts only (no details).
+ * Returns totalCategories, totalSubcategories, totalSubSubcategories.
+ */
+const getServiceCountByCategory = async (req, res) => {
+  try {
+    const categories = await ServiceCategory.find().lean();
+    const totalCategories = categories.length;
+    let totalSubcategories = 0;
+    let totalSubSubcategories = 0;
+    for (const cat of categories) {
+      if (cat.subCategories && Array.isArray(cat.subCategories)) {
+        totalSubcategories += cat.subCategories.length;
+        for (const sub of cat.subCategories) {
+          if (sub.subSubCategory && Array.isArray(sub.subSubCategory)) {
+            totalSubSubcategories += sub.subSubCategory.length;
+          }
+        }
+      }
+    }
+    res.status(200).json({
+      totalCategories,
+      totalSubcategories,
+      totalSubSubcategories,
+    });
+  } catch (error) {
+    console.error('Error getting service count by category:', error);
+    res.status(500).json({ message: 'Error getting service count by category', error: error.message });
+  }
+};
+
 const exportServicesToExcel = async (req, res) => {
   try {
     const services = await Service.find(); // Fetch all services
@@ -480,4 +511,4 @@ const fetchUrlmetaById = async (req, res) => {
   }
 };
 
-module.exports = { insertService, updateService, deleteService, getAllServices, getSingleService, getCategoryServices, getSubcategoryServices, getSubSubcategoryServices, countServices, deletePhotoAndAltText, exportServicesToExcel, importServices,fetchUrlPriorityFreq, editUrlPriorityFreq, fetchUrlPriorityFreqById,fetchUrlmeta, editUrlmeta, fetchUrlmetaById};
+module.exports = { insertService, updateService, deleteService, getAllServices, getSingleService, getCategoryServices, getSubcategoryServices, getSubSubcategoryServices, countServices, getServiceCountByCategory, deletePhotoAndAltText, exportServicesToExcel, importServices,fetchUrlPriorityFreq, editUrlPriorityFreq, fetchUrlPriorityFreqById,fetchUrlmeta, editUrlmeta, fetchUrlmetaById};

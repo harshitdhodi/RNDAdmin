@@ -595,12 +595,22 @@ const getAll = async (req, res) => {
   try {
     const categories = await ServiceCategory.find().lean();
     
-    // Transform the data to convert ObjectId format
-    const transformedCategories = categories.map(category => {
+    // Transform the data to convert ObjectId format and add service count per category
+    const transformedCategories = await Promise.all(categories.map(async (category) => {
       // Convert main category ID
-      if (category._id && category._id.$oid) {
-        category._id = category._id.$oid;
+      const categoryId = category._id && category._id.$oid
+        ? category._id.$oid
+        : (category._id && category._id.toString ? category._id.toString() : category._id);
+      category._id = categoryId;
+      
+      // Count services in this category
+      let serviceCount = 0;
+      try {
+        serviceCount = await Service.countDocuments({ categories: categoryId });
+      } catch (e) {
+        // ignore count error
       }
+      category.serviceCount = serviceCount;
       
       // Convert subcategory IDs
       if (category.subCategories && Array.isArray(category.subCategories)) {
@@ -624,7 +634,7 @@ const getAll = async (req, res) => {
       }
       
       return category;
-    });
+    }));
 
     res.status(200).json(transformedCategories);
   } catch (error) {

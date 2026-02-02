@@ -20,7 +20,8 @@ const EditStaff = () => {
   const [photoAlts, setPhotoAlts] = useState([]);
   const [initialphotoAlts, setInitialPhotoAlts] = useState([])
   const [initialImgtitle, setInitialImgtitle] = useState([]);
-  const [imgtitle, setImgtitle] = useState([])
+  const [imgtitle, setImgtitle] = useState([]);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -71,6 +72,7 @@ const EditStaff = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setIsSubmitting(true);
     try {
       const formData = new FormData();
       formData.append('S_id', S_id);
@@ -111,6 +113,8 @@ const EditStaff = () => {
       navigate('/our-staff-table');
     } catch (error) {
       console.error(error);
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -364,9 +368,17 @@ const EditStaff = () => {
       <div className="mt-4">
         <button
           type="submit"
-          className="bg-yellow-500 text-white px-4 py-2 rounded hover:bg-yellow-600 focus:outline-none"
+          disabled={isSubmitting}
+          className="bg-yellow-500 text-white px-4 py-2 rounded hover:bg-yellow-600 focus:outline-none disabled:opacity-70 disabled:cursor-not-allowed flex items-center gap-2"
         >
-          Save Changes
+          {isSubmitting ? (
+            <>
+              <span className="inline-block w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+              Saving...
+            </>
+          ) : (
+            'Save Changes'
+          )}
         </button>
       </div>
     </form>

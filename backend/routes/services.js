@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 
-const {insertService,getAllServices,updateService,deleteService,getSingleService, countServices,deletePhotoAndAltText,exportServicesToExcel,importServices,fetchUrlPriorityFreq,editUrlPriorityFreq,fetchUrlPriorityFreqById,fetchUrlmeta, editUrlmeta, fetchUrlmetaById   } = require('../controller/services') 
+const {insertService,getAllServices,updateService,deleteService,getSingleService, countServices,getServiceCountByCategory,deletePhotoAndAltText,exportServicesToExcel,importServices,fetchUrlPriorityFreq,editUrlPriorityFreq,fetchUrlPriorityFreqById,fetchUrlmeta, editUrlmeta, fetchUrlmetaById   } = require('../controller/services') 
 const {getServicesBySlug,getCategory,insertCategory,insertSubCategory,insertSubSubCategory,updateCategory,updateSubCategory,updatesubsubcategory,deletecategory,deletesubcategory,deletesubsubcategory,getAll,getSpecificCategory,getSpecificSubcategory,getSpecificSubSubcategory,fetchCategoryUrlPriorityFreq, editCategoryUrlPriorityFreq,  fetchCategoryUrlPriorityFreqById,fetchCategoryUrlmeta, editCategoryUrlmeta, fetchCategoryUrlmetaById,getActiveCategories }= require('../controller/servicecategory')
 
 const {uploadPhoto} = require('../middleware/fileUpload')
@@ -15,6 +15,7 @@ router.put('/updateService',requireAuth, uploadPhoto, updateService);
 router.delete('/deleteService',requireAuth,deleteService);
 router.get('/singleService',requireAuth,getSingleService)
 router.get('/countService',requireAuth,countServices )
+router.get('/countByCategory',requireAuth,getServiceCountByCategory)
 router.delete('/:id/image/:imageFilename/:index',requireAuth,deletePhotoAndAltText )
 router.get('/exportService',requireAuth,exportServicesToExcel)
 router.post('/importService',requireAuth,uploadfiles,importServices);
