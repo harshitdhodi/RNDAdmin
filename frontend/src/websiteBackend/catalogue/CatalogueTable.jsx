@@ -1,5 +1,5 @@
 import React from 'react';
-import { useGetAllCataloguesQuery, useDeleteCatalogueMutation } from"@/slice/catalogue/catalogueslice";
+import { useGetAllCataloguesQuery, useDeleteCatalogueMutation } from "@/slice/catalogue/catalogueslice";
 import { Table, Button, Space, message, Breadcrumb } from 'antd';
 import { EditOutlined, DeleteOutlined } from '@ant-design/icons';
 import { useNavigate, Link } from 'react-router-dom';

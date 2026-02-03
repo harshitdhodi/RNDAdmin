@@ -186,9 +186,18 @@ const EditStaff = () => {
   return (
     <form onSubmit={handleSubmit} className="p-4">
       <h1 className="text-xl font-bold font-serif text-gray-700 uppercase text-center">Edit Team Member</h1>
+ <button
+  type="button"
+  onClick={() => navigate(-1)}
+  className="mb-6 inline-flex items-center gap-2 rounded-md border border-gray-300 px-3 py-1.5 text-sm font-semibold text-gray-700 hover:border-yellow-500 hover:text-yellow-600 transition"
+>
+  ← Back
+</button>
+
+
       <div className="mb-4">
         <label htmlFor="S_id" className="block font-semibold mb-2">
-          Employee ID
+          Priority
         </label>
         <input
           type="text"

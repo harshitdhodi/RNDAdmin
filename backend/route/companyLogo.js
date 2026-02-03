@@ -10,6 +10,7 @@ router.get('/get-logo', logoController.getLogo);
 // Protected routes - require authentication
 router.post('/add', requireAuth, uploadLogo, logoController.addLogo);
 router.put('/update',  (req, res, next) => {
+    console.log("Update Logo Request Headers:", req);
     if (req.headers['content-type']?.includes('multipart/form-data')) {
         uploadLogo(req, res, next);
     } else {

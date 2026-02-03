@@ -95,7 +95,7 @@ let menuData = [
         children: [
           { title: "Blog Categories", icon: List, url: "/blog-category-table" },
           { title: "Blog", icon: PlusSquare, url: "/blog-table" },
-          { title: "Blog Card", icon: PlusSquare, url: "/blogCard" },
+          // { title: "Blog Card", icon: PlusSquare, url: "/blogCard" },
         ]
       },
       {

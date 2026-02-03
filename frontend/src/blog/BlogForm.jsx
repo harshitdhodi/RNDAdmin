@@ -13,7 +13,7 @@ const generateSlug = (title) => {
     .toLowerCase()
     .replace(/[^a-z0-9]+/g, '-')
     .replace(/^-+|-+$/g, '');
-};  
+};
 
 export default function BlogForm() {
   const { id } = useParams();
@@ -62,7 +62,7 @@ export default function BlogForm() {
     const { name, value } = e.target;
     // Clear error for the field being changed
     setFormErrors(prev => ({ ...prev, [name]: '' }));
-    
+
     setFormData((prev) => {
       const newData = {
         ...prev,
@@ -96,7 +96,7 @@ export default function BlogForm() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-  
+
     // Validate form
     const errors = {};
     if (!formData.title.trim()) errors.title = 'Title is required';
@@ -131,10 +131,10 @@ export default function BlogForm() {
     try {
       if (id) {
         await updateBlog({ id, formData: formDataToSubmit }).unwrap();
-        console.log('Blog updated successfully');
+        // console.log('Blog updated successfully');
       } else {
         await createBlog(formDataToSubmit).unwrap();
-        console.log('Blog created successfully');
+        // console.log('Blog created successfully');
       }
       navigate('/blog-table');
     } catch (error) {
@@ -191,15 +191,15 @@ export default function BlogForm() {
   return (
     <>
       <div className="flex items-center gap-2 mb-4 text-sm">
-        <span 
-          onClick={() => navigate('/dashboard')} 
+        <span
+          onClick={() => navigate('/dashboard')}
           className="cursor-pointer hover:text-primary"
         >
           Dashboard
         </span>
         <ChevronRight className="h-4 w-4" />
-        <span 
-          onClick={() => navigate('/blog-table')} 
+        <span
+          onClick={() => navigate('/blog-table')}
           className="cursor-pointer hover:text-primary"
         >
           Blogs
@@ -211,30 +211,29 @@ export default function BlogForm() {
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-4">
-      <div>
-            <label className="block text-sm font-medium">Blog Category</label>
-            <select
-                name="category"
-                value={formData.category}
-                onChange={(e) => setFormData(prev => ({
-                    ...prev,
-                    category: e.target.value
-                }))}
-                className={`w-full rounded-md border ${
-                    formErrors.category ? "border-red-500" : "border-gray-300"
-                } p-2`}
-                required
-            >
-                <option value="">Select a category</option>
-                {categories?.map(cat => (
-                    <option key={cat._id} value={cat._id}>
-                        {cat.category}
-                    </option>
-                ))}
-            </select>
-            {formErrors.category && (
-                <p className="text-red-500 text-sm mt-1">{formErrors.category}</p>
-            )}
+        <div>
+          <label className="block text-sm font-medium">Blog Category</label>
+          <select
+            name="category"
+            value={formData.category}
+            onChange={(e) => setFormData(prev => ({
+              ...prev,
+              category: e.target.value
+            }))}
+            className={`w-full rounded-md border ${formErrors.category ? "border-red-500" : "border-gray-300"
+              } p-2`}
+            required
+          >
+            <option value="">Select a category</option>
+            {categories?.map(cat => (
+              <option key={cat._id} value={cat._id}>
+                {cat.category}
+              </option>
+            ))}
+          </select>
+          {formErrors.category && (
+            <p className="text-red-500 text-sm mt-1">{formErrors.category}</p>
+          )}
         </div>
         <div>
           <label className="block text-sm font-medium">Title</label>

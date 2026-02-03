@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useAddUserMutation, useUpdateUserMutation, useGetAllUsersQuery } from '@/slice/contactInfo/contactInfo';
 import { MapPin, Phone, Mail, LinkIcon } from 'lucide-react';
+import axios from 'axios';
+import { toast, ToastContainer } from "react-toastify";
 
 const ContactInfoForm = () => {
     const [formData, setFormData] = useState({
@@ -13,6 +15,8 @@ const ContactInfoForm = () => {
         previewUrls: [],
         mapLink: ''
     });
+    const [heading, setHeading] = useState("");
+    const [subheading, setSubheading] = useState("");
 
     const [addUser] = useAddUserMutation();
     const [updateUser] = useUpdateUserMutation();
@@ -38,7 +42,7 @@ const ContactInfoForm = () => {
     const handleFileChange = (e) => {
         const files = Array.from(e.target.files);
         const newPreviewUrls = files.map(file => URL.createObjectURL(file));
-        
+
         setFormData(prev => ({
             ...prev,
             photo: files,
@@ -61,27 +65,27 @@ const ContactInfoForm = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        
+
         const submitFormData = new FormData();
         submitFormData.append('address', formData.address);
         submitFormData.append('mapLink', formData.mapLink);
-        
+
         formData.mobiles.forEach(mobile => {
             submitFormData.append('mobiles[]', mobile);
         });
         formData.emails.forEach(email => {
             submitFormData.append('emails[]', email);
         });
-        
+
         // Handle arrays for image-related fields
         formData.imgTitle.forEach((title, index) => {
             submitFormData.append('imgTitle[]', title);
         });
-        
+
         formData.altName.forEach((alt, index) => {
             submitFormData.append('altName[]', alt);
         });
-        
+
         // Handle multiple photo uploads
         if (formData.photo.length > 0) {
             formData.photo.forEach(file => {
@@ -96,9 +100,9 @@ const ContactInfoForm = () => {
 
         try {
             if (allUsers && allUsers.length > 0) {
-                await updateUser({ 
-                    id: allUsers[0]._id, 
-                    formData: submitFormData 
+                await updateUser({
+                    id: allUsers[0]._id,
+                    formData: submitFormData
                 }).unwrap();
                 alert('Contact information updated successfully!');
             } else {
@@ -110,14 +114,78 @@ const ContactInfoForm = () => {
             alert('Error saving contact information. Please try again.');
         }
     };
+    const notify = () => {
+        toast.success("Updated Successfully!");
+    };
+
+    const fetchHeadings = async () => {
+        try {
+            const response = await axios.get('/api/pageHeading/heading?pageType=contact', { withCredentials: true });
+            const { heading, subheading } = response.data;
+            setHeading(heading || '');
+            setSubheading(subheading || '');
+        } catch (error) {
+            console.error(error);
+        }
+    };
+
+    const saveHeadings = async () => {
+
+        try {
+            await axios.put('/api/pageHeading/updateHeading?pageType=contact', {
+                pagetype: 'contact',
+                heading,
+                subheading,
+            }, { withCredentials: true });
+            notify();
+        } catch (error) {
+            console.error(error);
+        }
+    };
+
+    useEffect(() => {
+        fetchHeadings();
+    }, []);
+
+    const handleHeadingChange = (e) => setHeading(e.target.value);
+    const handleSubheadingChange = (e) => setSubheading(e.target.value);
 
     return (
-        <div className="min-h-screen ">
+        <div className=" p-4 min-h-screen ">
+            <ToastContainer />
+            <div className="mb-8 border border-gray-200 shadow-lg p-4 rounded ">
+                <div className="grid md:grid-cols-2 md:gap-2 grid-cols-1">
+                    <div className="mb-6">
+                        <label className="block text-gray-700 font-bold mb-2 uppercase font-serif">Heading</label>
+                        <input
+                            type="text"
+                            value={heading}
+                            onChange={handleHeadingChange}
+                            className="w-full px-4 py-2 border rounded-md focus:outline-none focus:border-yellow-500 transition duration-300"
+                        />
+                    </div>
+                    <div className="mb-6">
+                        <label className="block text-gray-700 font-bold mb-2 uppercase font-serif">Sub heading</label>
+                        <input
+                            type="text"
+                            value={subheading}
+                            onChange={handleSubheadingChange}
+                            className="w-full px-4 py-2 border rounded-md focus:outline-none focus:border-yellow-500 transition duration-300"
+                        />
+                    </div>
+                </div>
+                <button
+                    onClick={saveHeadings}
+                    className="px-4 py-2 bg-slate-700 text-white rounded hover:bg-slate-900 transition duration-300 font-serif"
+                >
+                    Save
+                </button>
+            </div>
             <div className="max-w-3xl ">
                 {/* Header */}
                 <div className="bg-white rounded-t-2xl  p-2 border-b-4 border-yellow-500">
                     <h1 className="text-3xl font-bold text-gray-900">Contact Information</h1>
-                  
+
                 </div>
 
                 {/* Form */}
@@ -183,8 +251,8 @@ const ContactInfoForm = () => {
                                     required
                                 />
                                 {formData.mobiles.length > 1 && (
-                                    <button 
-                                        type="button" 
+                                    <button
+                                        type="button"
                                         onClick={() => setFormData(prev => {
                                             const newArray = [...prev.mobiles];
                                             newArray.splice(index, 1);
@@ -192,7 +260,7 @@ const ContactInfoForm = () => {
                                                 ...prev,
                                                 mobiles: newArray
                                             };
-                                        })} 
+                                        })}
                                         className="px-4 py-2 bg-red-100 text-red-600 rounded-lg hover:bg-red-200 transition-colors font-medium"
                                     >
                                         Remove
@@ -200,12 +268,12 @@ const ContactInfoForm = () => {
                                 )}
                             </div>
                         ))}
-                        <button 
-                            type="button" 
+                        <button
+                            type="button"
                             onClick={() => setFormData(prev => ({
                                 ...prev,
                                 mobiles: [...prev.mobiles, '']
-                            }))} 
+                            }))}
                             className="text-yellow-500 hover:text-yellow-700 font-medium text-sm flex items-center gap-1"
                         >
                             <span className="text-xl">+</span> Add Mobile Number
@@ -236,8 +304,8 @@ const ContactInfoForm = () => {
                                     required
                                 />
                                 {formData.emails.length > 1 && (
-                                    <button 
-                                        type="button" 
+                                    <button
+                                        type="button"
                                         onClick={() => setFormData(prev => {
                                             const newArray = [...prev.emails];
                                             newArray.splice(index, 1);
@@ -245,7 +313,7 @@ const ContactInfoForm = () => {
                                                 ...prev,
                                                 emails: newArray
                                             };
-                                        })} 
+                                        })}
                                         className="px-4 py-2 bg-red-100 text-red-600 rounded-lg hover:bg-red-200 transition-colors font-medium"
                                     >
                                         Remove
@@ -253,12 +321,12 @@ const ContactInfoForm = () => {
                                 )}
                             </div>
                         ))}
-                        <button 
-                            type="button" 
+                        <button
+                            type="button"
                             onClick={() => setFormData(prev => ({
                                 ...prev,
                                 emails: [...prev.emails, '']
-                            }))} 
+                            }))}
                             className="text-yellow-500 hover:text-yellow-700 font-medium text-sm flex items-center gap-1"
                         >
                             <span className="text-xl">+</span> Add Email Address

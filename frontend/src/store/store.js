@@ -75,7 +75,7 @@ const store = configureStore({
       .concat(smtpApi.middleware) // Middleware for SMTP API
       .concat(inquiryApi.middleware) // Middleware for inquiry API
       .concat(followupApi.middleware) // Middleware for followup API
-      .concat(statusApi.middleware) // Middleware for status API
+      .concat(statusApi.middleware) // Middleware for status A  PI
       .concat(sourceApi.middleware) // Middleware for source API
       .concat(adminApi.middleware)
       .concat(blogCategoryApi.middleware)

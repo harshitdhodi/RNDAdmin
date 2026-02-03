@@ -56,7 +56,6 @@ const updateStaff = async (req, res) => {
   const updateFields = req.body;
 
   try {
-    // Fetch the existing staff member to get their current photos
     const existingStaff = await OurStaff.findById(id);
 
     if (!existingStaff) {
@@ -67,12 +66,34 @@ const updateStaff = async (req, res) => {
       updateFields.socials = JSON.parse(updateFields.socials);
     }
 
-    // Process new uploaded photos
-    if (req.files && req.files['photo'] && req.files['photo'].length > 0) {
-      const newPhotoPaths = req.files['photo'].map(file => file.filename); // Using filename to get the stored file names
+    // 🔁 S_id swap logic
+    if (
+      updateFields.S_id &&
+      Number(updateFields.S_id) !== Number(existingStaff.S_id)
+    ) {
+      const newS_id = Number(updateFields.S_id);
+      const oldS_id = Number(existingStaff.S_id);
+
+      const conflictingStaff = await OurStaff.findOne({
+        S_id: newS_id,
+        _id: { $ne: id }
+      });
+
+      if (conflictingStaff) {
+        conflictingStaff.S_id = oldS_id;
+        await conflictingStaff.save();
+      }
+
+      // 👇 IMPORTANT: persist new S_id
+      updateFields.S_id = newS_id;
+    }
+
+    // 🖼 Process new uploaded photos
+    if (req.files && req.files.photo && req.files.photo.length > 0) {
+      const newPhotoPaths = req.files.photo.map(file => file.filename);
       updateFields.photo = [...existingStaff.photo, ...newPhotoPaths];
     } else {
-      updateFields.photo = existingStaff.photo; // Keep existing photos if no new photos are uploaded
+      updateFields.photo = existingStaff.photo;
     }
 
     const updatedStaff = await OurStaff.findByIdAndUpdate(
@@ -86,6 +107,7 @@ const updateStaff = async (req, res) => {
     res.status(500).json({ message: 'Server error', error });
   }
 };
+
 
 module.exports = updateStaff;
 

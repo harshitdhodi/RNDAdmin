@@ -3,11 +3,14 @@ import { Table, Button, Space, message, Breadcrumb, Popconfirm } from 'antd';
 import { EditOutlined, DeleteOutlined, PlusOutlined, HomeOutlined } from '@ant-design/icons';
 import axios from 'axios';
 import { useNavigate, Link } from 'react-router-dom';
+import { toast, ToastContainer } from "react-toastify";
 
 const CounterTable = () => {
   const navigate = useNavigate();
   const [data, setData] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [heading, setHeading] = useState("");
+  const [subheading, setSubheading] = useState("");
 
   const fetchCounters = async () => {
     setIsLoading(true);
@@ -66,8 +69,8 @@ const CounterTable = () => {
       key: 'actions',
       render: (_, record) => (
         <Space>
-          <Button 
-            type="primary" 
+          <Button
+            type="primary"
             icon={<EditOutlined />}
             onClick={() => navigate(`/edit-counter/${record._id}`)}
           />
@@ -77,8 +80,8 @@ const CounterTable = () => {
             okText="Yes"
             cancelText="No"
           >
-            <Button 
-              danger 
+            <Button
+              danger
               icon={<DeleteOutlined />}
             />
           </Popconfirm>
@@ -86,6 +89,41 @@ const CounterTable = () => {
       ),
     },
   ];
+  const notify = () => {
+    toast.success("Updated Successfully!");
+  };
+
+  const fetchHeadings = async () => {
+    try {
+      const response = await axios.get('/api/pageHeading/heading?pageType=counter', { withCredentials: true });
+      const { heading, subheading } = response.data;
+      setHeading(heading || '');
+      setSubheading(subheading || '');
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const saveHeadings = async () => {
+
+    try {
+      await axios.put('/api/pageHeading/updateHeading?pageType=counter', {
+        pagetype: 'counter',
+        heading,
+        subheading,
+      }, { withCredentials: true });
+      notify();
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  useEffect(() => {
+    fetchHeadings();
+  }, []);
+
+  const handleHeadingChange = (e) => setHeading(e.target.value);
+  const handleSubheadingChange = (e) => setSubheading(e.target.value);
 
   return (
     <div>
@@ -97,14 +135,43 @@ const CounterTable = () => {
         </Breadcrumb.Item>
         <Breadcrumb.Item>Counter Management</Breadcrumb.Item>
       </Breadcrumb>
-      
+      <ToastContainer />
+      <div className="mb-8 border border-gray-200 shadow-lg p-4 rounded ">
+        <div className="grid md:grid-cols-2 md:gap-2 grid-cols-1">
+          <div className="mb-6">
+            <label className="block text-gray-700 font-bold mb-2 uppercase font-serif">Heading</label>
+            <input
+              type="text"
+              value={heading}
+              onChange={handleHeadingChange}
+              className="w-full px-4 py-2 border rounded-md focus:outline-none focus:border-yellow-500 transition duration-300"
+            />
+          </div>
+          <div className="mb-6">
+            <label className="block text-gray-700 font-bold mb-2 uppercase font-serif">Sub heading</label>
+            <input
+              type="text"
+              value={subheading}
+              onChange={handleSubheadingChange}
+              className="w-full px-4 py-2 border rounded-md focus:outline-none focus:border-yellow-500 transition duration-300"
+            />
+          </div>
+        </div>
+        <button
+          onClick={saveHeadings}
+          className="px-4 py-2 bg-slate-700 text-white rounded hover:bg-slate-900 transition duration-300 font-serif"
+        >
+          Save
+        </button>
+      </div>
+
       <div className='p-6 flex justify-between items-center'>
         <div className='text-2xl font-bold'>
-          <h1>Counter Management</h1>   
+          <h1>Counter Management</h1>
         </div>
         <div>
-          <Button 
-            type="primary" 
+          <Button
+            type="primary"
             icon={<PlusOutlined />}
             onClick={() => navigate('/add-counter')}
             className='mb-4'
@@ -113,9 +180,9 @@ const CounterTable = () => {
           </Button>
         </div>
       </div>
-      <Table 
-        columns={columns} 
-        dataSource={data} 
+      <Table
+        columns={columns}
+        dataSource={data}
         loading={isLoading}
         rowKey="_id"
         pagination={{ pageSize: 5 }}

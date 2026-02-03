@@ -1,16 +1,20 @@
 import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom'; // Import Link from react-router-dom
+import { Link, useNavigate } from 'react-router-dom';
 import Adminlogo from '../assets/adminimg.png';
 import axios from 'axios';
 import Cookies from "js-cookie"
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { FiEye, FiEyeOff } from "react-icons/fi";
+
 
 
 function AdminLogin() {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [isLoading, setIsLoading] = useState(false);
+    const [showPassword, setShowPassword] = useState(false);
+
     const navigate = useNavigate();
 
     const handleSubmit = async (e) => {
@@ -55,19 +59,29 @@ function AdminLogin() {
                             />
                            
                         </div>
-                        <div className="mb-6">
-                            <label htmlFor="password" className="block text-sm font-sens text-gray-500">
-                                PASSWORD
-                            </label>
-                            <input
-                                type="password"
-                                id="password"
-                                className="w-full py-2 px-3 mt-1 text-yellow-950 bg-white border-b-2 border-gray-400 focus:outline-none focus:border-yellow-700"
-                                value={password}
-                                onChange={(e) => setPassword(e.target.value)}
-                                required
-                            />
-                        </div>
+                        <div className="mb-6 relative">
+  <label htmlFor="password" className="block text-sm font-sens text-gray-500">
+    PASSWORD
+  </label>
+
+  <input
+    type={showPassword ? "text" : "password"}
+    id="password"
+    className="w-full py-2 px-3 mt-1 pr-10 text-yellow-950 bg-white border-b-2 border-gray-400 focus:outline-none focus:border-yellow-700"
+    value={password}
+    onChange={(e) => setPassword(e.target.value)}
+    required
+  />
+
+  <button
+    type="button"
+    onClick={() => setShowPassword(!showPassword)}
+    className="absolute right-3 top-[38px] text-gray-500 hover:text-yellow-700"
+  >
+    {showPassword ? <FiEyeOff size={18} /> : <FiEye size={18} />}
+  </button>
+</div>
+
                         <div className="flex justify-between items-center">
                             <div className="text-sm text-gray-400">
                                 <Link

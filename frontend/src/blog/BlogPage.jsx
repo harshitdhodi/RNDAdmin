@@ -35,11 +35,15 @@ const BlogTable = () => {
   }, []);
 
   const fetchHeadings = async () => {
-    setLoadingHeadings(true);
+
+    // setLoadingHeadings(true);
     try {
+      // console.log("Fetching blog page headings");
       const response = await axios.get('/api/pageHeading/heading?pageType=blogtitle', {
         withCredentials: true,
       });
+      // console.log("blog Data",response.data);
+
       const { heading: fetchedHeading = '', subheading: fetchedSubheading = '' } = response.data || {};
 
       setHeading(fetchedHeading);
@@ -122,9 +126,8 @@ const BlogTable = () => {
       render: (text, record) => (
         <div>
           <div
-            className={`relative overflow-hidden transition-all duration-300 ${
-              expandedRows[record._id] ? 'max-h-none' : 'max-h-20'
-            }`}
+            className={`relative overflow-hidden transition-all duration-300 ${expandedRows[record._id] ? 'max-h-none' : 'max-h-20'
+              }`}
             dangerouslySetInnerHTML={{ __html: text }}
           />
           {text && text.length > 100 && (
@@ -174,7 +177,8 @@ const BlogTable = () => {
           <Button
             icon={<EditOutlined />}
             onClick={() => navigate(`/edit-blog-form/${record._id}`)}
-            size="small"
+            type='button'
+            className='bg-[#ebb207] text-white hover:bg-yellow-700 transition whitespace-nowrap'
           />
           <Popconfirm
             title="Are you sure you want to delete this blog?"
@@ -183,7 +187,7 @@ const BlogTable = () => {
             cancelText="No"
             disabled={isDeleting}
           >
-            <Button danger icon={<DeleteOutlined />} size="small" loading={isDeleting} />
+            <Button danger icon={<DeleteOutlined />} loading={isDeleting} />
           </Popconfirm>
         </div>
       ),
@@ -235,6 +239,7 @@ const BlogTable = () => {
             />
           </div>
         </div>
+
 
         <div className="mt-6 flex items-center gap-4">
           <Button

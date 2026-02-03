@@ -5,6 +5,8 @@ const getpageHeading = async (req, res) => {
 
   try {
     const pageHeading = await PageHeadings.findOne({ pageType: pageType });
+    console.log("pageHeading Log",pageHeading);
+    
     if (pageHeading) {
       res.status(200).json({ heading: pageHeading.heading, subheading: pageHeading.subheading, detail: pageHeading.detail, photo:pageHeading.photo,alt:pageHeading.alt,imgTitle:pageHeading.imgTitle });
     }
