@@ -1,10 +1,10 @@
 import React, { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { useNavigate, useParams } from 'react-router-dom';
-import { 
-  useAddCategoryMutation, 
-  useGetCategoryByIdQuery, 
-  useUpdateCategoryMutation 
+import {
+  useAddCategoryMutation,
+  useGetCategoryByIdQuery,
+  useUpdateCategoryMutation
 } from '@/slice/blog/blogCategory';
 
 const CategoryForm = () => {
@@ -20,9 +20,9 @@ const CategoryForm = () => {
   });
 
   // Initialize react-hook-form
-  const { 
-    register, 
-    handleSubmit, 
+  const {
+    register,
+    handleSubmit,
     formState: { errors },
     reset,
     setValue
@@ -46,7 +46,7 @@ const CategoryForm = () => {
         ...data,
         priority: data.priority ? Number(data.priority) : undefined
       };
-  
+
       let response;
       if (id) {
         // Update existing category with id as query parameter
@@ -55,22 +55,22 @@ const CategoryForm = () => {
         // Add new category
         response = await addCategory(formData).unwrap();
       }
-  
+
       // Reset form after successful submission
       reset();
-  
+
       // Manually trigger refetch or state change for table update
       // Navigate to category table and refetch data if necessary
       navigate("/blog-category-table", { replace: true });
-  
+
       // Optionally, add a success toast or notification
-      console.log(id ? 'Category updated successfully' : 'Category added successfully', response);
+      // console.log(id ? 'Category updated successfully' : 'Category added successfully', response);
     } catch (submitError) {
       // Handle submission error (you might want to add error handling)
       console.error(id ? 'Failed to update category' : 'Failed to add category', submitError);
     }
   };
-  
+
   // Determine loading and button text
   const isLoading = isAddLoading || isUpdateLoading || isFetchLoading;
   const isEditMode = !!id;
@@ -80,7 +80,7 @@ const CategoryForm = () => {
       <h2 className="text-2xl font-bold mb-6 text-center">
         {isEditMode ? 'Update Category' : 'Add Category'}
       </h2>
-      
+
       {isLoading ? (
         <div className="text-center text-gray-600">Loading...</div>
       ) : (
@@ -93,7 +93,7 @@ const CategoryForm = () => {
             <input
               type="text"
               id="category"
-              {...register("category", { 
+              {...register("category", {
                 required: "Category is required",
                 minLength: { value: 2, message: "Category must be at least 2 characters" }
               })}
@@ -112,7 +112,7 @@ const CategoryForm = () => {
             <input
               type="text"
               id="slug"
-              {...register("slug", { 
+              {...register("slug", {
                 required: "Slug is required",
                 pattern: {
                   value: /^[a-z0-9-]+$/,
@@ -223,8 +223,8 @@ const CategoryForm = () => {
               className="w-full px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 
               disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              {isLoading 
-                ? 'Processing...' 
+              {isLoading
+                ? 'Processing...'
                 : (isEditMode ? 'Update Category' : 'Add Category')
               }
             </button>

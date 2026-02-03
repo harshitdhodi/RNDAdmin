@@ -17,9 +17,9 @@ const storage = multer.diskStorage({
     // Store directly in logos directory
     cb(null, uploadDir);
   },
-  filename: function (req, file, cb) {
-    const fileName = `${file.fieldname}_${Date.now()}.webp`; // Always use .webp extension
-    cb(null, fileName);
+   filename: (req, file, cb) => {
+    const name = `${file.fieldname}_${Date.now()}.webp`;
+    cb(null, name);
   }
 });
 
@@ -37,59 +37,33 @@ const upload = multer({
 });
 
 // Process the image in place to ensure WebP format
-const processLogoImage = async (filePath) => {
-  try {
-    // If the file is already a .webp, skip processing
-    if (path.extname(filePath).toLowerCase() === '.webp') {
-      return;
-    }
-    // Otherwise, convert to WebP
-    await sharp(filePath)
-      .webp({ quality: 80 })
-      .toFile(filePath + '.temp');
-    await fs.promises.rename(filePath + '.temp', filePath);
-  } catch (err) {
-    throw new Error(`Failed to process image: ${err.message}`);
-  }
+const processToWebp = async (filePath) => {
+  const buffer = await sharp(filePath).webp({ quality: 80 }).toBuffer();
+  await fs.promises.writeFile(filePath, buffer);
 };
+
 
 // Middleware to handle the logo file upload and process the image
-const uploadLogo = async (req, res, next) => {
-  try {
-    await upload.single('photo')(req, res, async (err) => {
-      if (err) {
-        return res.status(400).json({
-          error: err.message || 'Error uploading file'
-        });
+const uploadLogo = (req, res, next) => {
+  upload.fields([
+    { name: 'headerLogo', maxCount: 1 },
+    { name: 'favIcon', maxCount: 1 },
+    { name: 'footerLogo', maxCount: 1 }
+  ])(req, res, async (err) => {
+    if (err) return res.status(400).json({ error: err.message });
+
+    try {
+      const files = req.files || {};
+      for (const key of Object.keys(files)) {
+        await processToWebp(files[key][0].path);
       }
-
-      // If no file is uploaded, proceed without photo processing
-      if (!req.file) {
-        return next();
-      }
-
-      try {
-        const filePath = req.file.path;
-        console.log('File saved to:', filePath);
-
-        // Process the image to ensure it's in WebP format
-        await processLogoImage(filePath);
-
-        next();
-      } catch (processError) {
-        console.error('Processing error:', processError);
-        return res.status(500).json({
-          error: 'Error processing the image',
-          details: processError.message
-        });
-      }
-    });
-  } catch (err) {
-    console.error('Server error:', err);
-    return res.status(500).json({
-      error: 'Server error during upload'
-    });
-  }
+      next();
+    } catch (e) {
+      res.status(500).json({ error: e.message });
+    }
+  });
 };
+
+
 
 module.exports = { uploadLogo };

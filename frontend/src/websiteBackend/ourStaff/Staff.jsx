@@ -31,12 +31,12 @@ const StaffTable = () => {
 
   const columns = useMemo(
     () => [
+        // {
+        //   Header: "ID",
+        //   accessor: "id",
+        // },
       {
-        Header: "ID",
-        accessor: "id",
-      },
-      {
-        Header: "Employee ID",
+        Header: "Priority",
         accessor: "S_id",
         Cell: ({ row }) => (
           <span
@@ -242,9 +242,11 @@ const StaffTable = () => {
       </div>
       <div className="flex justify-between items-center mb-4">
         <h1 className="text-xl font-bold  text-gray-700 font-serif uppercase">Our Team</h1>
+        <Link to="/our-staff-form">
         <button className="px-4 py-2 bg-slate-700 text-white rounded hover:bg-slate-900 transition duration-300 font-serif">
-          <Link to="/our-staff-form"><FaPlus size={15} /></Link>
+          <FaPlus size={15} />
         </button>
+        </Link>
       </div>
       <div className="mb-4">
         <input
