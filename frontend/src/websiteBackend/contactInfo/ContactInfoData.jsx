@@ -11,7 +11,9 @@ const ContactInfoForm = () => {
         altName: [''],
         photo: [],
         previewUrls: [],
-        mapLink: ''
+        mapLink: '',
+        hrEmail: '',
+        hrPhone: ''
     });
 
     const [addUser] = useAddUserMutation();
@@ -30,7 +32,9 @@ const ContactInfoForm = () => {
                 altName: existingData.altName || [''],
                 photo: [],
                 previewUrls: existingData.photo ? existingData.photo.map(p => `/api/image/download/${p}`) : [],
-                mapLink: existingData.mapLink || ''
+                mapLink: existingData.mapLink || '',
+                hrEmail: existingData.hrEmail || '',
+                hrPhone: existingData.hrPhone || ''
             });
         }
     }, [allUsers]);
@@ -65,6 +69,8 @@ const ContactInfoForm = () => {
         const submitFormData = new FormData();
         submitFormData.append('address', formData.address);
         submitFormData.append('mapLink', formData.mapLink);
+        submitFormData.append('hrEmail', formData.hrEmail);
+        submitFormData.append('hrPhone', formData.hrPhone);
         
         formData.mobiles.forEach(mobile => {
             submitFormData.append('mobiles[]', mobile);
@@ -210,6 +216,42 @@ const ContactInfoForm = () => {
                         >
                             <span className="text-xl">+</span> Add Mobile Number
                         </button>
+                    </div>
+
+                    {/* HR Email */}
+                    <div className="space-y-2">
+                        <label className="flex items-center text-sm font-semibold text-gray-700">
+                            <Mail className="w-5 h-5 mr-2 text-indigo-600" />
+                            HR Email
+                        </label>
+                        <input
+                            type="email"
+                            value={formData.hrEmail}
+                            onChange={(e) => setFormData(prev => ({
+                                ...prev,
+                                hrEmail: e.target.value
+                            }))}
+                            className="w-full px-4 py-3 rounded-lg border-2 border-gray-200 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 transition-all outline-none"
+                            placeholder="hr@example.com"
+                        />
+                    </div>
+
+                    {/* HR Phone */}
+                    <div className="space-y-2">
+                        <label className="flex items-center text-sm font-semibold text-gray-700">
+                            <Phone className="w-5 h-5 mr-2 text-indigo-600" />
+                            HR Phone
+                        </label>
+                        <input
+                            type="tel"
+                            value={formData.hrPhone}
+                            onChange={(e) => setFormData(prev => ({
+                                ...prev,
+                                hrPhone: e.target.value
+                            }))}
+                            className="w-full px-4 py-3 rounded-lg border-2 border-gray-200 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 transition-all outline-none"
+                            placeholder="+91 XXXXX XXXXX"
+                        />
                     </div>
 
                     {/* Emails */}

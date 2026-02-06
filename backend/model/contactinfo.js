@@ -35,6 +35,20 @@ const UserSchema = new mongoose.Schema({
       message: (props) => `${props.value} contains an invalid email address.`,
     },
   },
+  hrEmail: {
+    type: String, // HR email address
+    required: false,
+    validate: {
+      validator: function (v) {
+        return !v || /^\S+@\S+\.\S+$/.test(v);
+      },
+      message: (props) => `${props.value} is not a valid email address.`,
+    },
+  },
+  hrPhone: {
+    type: String, // HR phone number
+    required: false,
+  },
 }, { timestamps: true });
 
 const User = mongoose.model('contactInfo', UserSchema);
