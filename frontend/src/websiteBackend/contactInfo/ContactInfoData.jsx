@@ -24,7 +24,8 @@ const ContactInfoForm = () => {
     useEffect(() => {
         if (allUsers && allUsers.length > 0) {
             const existingData = allUsers[0];
-            setFormData({
+            console.log('📋 Existing Contact Data:', existingData);
+            const newFormData = {
                 address: existingData.address || '',
                 mobiles: existingData.mobiles || [''],
                 emails: existingData.emails || [''],
@@ -35,7 +36,9 @@ const ContactInfoForm = () => {
                 mapLink: existingData.mapLink || '',
                 hrEmail: existingData.hrEmail || '',
                 hrPhone: existingData.hrPhone || ''
-            });
+            };
+            console.log('✅ Form Data Set:', newFormData);
+            setFormData(newFormData);
         }
     }, [allUsers]);
 
@@ -72,20 +75,20 @@ const ContactInfoForm = () => {
         submitFormData.append('hrEmail', formData.hrEmail);
         submitFormData.append('hrPhone', formData.hrPhone);
         
+        console.log('📝 Form Data Before Submit:', formData);
+        console.log('📦 Submitted Data:');
+        console.log('  - Address:', formData.address);
+        console.log('  - Map Link:', formData.mapLink);
+        console.log('  - Mobiles:', formData.mobiles);
+        console.log('  - Emails:', formData.emails);
+        console.log('  - HR Email:', formData.hrEmail);
+        console.log('  - HR Phone:', formData.hrPhone);
+        
         formData.mobiles.forEach(mobile => {
             submitFormData.append('mobiles[]', mobile);
         });
         formData.emails.forEach(email => {
             submitFormData.append('emails[]', email);
-        });
-        
-        // Handle arrays for image-related fields
-        formData.imgTitle.forEach((title, index) => {
-            submitFormData.append('imgTitle[]', title);
-        });
-        
-        formData.altName.forEach((alt, index) => {
-            submitFormData.append('altName[]', alt);
         });
         
         // Handle multiple photo uploads
@@ -102,17 +105,21 @@ const ContactInfoForm = () => {
 
         try {
             if (allUsers && allUsers.length > 0) {
+                console.log('🔄 Updating Contact with ID:', allUsers[0]._id);
                 await updateUser({ 
                     id: allUsers[0]._id, 
                     formData: submitFormData 
                 }).unwrap();
+                console.log('✅ Successfully Updated!');
                 alert('Contact information updated successfully!');
             } else {
+                console.log('➕ Creating New Contact');
                 await addUser(submitFormData).unwrap();
+                console.log('✅ Successfully Created!');
                 alert('Contact information added successfully!');
             }
         } catch (error) {
-            console.error('Error:', error);
+            console.error('❌ Error:', error);
             alert('Error saving contact information. Please try again.');
         }
     };

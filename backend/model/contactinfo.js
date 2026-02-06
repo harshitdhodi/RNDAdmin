@@ -3,15 +3,18 @@ const mongoose = require('mongoose');
 const UserSchema = new mongoose.Schema({
   photo: {
     type: [String], // Array of image URLs
-    required: true,
+    required: false,
+    default: [],
   },
   imgTitle: {
-    type: [String], // Array of image URLs
-    required: true,
+    type: [String], // Array of image titles
+    required: false,
+    default: [],
   },
   altName: {
-    type: [String], // Array of image URLs
-    required: true,
+    type: [String], // Array of alt names
+    required: false,
+    default: [],
   },
   address: {
     type: String, // Single address field
